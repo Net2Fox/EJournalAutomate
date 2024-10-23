@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.Remoting.Lifetime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -31,11 +32,14 @@ namespace EJournalWPF.Data
         internal delegate void LoadDataSuccessHandler(List<Mail> mails);
         internal event LoadDataSuccessHandler LoadDataSuccessEvent;
 
-        internal delegate void BeginDataLoadingHandler();
+        internal delegate void BeginDataLoadingHandler(string message);
         internal event BeginDataLoadingHandler BeginDataLoadingEvent;
 
         internal delegate void DataLoadingErrorHandler(string errorMsg);
         internal event DataLoadingErrorHandler DataLoadingErrorEvent;
+
+        internal delegate void DownloadingFinishHandler();
+        internal event DownloadingFinishHandler DownloadingFinishEvent;
 
         private DataRepository(List<CefSharp.Cookie> cefSharpCookies)
         {
@@ -87,7 +91,7 @@ namespace EJournalWPF.Data
         {
             try
             {
-                BeginDataLoadingEvent?.Invoke();
+                BeginDataLoadingEvent?.Invoke("Загрузка данных, пожалуйста, подождите...");
                 string jsonResponse = await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.get_list&category=inbox&search=&limit={limit}&offset={offset}&teacher=21742&status={(status == Status.all ? "" : status.ToString())}&companion=&minDate=0", _cookies);
                 JObject jsonData = JObject.Parse(jsonResponse);
                 _mails = JsonConvert.DeserializeObject<List<Mail>>(jsonData["list"].ToString());
@@ -117,37 +121,69 @@ namespace EJournalWPF.Data
             }
         }
 
-        internal void DownloadFile(string fileUrl, string fileName, string subDirectory = null)
+        internal async void DownloadFile(List<Mail> mailsToDownload)
         {
+            BeginDataLoadingEvent?.Invoke($"Скачивание {mailsToDownload.Count} писем...");
+            string mainFolder = "Письма";
+            string group = null;
+            string student = null;
+            string subDirectory = null;
+            string fileName = null;
+            if (!Directory.Exists(mainFolder))
+            {
+                Directory.CreateDirectory(mainFolder);
+            }
+
             using (WebClient client = new WebClient())
             {
-                if (!Directory.Exists("Работа"))
+                foreach (var mail in mailsToDownload)
                 {
-                    Directory.CreateDirectory("Работа");
-                }
-
-                if (subDirectory != null)
-                {
-                    if (!Directory.Exists($"Работа/{subDirectory}"))
+                    group = mail.FromUser.Group.Name;
+                    if (!Directory.Exists($"{mainFolder}/{group}"))
                     {
-                        Directory.CreateDirectory($"Работа/{subDirectory}");
+                        Directory.CreateDirectory($"{mainFolder}/{group}");
                     }
-                    fileName = $"Работа/{subDirectory}/{fileName}";
-                }
-                else
-                {
-                    fileName = $"Работа/{fileName}";
-                }
 
-                if (System.IO.File.Exists(fileName))
-                {
-                    return;
+                    student = $"{mail.FromUser.FirtsName} {mail.FromUser.LastName}";
+                    if (!Directory.Exists($"{mainFolder}/{group}/{student}"))
+                    {
+                        Directory.CreateDirectory($"{mainFolder}/{group}/{student}");
+                    }
+
+                    if (mail.Files.Count > 1)
+                    {
+                        subDirectory = mail.Subject;
+                        if (!Directory.Exists($"{mainFolder}/{group}/{student}/{subDirectory}"))
+                        {
+                            Directory.CreateDirectory($"{mainFolder}/{group}/{student}/{subDirectory}");
+                        }
+                    }
+
+                    foreach (var file in mail.Files)
+                    {
+                        if (subDirectory != null)
+                        {
+                            fileName = $"{mainFolder}/{group}/{student}/{subDirectory}/{file.Filename}";
+                        }
+                        else
+                        {
+                            fileName = $"{mainFolder}/{group}/{student}/{file.Filename}";
+                        }
+
+                        if (System.IO.File.Exists(fileName))
+                        {
+                            break;
+                        }
+
+                        byte[] fileBytes = client.DownloadData(file.URL);
+                        System.IO.File.WriteAllBytes(fileName, fileBytes);
+                    }
+                    await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.note_read&idsString={mail.ID}", _cookies);
+                    mail.Status = Status.read;
+                    mail.IsSelected = false;
                 }
-
-                byte[] fileBytes = client.DownloadData(fileUrl);
-
-                System.IO.File.WriteAllBytes(fileName, fileBytes);
             }
+            DownloadingFinishEvent?.Invoke();
         }
 
         public static void Initialize(List<CefSharp.Cookie> cefSharpCookies)

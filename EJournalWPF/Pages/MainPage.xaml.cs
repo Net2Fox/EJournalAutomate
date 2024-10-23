@@ -26,6 +26,12 @@ namespace EJournalWPF.Pages
             repository.LoadDataSuccessEvent += LoadData;
             repository.BeginDataLoadingEvent += DataLoadingProgress;
             repository.DataLoadingErrorEvent += DataLoadingErrorEvent;
+            repository.DownloadingFinishEvent += DownloadingFinish;
+        }
+
+        private void DownloadingFinish()
+        {
+             LoadData(repository.GetMails());
         }
 
         private void DataLoadingErrorEvent(string errorMsg)
@@ -54,10 +60,10 @@ namespace EJournalWPF.Pages
             });
         }
 
-        private void DataLoadingProgress()
+        private void DataLoadingProgress(string message)
         {
             Application.Current.Dispatcher.Invoke(() => {
-                LoadingTextBlock.Text = "Загрузка данных, пожалуйста, подождите...";
+                LoadingTextBlock.Text = message;
                 LoadingSplashPanel.Visibility = Visibility.Visible;
                 isDataLoaded = false;
             });
@@ -167,7 +173,7 @@ namespace EJournalWPF.Pages
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-            repository.GetMails().Where(m => m.IsSelected == true && m.HasFiles == true).ToList();
+            repository.DownloadFile(repository.GetMails().Where(m => m.IsSelected == true && m.HasFiles == true).ToList());
         }
     }
 }
