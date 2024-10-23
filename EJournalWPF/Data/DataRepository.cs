@@ -179,11 +179,17 @@ namespace EJournalWPF.Data
                         System.IO.File.WriteAllBytes(fileName, fileBytes);
                     }
                     await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.note_read&idsString={mail.ID}", _cookies);
-                    mail.Status = Status.read;
-                    mail.IsSelected = false;
+                    CheckStatusMail(mail.ID);
                 }
             }
             DownloadingFinishEvent?.Invoke();
+        }
+
+        private void CheckStatusMail(long id)
+        {
+            Mail mail = _mails.Find(m => m.ID == id);
+            mail.Status = Status.read;
+            mail.IsSelected = false;
         }
 
         public static void Initialize(List<CefSharp.Cookie> cefSharpCookies)
