@@ -25,5 +25,5 @@
 - **CefSharp** - лицензируется под BSD License. См. [CefSharp License](https://github.com/cefsharp/CefSharp?tab=License-1-ov-file#readme).
 
 ## Лицензия
-Этот проект находится под лицензией MIT. Подробности см. в файле [LICENSE](https://github.com/Net2Fox/EJournalDesktop/blob/v2.0/LICENSE).
+Этот проект находится под лицензией MIT. Подробности см. в файле [LICENSE](LICENSE.md).
 
