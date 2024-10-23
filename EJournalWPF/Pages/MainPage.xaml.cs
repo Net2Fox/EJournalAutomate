@@ -31,7 +31,10 @@ namespace EJournalWPF.Pages
 
         private void DownloadingFinish()
         {
-             LoadData(repository.GetMails());
+            Application.Current.Dispatcher.Invoke(() => {
+                MessageBox.Show("Вложения из писем успешно скачаны!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                LoadData(repository.GetMails());
+            });
         }
 
         private void DataLoadingErrorEvent(string errorMsg)
@@ -46,6 +49,7 @@ namespace EJournalWPF.Pages
         {
             Application.Current.Dispatcher.Invoke(() => {
                 EmailListBox.ItemsSource = mails;
+                EmailListBox.Items.Refresh();
                 isDataLoaded = true;
                 Filter();
                 LoadingSplashPanel.Visibility = Visibility.Collapsed;
@@ -89,6 +93,7 @@ namespace EJournalWPF.Pages
             }
 
             EmailListBox.ItemsSource = filteredList;
+            EmailListBox.Items.Refresh();
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
