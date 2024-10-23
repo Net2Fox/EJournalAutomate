@@ -40,9 +40,17 @@ namespace EJournalWPF.Pages
         {
             Application.Current.Dispatcher.Invoke(() => {
                 EmailListBox.ItemsSource = mails;
-                Filter();
                 isDataLoaded = true;
+                Filter();
                 LoadingSplashPanel.Visibility = Visibility.Collapsed;
+                if (offset >= limit)
+                {
+                    BackButton.IsEnabled = true;
+                } 
+                else
+                {
+                    BackButton.IsEnabled = false;
+                }
             });
         }
 
@@ -51,6 +59,7 @@ namespace EJournalWPF.Pages
             Application.Current.Dispatcher.Invoke(() => {
                 LoadingTextBlock.Text = "Загрузка данных, пожалуйста, подождите...";
                 LoadingSplashPanel.Visibility = Visibility.Visible;
+                isDataLoaded = false;
             });
         }
 
@@ -92,14 +101,19 @@ namespace EJournalWPF.Pages
             }
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        private async void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Перемещаться назад offset-limit(n) пока offset != 0
+            if (offset >= limit)
+            {
+                offset -= limit;
+            }
+            await repository.GetMailsFromAPI(limit, offset);
         }
 
-        private void ForwardButton_Click(object sender, RoutedEventArgs e)
+        private async void ForwardButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Перемещаться вперёд, offset+limit(n)
+            offset += limit;
+            await repository.GetMailsFromAPI(limit, offset);
         }
 
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -150,6 +164,10 @@ namespace EJournalWPF.Pages
             }
             EmailListBox.Items.Refresh();
         }
+
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            repository.GetMails().Where(m => m.IsSelected == true && m.HasFiles == true).ToList();
         }
     }
 }
