@@ -1,30 +1,24 @@
-﻿using EJournalWPF.Model;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace EJournalWPF
 {
+    [JsonObject(MemberSerialization.OptIn)]
     internal class Group
     {
+        [JsonProperty("name")]
         public string Name { get; set; }
-        public string Key { get; set; }
-        public List<Student> Students { get; set; }
 
-        public Group(string name, string key, List<Student> students)
-        {
-            this.Name = name;
-            this.Key = key;
-            this.Students = students;
-        }
+        [JsonProperty("key")]
+        public string Key { get; set; }
 
         public Group(string name, string key) 
         {
             this.Name = name;
-            this.Key = key;
-            this.Students = new List<Student>();
+            this.Key = key.Split(new[] { "#####" }, StringSplitOptions.RemoveEmptyEntries)[1];
         }
     }
 }
