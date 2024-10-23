@@ -33,7 +33,17 @@
                         <CheckBox x:Name="EmailCheckBox" IsChecked="{Binding IsSelected}" VerticalAlignment="Center" Margin="0,0,0,0"/>
                         <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="10,0,0,0">
                             <TextBlock x:Name="SenderTextBlock" Text="{Binding FromUser.LastName}" FontSize="8"/>
-                            <TextBlock x:Name="SubjectTextBlock" Text="{Binding Subject}" FontSize="16" FontWeight="Bold"/>
+                            <TextBlock x:Name="SubjectTextBlock" Text="{Binding Subject}" FontSize="16">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Status}" Value="1">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>
