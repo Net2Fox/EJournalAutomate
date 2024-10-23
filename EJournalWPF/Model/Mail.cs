@@ -35,6 +35,8 @@ namespace EJournalWPF.Model
         [JsonExtensionData]
         private IDictionary<string, JToken> _additionalData;
 
+        public bool IsSelected { get; set; }
+
         public Mail(long id, DateTime date, string subject, Status status, List<File> files, bool hasFiles)
         {
             this.ID = id;
@@ -43,6 +45,7 @@ namespace EJournalWPF.Model
             this.Status = status;
             this.Files = files;
             this.HasFiles = true;
+            this.IsSelected = false;
         }
 
         [OnDeserialized]

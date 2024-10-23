@@ -141,5 +141,15 @@ namespace EJournalWPF.Pages
                 await repository.GetMailsFromAPI(limit);
             }
         }
+
+        private void SelectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var mail in EmailListBox.Items.SourceCollection as List<Mail>)
+            {
+                mail.IsSelected = true;
+            }
+            EmailListBox.Items.Refresh();
+        }
+        }
     }
 }
