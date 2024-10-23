@@ -25,9 +25,9 @@ namespace EJournalWPF.Model
         public Student(long id, string firtsName, string lastName, string middleName)
         {
             this.Id = id;
-            this.FirtsName = firtsName;
-            this.LastName = lastName;
-            this.MiddleName = middleName;
+            this.FirtsName = firtsName.Replace(" ", "");
+            this.LastName = lastName.Replace(" ", "");
+            this.MiddleName = middleName.Replace(" ", "");
         }
     }
 }
