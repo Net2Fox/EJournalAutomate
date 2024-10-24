@@ -144,7 +144,7 @@ namespace EJournalWPF.Data
                         Directory.CreateDirectory($"{mainFolder}/{group}");
                     }
 
-                    student = $"{mail.FromUser.FirtsName} {mail.FromUser.LastName}";
+                    student = $"{mail.FromUser.LastName} {mail.FromUser.FirtsName}";
                     if (!Directory.Exists($"{mainFolder}/{group}/{student}"))
                     {
                         Directory.CreateDirectory($"{mainFolder}/{group}/{student}");
