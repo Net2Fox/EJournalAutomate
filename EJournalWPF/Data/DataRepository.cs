@@ -51,7 +51,14 @@ namespace EJournalWPF.Data
             Task.Run(async () =>
             {
                 await GetStudentsFromAPI();
-                await GetMailsFromAPI();
+                if (_students.Count > 0)
+                {
+                    await GetMailsFromAPI();
+                }
+                else
+                {
+                    DataLoadingErrorEvent?.Invoke("При загрузке списка студентов произошла ошибка, перезапустите программу!");
+                }
             });
         }
 
