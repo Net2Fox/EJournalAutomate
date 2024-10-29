@@ -132,10 +132,7 @@ namespace EJournalWPF.Data
         {
             BeginDataLoadingEvent?.Invoke($"Скачивание {mailsToDownload.Count} писем...");
             string mainFolder = "Письма";
-            string group = null;
-            string student = null;
-            string subDirectory = null;
-            string fileName = null;
+            
             if (!Directory.Exists(mainFolder))
             {
                 Directory.CreateDirectory(mainFolder);
@@ -145,6 +142,11 @@ namespace EJournalWPF.Data
             {
                 foreach (var mail in mailsToDownload)
                 {
+                    string group = null;
+                    string student = null;
+                    string subDirectory = null;
+                    string fileName = null;
+
                     group = mail.FromUser.Group.Name;
                     if (!Directory.Exists($"{mainFolder}/{group}"))
                     {
