@@ -99,7 +99,7 @@ namespace EJournalWPF.Data
             try
             {
                 BeginDataLoadingEvent?.Invoke("Загрузка данных, пожалуйста, подождите...");
-                string jsonResponse = await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.get_list&category=inbox&search=&limit={limit}&offset={offset}&teacher=21742&status={(status == Status.all ? "" : status.ToString())}&companion=&minDate=0", _cookies);
+                string jsonResponse = await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.get_list&category=inbox&search=&limit={limit}&offset={offset}&teacher=0&status={(status == Status.all ? "" : status.ToString())}&companion=&minDate=0", _cookies);
                 JObject jsonData = JObject.Parse(jsonResponse);
                 _mails = JsonConvert.DeserializeObject<List<Mail>>(jsonData["list"].ToString());
                 _mails = _mails.Where(m => m.FromUser != null).ToList();
