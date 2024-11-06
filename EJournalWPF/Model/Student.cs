@@ -20,7 +20,8 @@ namespace EJournalWPF.Model
         // Отчество
         public string MiddleName { get; set; }
 
-        public Group Group { get; set; }
+        [JsonProperty("group", Required = Required.DisallowNull)]
+        public virtual Group Group { get; set; }
 
         public Student(long id, string firtsName, string lastName, string middleName)
         {

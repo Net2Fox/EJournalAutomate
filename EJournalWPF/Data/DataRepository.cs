@@ -98,6 +98,7 @@ namespace EJournalWPF.Data
             catch (Exception ex)
             {
                 DataLoadingErrorEvent?.Invoke(ex.Message);
+                return;
             }
         }
 
@@ -120,6 +121,7 @@ namespace EJournalWPF.Data
             catch (Exception ex)
             {
                 DataLoadingErrorEvent?.Invoke(ex.Message);
+                return;
             }
         }
 
