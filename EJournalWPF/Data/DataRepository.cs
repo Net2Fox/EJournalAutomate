@@ -161,7 +161,7 @@ namespace EJournalWPF.Data
 
                     if (mail.Files.Count > 1)
                     {
-                        subDirectory = mail.Subject;
+                        subDirectory = Regex.Replace(mail.Subject, @"[<>:""|?*]", string.Empty);
                         if (!Directory.Exists($"{mainFolder}/{group}/{student}/{subDirectory}"))
                         {
                             Directory.CreateDirectory($"{mainFolder}/{group}/{student}/{subDirectory}");
@@ -170,13 +170,14 @@ namespace EJournalWPF.Data
 
                     foreach (var file in mail.Files)
                     {
+                        fileName = Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty);
                         if (subDirectory != null)
                         {
-                            fileName = $"{mainFolder}/{group}/{student}/{subDirectory}/{file.Filename}";
+                            fileName = $"{mainFolder}/{group}/{student}/{subDirectory}/{fileName}";
                         }
                         else
                         {
-                            fileName = $"{mainFolder}/{group}/{student}/{file.Filename}";
+                            fileName = $"{mainFolder}/{group}/{student}/{fileName}";
                         }
 
                         if (System.IO.File.Exists(fileName))
