@@ -19,6 +19,8 @@ using System.Windows.Shapes;
 using CefSharp;
 using CefSharp.DevTools.Network;
 using EJournalWPF.Model;
+using EJournalWPF.Pages;
+using EJournalWPF.Data;
 
 namespace EJournalWPF
 {
@@ -30,6 +32,29 @@ namespace EJournalWPF
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private async void RedownloadDataMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            await DataRepository.GetInstance().LoadDataAPI();
+        }
+
+        private void MainFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+            if (MainFrame.Content is MainPage)
+            {
+                MainMenu.IsEnabled = true;
+            }
         }
     }
 }

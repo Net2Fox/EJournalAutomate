@@ -81,6 +81,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Data\DataRepository.cs" />
+    <Compile Include="Model\CacheData.cs" />
     <Compile Include="Model\File.cs" />
     <Compile Include="Model\Mail.cs" />
     <Compile Include="Model\Status.cs" />

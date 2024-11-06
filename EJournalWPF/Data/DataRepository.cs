@@ -47,25 +47,37 @@ namespace EJournalWPF.Data
             {
                 _cookies.Add(new Uri("https://kip.eljur.ru"), new System.Net.Cookie(cookie.Name, cookie.Value));
             }
-
+            
             Task.Run(async () =>
             {
-                await GetStudentsFromAPI();
-                if (_students.Count > 0)
+                if (System.IO.File.Exists($"{Environment.CurrentDirectory}/cache.json"))
                 {
-                    await GetMailsFromAPI();
+                    await LoadCacheData();
+                    return;
                 }
-                else
-                {
-                    DataLoadingErrorEvent?.Invoke("При загрузке списка студентов произошла ошибка, перезапустите программу!");
-                }
+                await LoadDataAPI();
             });
+        }
+
+        internal async Task LoadDataAPI()
+        {
+            await GetStudentsFromAPI();
+            if (_students.Count > 0)
+            {
+                await GetMailsFromAPI();
+            }
+            else
+            {
+                DataLoadingErrorEvent?.Invoke("При загрузке списка студентов произошла ошибка, перезапустите программу!");
+            }
+            await SaveCacheData();
         }
 
         internal async Task GetStudentsFromAPI()
         {
             try
             {
+                BeginDataLoadingEvent?.Invoke("Загрузка данных, пожалуйста, подождите...");
                 JObject recipient_structure = JObject.Parse(await SendRequestAsync("https://kip.eljur.ru/journal-api-messages-action?method=messages.get_recipient_structure", _cookies));
                 _groups = JsonConvert.DeserializeObject<List<Group>>(recipient_structure["structure"][0]["data"][5]["data"].ToString());
 
@@ -204,6 +216,34 @@ namespace EJournalWPF.Data
             Mail mail = _mails.Find(m => m.ID == id);
             mail.Status = Status.read;
             mail.IsSelected = false;
+        }
+
+        private async Task SaveCacheData()
+        {
+            CacheData cacheData = new CacheData(_students, _groups);
+            System.IO.File.WriteAllText($"{Environment.CurrentDirectory}/cache.json", JsonConvert.SerializeObject(cacheData));
+        }
+
+        private async Task LoadCacheData()
+        {
+            try
+            {
+                CacheData cache = JsonConvert.DeserializeObject<CacheData>(System.IO.File.ReadAllText($"{Environment.CurrentDirectory}/cache.json"));
+                _groups = cache.Groups;
+                _students = cache.Students;
+                if (_students.Count > 0)
+                {
+                    await GetMailsFromAPI();
+                }
+                else
+                {
+                    await LoadDataAPI();
+                }
+            }
+            catch
+            {
+                await LoadDataAPI();
+            }
         }
 
         public static void Initialize(List<CefSharp.Cookie> cefSharpCookies)

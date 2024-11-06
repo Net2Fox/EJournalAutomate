@@ -18,7 +18,14 @@ namespace EJournalWPF
         public Group(string name, string key) 
         {
             this.Name = name;
-            this.Key = key.Split(new[] { "#####" }, StringSplitOptions.RemoveEmptyEntries)[1];
+            if (key.Contains("#####"))
+            {
+                this.Key = key.Split(new[] { "#####" }, StringSplitOptions.RemoveEmptyEntries)[1];
+            }
+            else
+            {
+                this.Key = key;
+            }
         }
     }
 }

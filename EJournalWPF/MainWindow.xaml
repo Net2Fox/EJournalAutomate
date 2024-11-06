@@ -5,6 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EJournalWPF" 
         mc:Ignorable="d"
-        Title="EJournal Desktop" Height="450" Width="800" WindowStartupLocation="CenterScreen">
-    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Source="Pages/BrowserPage.xaml"/>
+        Title="EJournal Desktop" Height="470" Width="800" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu x:Name="MainMenu" Height="20" VerticalAlignment="Top" Grid.Row="0" IsEnabled="False">
+            <MenuItem Header="Файл" Height="20">
+                <MenuItem x:Name="RedownloadDataMenuItem" Header="Повторно получить данные" Click="RedownloadDataMenuItem_Click"/>
+                <MenuItem x:Name="AboutMenuItem" Header="О программе" Click="AboutMenuItem_Click"/>
+            </MenuItem>
+            <MenuItem x:Name="SettingsMenuItem" Header="Настройки" Click="SettingsMenuItem_Click" Height="20"/>
+        </Menu>
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Source="Pages/BrowserPage.xaml" Grid.Row="1" Navigated="MainFrame_Navigated" />
+    </Grid>
 </Window>
+
