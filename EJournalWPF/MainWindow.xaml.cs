@@ -36,7 +36,7 @@ namespace EJournalWPF
 
         private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
-
+            MainFrame.Navigate(new SettingsPage());
         }
 
         private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
