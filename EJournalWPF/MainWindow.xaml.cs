@@ -41,7 +41,8 @@ namespace EJournalWPF
 
         private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
         {
-
+            AboutWindow aboutWindow = new AboutWindow();
+            aboutWindow.ShowDialog();
         }
 
         private async void RedownloadDataMenuItem_Click(object sender, RoutedEventArgs e)
@@ -53,7 +54,8 @@ namespace EJournalWPF
         {
             if (MainFrame.Content is MainPage)
             {
-                MainMenu.IsEnabled = true;
+                RedownloadDataMenuItem.IsEnabled = true;
+                SettingsMenuItem.IsEnabled = true;
             }
         }
     }
