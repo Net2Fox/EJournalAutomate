@@ -162,6 +162,10 @@ namespace EJournalWPF.Data
                     if (mail.Files.Count > 1)
                     {
                         subDirectory = Regex.Replace(mail.Subject, @"[<>:""|?*]", string.Empty);
+                        if (subDirectory.Length > 30)
+                        {
+                            subDirectory = subDirectory.Remove(30);
+                        }
                         if (!Directory.Exists($"{mainFolder}/{group}/{student}/{subDirectory}"))
                         {
                             Directory.CreateDirectory($"{mainFolder}/{group}/{student}/{subDirectory}");
