@@ -25,9 +25,13 @@ namespace EJournalWPF.Data
         private List<Student> _students;
         private List<Mail> _mails;
 
+        private string _saveDirectory = $"{Environment.CurrentDirectory}/Письма";
+
         public List<Group> Groups { get { return _groups; } }
         public List<Student> Students { get { return _students; } }
         public List<Mail> Mails { get { return _mails; } }
+
+        public string SaveDirectory { get { return _saveDirectory; } }
 
         internal delegate void LoadDataSuccessHandler(List<Mail> mails);
         internal event LoadDataSuccessHandler LoadDataSuccessEvent;
@@ -145,11 +149,10 @@ namespace EJournalWPF.Data
         internal async void DownloadFile(List<Mail> mailsToDownload)
         {
             BeginDataLoadingEvent?.Invoke($"Скачивание {mailsToDownload.Count} писем...");
-            string mainFolder = "Письма";
             
-            if (!Directory.Exists(mainFolder))
+            if (!Directory.Exists(_saveDirectory))
             {
-                Directory.CreateDirectory(mainFolder);
+                Directory.CreateDirectory(_saveDirectory);
             }
 
             using (WebClient client = new WebClient())
@@ -162,15 +165,15 @@ namespace EJournalWPF.Data
                     string fileName = null;
 
                     group = mail.FromUser.Group.Name;
-                    if (!Directory.Exists($"{mainFolder}/{group}"))
+                    if (!Directory.Exists($"{_saveDirectory}/{group}"))
                     {
-                        Directory.CreateDirectory($"{mainFolder}/{group}");
+                        Directory.CreateDirectory($"{_saveDirectory}/{group}");
                     }
 
                     student = $"{mail.FromUser.LastName} {mail.FromUser.FirtsName}";
-                    if (!Directory.Exists($"{mainFolder}/{group}/{student}"))
+                    if (!Directory.Exists($"{_saveDirectory}/{group}/{student}"))
                     {
-                        Directory.CreateDirectory($"{mainFolder}/{group}/{student}");
+                        Directory.CreateDirectory($"{_saveDirectory}/{group}/{student}");
                     }
 
                     if (mail.Files.Count > 1)
@@ -180,9 +183,9 @@ namespace EJournalWPF.Data
                         {
                             subDirectory = subDirectory.Remove(30);
                         }
-                        if (!Directory.Exists($"{mainFolder}/{group}/{student}/{subDirectory}"))
+                        if (!Directory.Exists($"{_saveDirectory}/{group}/{student}/{subDirectory}"))
                         {
-                            Directory.CreateDirectory($"{mainFolder}/{group}/{student}/{subDirectory}");
+                            Directory.CreateDirectory($"{_saveDirectory}/{group}/{student}/{subDirectory}");
                         }
                     }
 
@@ -191,11 +194,11 @@ namespace EJournalWPF.Data
                         fileName = Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty);
                         if (subDirectory != null)
                         {
-                            fileName = $"{mainFolder}/{group}/{student}/{subDirectory}/{fileName}";
+                            fileName = $"{_saveDirectory}/{group}/{student}/{subDirectory}/{fileName}";
                         }
                         else
                         {
-                            fileName = $"{mainFolder}/{group}/{student}/{fileName}";
+                            fileName = $"{_saveDirectory}/{group}/{student}/{fileName}";
                         }
 
                         if (System.IO.File.Exists(fileName))
@@ -246,6 +249,11 @@ namespace EJournalWPF.Data
             {
                 await LoadDataAPI();
             }
+        }
+
+        internal void SetSaveDirectory(string directory)
+        {
+            _saveDirectory = directory;
         }
 
         public static void Initialize(List<CefSharp.Cookie> cefSharpCookies)
