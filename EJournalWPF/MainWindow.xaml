@@ -16,7 +16,9 @@
                 <MenuItem x:Name="RedownloadDataMenuItem" Header="Повторно получить данные" Click="RedownloadDataMenuItem_Click" IsEnabled="False"/>
                 <MenuItem x:Name="AboutMenuItem" Header="О программе" Click="AboutMenuItem_Click"/>
             </MenuItem>
-            <MenuItem x:Name="SettingsMenuItem" Header="Настройки" Click="SettingsMenuItem_Click" Height="20" IsEnabled="False"/>
+            <MenuItem x:Name="SettingsMenuItem" Header="Настройки" Height="20" IsEnabled="False">
+                <MenuItem x:Name="ChangeSaveDirectoryMenuItem" Header="Указать новую папку для скачивания писем" Height="20" Click="ChangeSaveDirectoryMenuItem_Click"/>
+            </MenuItem>
         </Menu>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Source="Pages/BrowserPage.xaml" Grid.Row="1" Navigated="MainFrame_Navigated" />
     </Grid>

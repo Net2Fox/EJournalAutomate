@@ -34,9 +34,10 @@ namespace EJournalWPF
             InitializeComponent();
         }
 
-        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        private void ChangeSaveDirectoryMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            MainFrame.Navigate(new SettingsPage());
+            DirectorySettingsWindow settingsWindow = new DirectorySettingsWindow();
+            settingsWindow.ShowDialog();
         }
 
         private void AboutMenuItem_Click(object sender, RoutedEventArgs e)

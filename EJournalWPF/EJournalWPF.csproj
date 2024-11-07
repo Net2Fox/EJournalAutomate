@@ -62,6 +62,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -84,6 +85,9 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\DataRepository.cs" />
+    <Compile Include="DirectorySettingsWindow.xaml.cs">
+      <DependentUpon>DirectorySettingsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\CacheData.cs" />
     <Compile Include="Model\File.cs" />
     <Compile Include="Model\Mail.cs" />
@@ -95,6 +99,10 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DirectorySettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -119,16 +127,9 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Pages\SettingsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Student.cs" />
-    <Compile Include="Pages\SettingsPage.xaml.cs">
-      <DependentUpon>SettingsPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
