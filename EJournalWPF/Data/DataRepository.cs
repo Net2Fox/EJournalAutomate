@@ -25,7 +25,7 @@ namespace EJournalWPF.Data
         private List<Student> _students;
         private List<Mail> _mails;
 
-        private string _saveDirectory = $"{Environment.CurrentDirectory}/Письма";
+        private string _saveDirectory = $"{Environment.CurrentDirectory}\\Письма";
 
         public List<Group> Groups { get { return _groups; } }
         public List<Student> Students { get { return _students; } }
