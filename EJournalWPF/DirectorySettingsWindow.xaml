@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EJournalWPF"
         mc:Ignorable="d"
-        Title="ЭлЖур Десктоп" Height="100" Width="800" WindowStartupLocation="CenterOwner">
+        Title="ЭлЖур Десктоп" Height="100" Width="800" WindowStartupLocation="CenterScreen">
     <StackPanel VerticalAlignment="Center">
         <Grid>
             <Grid.ColumnDefinitions>

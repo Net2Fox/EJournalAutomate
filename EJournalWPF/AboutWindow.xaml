@@ -5,7 +5,7 @@ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:local="clr-namespace:EJournalWPF" ResizeMode="NoResize"
 mc:Ignorable="d" MaxHeight="150" MaxWidth="400" MinHeight="150" MinWidth="400"
-Title="ЭлЖур Десктоп" Height="150" Width="400" WindowStartupLocation="CenterOwner">
+Title="ЭлЖур Десктоп" Height="150" Width="400" WindowStartupLocation="CenterScreen">
 
     <StackPanel Orientation="Horizontal" Margin="20,20,0,20">
         <Image Source="Images/favicon.ico" Width="70" Height="70"/>
