@@ -51,7 +51,7 @@ namespace EJournalWPF.Data
             {
                 _cookies.Add(new Uri("https://kip.eljur.ru"), new System.Net.Cookie(cookie.Name, cookie.Value));
             }
-            
+            LoadSettings();
             Task.Run(async () =>
             {
                 if (System.IO.File.Exists($"{Environment.CurrentDirectory}/cache.json"))
@@ -254,6 +254,19 @@ namespace EJournalWPF.Data
         internal void SetSaveDirectory(string directory)
         {
             _saveDirectory = directory;
+        }
+
+        internal void SaveSettings()
+        {
+            System.IO.File.WriteAllText($"{Environment.CurrentDirectory}\\settings", _saveDirectory);
+        }
+
+        private void LoadSettings()
+        {
+            if (System.IO.File.Exists($"{Environment.CurrentDirectory}\\settings"))
+            {
+                _saveDirectory = System.IO.File.ReadAllText($"{Environment.CurrentDirectory}\\settings");
+            }
         }
 
         public static void Initialize(List<CefSharp.Cookie> cefSharpCookies)

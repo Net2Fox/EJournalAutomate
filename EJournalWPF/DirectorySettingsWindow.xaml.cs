@@ -32,8 +32,10 @@ namespace EJournalWPF
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
             if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                DataRepository.GetInstance().SetSaveDirectory(folderBrowserDialog.SelectedPath);
+                DataRepository dataRepository = DataRepository.GetInstance();
+                dataRepository.SetSaveDirectory(folderBrowserDialog.SelectedPath);
                 CurrentDirTextBox.Text = folderBrowserDialog.SelectedPath;
+                dataRepository.SaveSettings();
                 System.Windows.MessageBox.Show("Путь успешно установлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
