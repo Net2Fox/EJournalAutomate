@@ -27,11 +27,15 @@ namespace EJournalWPF.Data
 
         private string _saveDirectory = $"{Environment.CurrentDirectory}\\Письма";
 
+        private bool _saveDateTime = false;
+
         public List<Group> Groups { get { return _groups; } }
         public List<Student> Students { get { return _students; } }
         public List<Mail> Mails { get { return _mails; } }
 
         public string SaveDirectory { get { return _saveDirectory; } }
+
+        public bool SaveDateTime { get { return _saveDateTime; } }
 
         internal delegate void LoadDataSuccessHandler(List<Mail> mails);
         internal event LoadDataSuccessHandler LoadDataSuccessEvent;
@@ -267,6 +271,11 @@ namespace EJournalWPF.Data
             {
                 _saveDirectory = System.IO.File.ReadAllText($"{Environment.CurrentDirectory}\\settings");
             }
+        }
+
+        public void SetDateTimeSave()
+        {
+            _saveDateTime = !_saveDateTime;
         }
 
         public static void Initialize(List<CefSharp.Cookie> cefSharpCookies)

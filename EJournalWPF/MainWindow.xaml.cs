@@ -57,7 +57,16 @@ namespace EJournalWPF
             {
                 RedownloadDataMenuItem.IsEnabled = true;
                 SettingsMenuItem.IsEnabled = true;
+                DateMailSaveMenuItem.IsChecked = DataRepository.GetInstance().SaveDateTime;
             }
+        }
+
+        private void DateMailSaveMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            DataRepository dataRepository = DataRepository.GetInstance();
+            dataRepository.SetDateTimeSave();
+            dataRepository.SaveSettings();
+            DateMailSaveMenuItem.IsChecked = dataRepository.SaveDateTime;
         }
     }
 }
