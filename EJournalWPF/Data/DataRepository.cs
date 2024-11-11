@@ -262,14 +262,16 @@ namespace EJournalWPF.Data
 
         internal void SaveSettings()
         {
-            System.IO.File.WriteAllText($"{Environment.CurrentDirectory}\\settings", _saveDirectory);
+            System.IO.File.WriteAllText($"{Environment.CurrentDirectory}\\settings", $"{_saveDirectory}\n{_saveDateTime}");
         }
 
         private void LoadSettings()
         {
             if (System.IO.File.Exists($"{Environment.CurrentDirectory}\\settings"))
             {
-                _saveDirectory = System.IO.File.ReadAllText($"{Environment.CurrentDirectory}\\settings");
+                string[] settings = System.IO.File.ReadAllText($"{Environment.CurrentDirectory}\\settings").Split('\n');
+                _saveDirectory = settings[0];
+                _saveDateTime = Convert.ToBoolean(settings[1]);
             }
         }
 
