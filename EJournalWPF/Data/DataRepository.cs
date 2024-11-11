@@ -270,8 +270,16 @@ namespace EJournalWPF.Data
             if (System.IO.File.Exists($"{Environment.CurrentDirectory}\\settings"))
             {
                 string[] settings = System.IO.File.ReadAllText($"{Environment.CurrentDirectory}\\settings").Split('\n');
-                _saveDirectory = settings[0];
-                _saveDateTime = Convert.ToBoolean(settings[1]);
+                if (settings.Length > 0 && settings.Length < 2)
+                {
+                    _saveDirectory = settings[0];
+                }
+                else
+                {
+                    _saveDirectory = settings[0];
+                    _saveDateTime = Convert.ToBoolean(settings[1]);
+                }
+                
             }
         }
 
