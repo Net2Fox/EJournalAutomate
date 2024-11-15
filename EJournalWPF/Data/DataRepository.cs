@@ -166,11 +166,8 @@ namespace EJournalWPF.Data
                     string group = null;
                     string student = null;
                     string subDirectory = null;
-                    string fileName = null;
-                    if (_saveDateTime)
-                    {
-                        fileName = $"{mail.Date.ToString("dd.MM HH-mm")}";
-                    }
+                    string fileName = "";
+                    
                     group = mail.FromUser.Group.Name;
                     if (!Directory.Exists($"{_saveDirectory}/{group}"))
                     {
@@ -198,6 +195,14 @@ namespace EJournalWPF.Data
 
                     foreach (var file in mail.Files)
                     {
+                        if (_saveDateTime)
+                        {
+                            fileName = $"{mail.Date.ToString("dd.MM HH-mm")}";
+                        }
+                        else
+                        {
+                            fileName = "";
+                        }
                         fileName = $"{fileName} {Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty)}";
                         if (subDirectory != null)
                         {
