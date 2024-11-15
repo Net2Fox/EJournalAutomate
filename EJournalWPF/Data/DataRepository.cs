@@ -222,15 +222,14 @@ namespace EJournalWPF.Data
                         System.IO.File.WriteAllBytes(fileName, fileBytes);
                     }
                     await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.note_read&idsString={mail.ID}", _cookies);
-                    CheckStatusMail(mail.ID);
+                    CheckStatusMail(mail);
                 }
             }
             DownloadingFinishEvent?.Invoke();
         }
 
-        private void CheckStatusMail(long id)
+        private void CheckStatusMail(Mail mail)
         {
-            Mail mail = _mails.Find(m => m.ID == id);
             mail.Status = Status.read;
             mail.IsSelected = false;
         }
