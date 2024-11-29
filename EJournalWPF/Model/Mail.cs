@@ -44,7 +44,7 @@ namespace EJournalWPF.Model
             this.Subject = subject;
             this.Status = status;
             this.Files = files;
-            this.HasFiles = true;
+            this.HasFiles = hasFiles;
             this.IsSelected = false;
         }
 
