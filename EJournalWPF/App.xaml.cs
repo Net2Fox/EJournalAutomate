@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
+using EJournalWPF.Data;
 
 namespace EJournalWPF
 {
@@ -18,6 +19,8 @@ namespace EJournalWPF
     {
         public App()
         {
+            DataRepository.Initialize();
+
             var settings = new CefSettings();
             
             settings.LogSeverity = LogSeverity.Verbose;
