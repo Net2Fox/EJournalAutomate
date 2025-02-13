@@ -1,4 +1,6 @@
 ﻿using EJournalWPF.Model;
+using EJournalWPF.Model.API;
+using EJournalWPF.Model.API.AuthModel;
 using EJournalWPF.Pages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,6 +13,9 @@ using System.Net.Http;
 using System.Runtime.Remoting.Lifetime;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Security;
+using System.Text;
 
 namespace EJournalWPF.Data
 {
@@ -48,6 +53,13 @@ namespace EJournalWPF.Data
 
         internal delegate void DownloadingFinishHandler();
         internal event DownloadingFinishHandler DownloadingFinishEvent;
+
+        /////////////////////////////////////////////////////////////////////////
+        private string _authToken = string.Empty;
+
+        internal delegate void AuthHandler(bool isSuccess, string error);
+        internal event AuthHandler AuthEvent;
+
 
         private DataRepository(List<CefSharp.Cookie> cefSharpCookies)
         {
@@ -294,6 +306,58 @@ namespace EJournalWPF.Data
         {
             _saveDateTime = !_saveDateTime;
         }
+        ////////////////////////////////////////////////////////////////////////////////////////
+        private DataRepository()
+        {
+            _authToken = TokenStorage.LoadToken();
+        }
+
+        internal async Task Auth(string login, string password)
+        {
+            var result = await APIv3.Auth(login, password);
+            if (result.IsSuccess)
+            {
+                AuthResult authResult = result.Data;
+                _authToken = authResult.Token;
+                TokenStorage.SaveToken(_authToken);
+                AuthEvent.Invoke(true, null);
+            }
+            else
+            {
+                AuthEvent.Invoke(false, result.Error);
+            }
+        }
+
+        internal bool IsAuthorized()
+        {
+            if (_authToken != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void SecureSaveString()
+        {
+            
+        }
+
+        public static void Initialize()
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new DataRepository();
+                    }
+                }
+            }
+        }
 
         public static void Initialize(List<CefSharp.Cookie> cefSharpCookies)
         {
@@ -308,7 +372,7 @@ namespace EJournalWPF.Data
                 }
             }
         }
-        
+
         public static DataRepository GetInstance()
         {
             if (_instance == null)
