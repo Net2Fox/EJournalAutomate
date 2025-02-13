@@ -21,7 +21,7 @@
                 <MenuItem x:Name="DateMailSaveMenuItem" Header="Сохранение времени отправки файла в названии" Height="20" Click="DateMailSaveMenuItem_Click"/>
             </MenuItem>
         </Menu>
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Source="Pages/BrowserPage.xaml" Grid.Row="1" Navigated="MainFrame_Navigated" />
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Source="Pages/AuthPage.xaml" Grid.Row="1" Navigated="MainFrame_Navigated" />
     </Grid>
 </Window>
 

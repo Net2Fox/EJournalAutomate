@@ -29,9 +29,16 @@ namespace EJournalWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        private DataRepository _dataRepository;
         public MainWindow()
         {
             InitializeComponent();
+            _dataRepository = DataRepository.GetInstance();
+            if (_dataRepository.IsAuthorized())
+            {
+                //MainFrame.Navigate(new MainPage());
+                MessageBox.Show("Вы уже авторизированы, переходим на главную страницу...");
+            }
         }
 
         private void ChangeSaveDirectoryMenuItem_Click(object sender, RoutedEventArgs e)

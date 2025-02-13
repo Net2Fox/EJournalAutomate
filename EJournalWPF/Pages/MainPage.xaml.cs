@@ -13,27 +13,27 @@ namespace EJournalWPF.Pages
     /// </summary>
     public partial class MainPage : Page
     {
-        private bool isDataLoaded = false;
-        private int limit = 20;
-        private int offset = 0;
-        private DataRepository repository;
+        private bool _isDataLoaded = false;
+        private int _limit = 20;
+        private int _offset = 0;
+        private DataRepository _dataRepository;
 
-        public MainPage(List<CefSharp.Cookie> cefSharpCookies)
+        public MainPage(List<CefSharp.Cookie> cefSharpCookies = null)
         {
             InitializeComponent();
             DataRepository.Initialize(cefSharpCookies);
-            repository = DataRepository.GetInstance();
-            repository.LoadDataSuccessEvent += LoadData;
-            repository.BeginDataLoadingEvent += DataLoadingProgress;
-            repository.DataLoadingErrorEvent += DataLoadingErrorEvent;
-            repository.DownloadingFinishEvent += DownloadingFinish;
+            _dataRepository = DataRepository.GetInstance();
+            _dataRepository.LoadDataSuccessEvent += LoadData;
+            _dataRepository.BeginDataLoadingEvent += DataLoadingProgress;
+            _dataRepository.DataLoadingErrorEvent += DataLoadingErrorEvent;
+            _dataRepository.DownloadingFinishEvent += DownloadingFinish;
         }
 
         private void DownloadingFinish()
         {
             Application.Current.Dispatcher.Invoke(() => {
                 MessageBox.Show("Вложения из писем успешно скачаны!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                LoadData(repository.GetMails());
+                LoadData(_dataRepository.GetMails());
             });
         }
 
@@ -50,10 +50,10 @@ namespace EJournalWPF.Pages
             Application.Current.Dispatcher.Invoke(() => {
                 EmailListBox.ItemsSource = mails;
                 EmailListBox.Items.Refresh();
-                isDataLoaded = true;
+                _isDataLoaded = true;
                 Filter();
                 LoadingSplashPanel.Visibility = Visibility.Collapsed;
-                if (offset >= limit)
+                if (_offset >= _limit)
                 {
                     BackButton.IsEnabled = true;
                 } 
@@ -69,13 +69,13 @@ namespace EJournalWPF.Pages
             Application.Current.Dispatcher.Invoke(() => {
                 LoadingTextBlock.Text = message;
                 LoadingSplashPanel.Visibility = Visibility.Visible;
-                isDataLoaded = false;
+                _isDataLoaded = false;
             });
         }
 
         private void Filter()
         {
-            List<Mail> filteredList = repository.GetMails();
+            List<Mail> filteredList = _dataRepository.GetMails();
 
             if (SearchTextBox.Text != string.Empty && SearchTextBox.Text != "Поиск")
             {
@@ -98,7 +98,7 @@ namespace EJournalWPF.Pages
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (isDataLoaded == true)
+            if (_isDataLoaded == true)
             {
                 Filter();
             }
@@ -106,7 +106,7 @@ namespace EJournalWPF.Pages
 
         private void StatusComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (isDataLoaded == true)
+            if (_isDataLoaded == true)
             {
                 Filter();
             }
@@ -114,17 +114,17 @@ namespace EJournalWPF.Pages
 
         private async void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (offset >= limit)
+            if (_offset >= _limit)
             {
-                offset -= limit;
+                _offset -= _limit;
             }
-            await repository.GetMailsFromAPI(limit, offset);
+            await _dataRepository.GetMailsFromAPI(_limit, _offset);
         }
 
         private async void ForwardButton_Click(object sender, RoutedEventArgs e)
         {
-            offset += limit;
-            await repository.GetMailsFromAPI(limit, offset);
+            _offset += _limit;
+            await _dataRepository.GetMailsFromAPI(_limit, _offset);
         }
 
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -161,9 +161,9 @@ namespace EJournalWPF.Pages
 
         private async void CountTextBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if (e.Key == System.Windows.Input.Key.Enter && isDataLoaded && int.TryParse(CountTextBox.Text, out limit))
+            if (e.Key == System.Windows.Input.Key.Enter && _isDataLoaded && int.TryParse(CountTextBox.Text, out _limit))
             {
-                await repository.GetMailsFromAPI(limit);
+                await _dataRepository.GetMailsFromAPI(_limit);
             }
         }
 
@@ -178,7 +178,7 @@ namespace EJournalWPF.Pages
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-            repository.DownloadFile(repository.GetMails().Where(m => m.IsSelected == true && m.HasFiles == true).ToList());
+            _dataRepository.DownloadFile(_dataRepository.GetMails().Where(m => m.IsSelected == true && m.HasFiles == true).ToList());
         }
     }
 }

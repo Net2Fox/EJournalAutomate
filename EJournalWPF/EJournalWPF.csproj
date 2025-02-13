@@ -61,6 +61,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -84,14 +85,22 @@
     <Compile Include="AboutWindow.xaml.cs">
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Data\APIv3.cs" />
     <Compile Include="Data\DataRepository.cs" />
+    <Compile Include="Data\TokenStorage.cs" />
     <Compile Include="DirectorySettingsWindow.xaml.cs">
       <DependentUpon>DirectorySettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\API\AuthModel\AuthModel.cs" />
+    <Compile Include="Model\API\AuthModel\AuthResult.cs" />
+    <Compile Include="Model\API\ResponseAPI.cs" />
     <Compile Include="Model\CacheData.cs" />
     <Compile Include="Model\File.cs" />
     <Compile Include="Model\Mail.cs" />
     <Compile Include="Model\Status.cs" />
+    <Compile Include="Pages\AuthPage.xaml.cs">
+      <DependentUpon>AuthPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\BrowserPage.xaml.cs">
       <DependentUpon>BrowserPage.xaml</DependentUpon>
     </Compile>
@@ -119,6 +128,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Pages\AuthPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\BrowserPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
