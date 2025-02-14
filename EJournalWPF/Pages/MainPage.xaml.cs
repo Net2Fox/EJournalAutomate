@@ -20,7 +20,7 @@ namespace EJournalWPF.Pages
 
         private DataRepository _dataRepository;
 
-        public MainPage(List<CefSharp.Cookie> cefSharpCookies = null)
+        public MainPage()
         {
             InitializeComponent();
             _dataRepository = DataRepository.GetInstance();
