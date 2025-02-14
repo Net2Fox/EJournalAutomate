@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EJournalWPF.Model.API.AuthModel
 {
-    internal class AuthResult
+    internal class AuthResponse
     {
         [JsonProperty("token")]
         internal string Token { get; set; }

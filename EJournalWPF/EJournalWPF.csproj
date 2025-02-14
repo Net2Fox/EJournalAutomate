@@ -91,9 +91,10 @@
     <Compile Include="DirectorySettingsWindow.xaml.cs">
       <DependentUpon>DirectorySettingsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\API\AuthModel\AuthModel.cs" />
-    <Compile Include="Model\API\AuthModel\AuthResult.cs" />
+    <Compile Include="Model\API\AuthModel\AuthRequest.cs" />
+    <Compile Include="Model\API\AuthModel\AuthResponse.cs" />
     <Compile Include="Model\API\ResponseAPI.cs" />
+    <Compile Include="Model\API\Result.cs" />
     <Compile Include="Model\CacheData.cs" />
     <Compile Include="Model\File.cs" />
     <Compile Include="Model\Mail.cs" />

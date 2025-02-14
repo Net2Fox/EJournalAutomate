@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EJournalWPF.Model.API.AuthModel
 {
-    internal class AuthModel
+    internal class AuthRequest
     {
         [JsonProperty("login")]
         internal string Login { get; set; }
@@ -16,7 +16,7 @@ namespace EJournalWPF.Model.API.AuthModel
         [JsonProperty("password")]
         internal string Password { get; set; }
 
-        internal AuthModel(string login, string password)
+        internal AuthRequest(string login, string password)
         {
             Login = login;
             Password = password;
