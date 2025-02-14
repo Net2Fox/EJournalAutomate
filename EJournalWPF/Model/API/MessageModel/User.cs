@@ -22,6 +22,8 @@ namespace EJournalWPF.Model.API.MessageModel
         public string MiddleName { get; set; }
 
         public string GroupName { get; set; }
+
+        [JsonIgnore]
         public string FullName
         {
             get
