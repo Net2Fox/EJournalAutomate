@@ -69,5 +69,20 @@ namespace EJournalWPF.Data
                 return new Result<MessageInfoResponse>(false, null, jsonResponse.Response.Error);
             }
         }
+
+        internal static async Task<Result<MessageReceiversResponse>> GetMessageReceivers(string authToken)
+        {
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"https://kip.eljur.ru/apiv3/getmessagereceivers?&devkey={DevKey}&out_format=json&auth_token={authToken}&vendor=kip");
+            HttpResponseMessage response = await _client.SendAsync(request);
+            ResponseAPI jsonResponse = JsonConvert.DeserializeObject<ResponseAPI>(await response.Content.ReadAsStringAsync());
+            if (response.IsSuccessStatusCode)
+            {
+                return new Result<MessageReceiversResponse>(true, jsonResponse.Response.Result.ToObject<MessageReceiversResponse>(), null);
+            }
+            else
+            {
+                return new Result<MessageReceiversResponse>(false, null, jsonResponse.Response.Error);
+            }
+        }
     }
 }
