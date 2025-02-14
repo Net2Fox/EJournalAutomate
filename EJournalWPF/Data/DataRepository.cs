@@ -1,7 +1,7 @@
 ﻿using EJournalWPF.Model;
 using EJournalWPF.Model.API;
 using EJournalWPF.Model.API.AuthModel;
-using EJournalWPF.Pages;
+using EJournalWPF.Model.API.MessageModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -10,12 +10,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.Remoting.Lifetime;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
-using System.Security;
-using System.Text;
 
 namespace EJournalWPF.Data
 {
@@ -24,49 +21,34 @@ namespace EJournalWPF.Data
         private static DataRepository _instance;
         private static readonly object _lock = new object();
 
-        private readonly CookieContainer _cookies = new CookieContainer();
+        private string _authToken = string.Empty;
 
-        private List<Group> _groups;
-        private List<Student> _students;
-        private List<Mail> _mails;
+        private List<Message> _messages;
+
+        private List<Model.API.MessageModel.Group> _groups;
 
         private string _saveDirectory = $"{Environment.CurrentDirectory}\\Письма";
 
         private bool _saveDateTime = false;
 
-        public List<Group> Groups { get { return _groups; } }
-        public List<Student> Students { get { return _students; } }
-        public List<Mail> Mails { get { return _mails; } }
-
         public string SaveDirectory { get { return _saveDirectory; } }
 
         public bool SaveDateTime { get { return _saveDateTime; } }
 
-        internal delegate void LoadDataSuccessHandler(List<Mail> mails);
-        internal event LoadDataSuccessHandler LoadDataSuccessEvent;
+        public List<Message> Messages { get { return _messages; } }
 
-        internal delegate void BeginDataLoadingHandler(string message);
-        internal event BeginDataLoadingHandler BeginDataLoadingEvent;
+        public List<Model.API.MessageModel.Group> Groups { get { return _groups; } }
 
-        internal delegate void DataLoadingErrorHandler(string errorMsg);
-        internal event DataLoadingErrorHandler DataLoadingErrorEvent;
-
-        internal delegate void DownloadingFinishHandler();
-        internal event DownloadingFinishHandler DownloadingFinishEvent;
-
-        /////////////////////////////////////////////////////////////////////////
-        private string _authToken = string.Empty;
 
         internal delegate void AuthHandler(bool isSuccess, string error);
         internal event AuthHandler AuthEvent;
 
+        internal delegate void GetMessagesHandler(bool isSuccess, List<Message> messages, string error);
+        internal event GetMessagesHandler GetMessagesEvent;
 
-        private DataRepository(List<CefSharp.Cookie> cefSharpCookies)
+        private DataRepository()
         {
-            foreach (var cookie in cefSharpCookies)
-            {
-                _cookies.Add(new Uri("https://kip.eljur.ru"), new System.Net.Cookie(cookie.Name, cookie.Value));
-            }
+            _authToken = TokenStorage.LoadToken();
             LoadSettings();
             Task.Run(async () =>
             {
@@ -75,79 +57,14 @@ namespace EJournalWPF.Data
                     await LoadCacheData();
                     return;
                 }
-                await LoadDataAPI();
+                await LoadDataFromAPI();
             });
         }
 
-        internal async Task LoadDataAPI()
+        internal async Task LoadDataFromAPI()
         {
-            await GetStudentsFromAPI();
-            if (_students.Count > 0)
-            {
-                await GetMailsFromAPI();
-            }
-            else
-            {
-                DataLoadingErrorEvent?.Invoke("При загрузке списка студентов произошла ошибка, перезапустите программу!");
-            }
+            await GetMessageReceivers();
             await SaveCacheData();
-        }
-
-        internal async Task GetStudentsFromAPI()
-        {
-            try
-            {
-                BeginDataLoadingEvent?.Invoke("Загрузка данных, пожалуйста, подождите...");
-                JObject recipient_structure = JObject.Parse(await SendRequestAsync("https://kip.eljur.ru/journal-api-messages-action?method=messages.get_recipient_structure", _cookies));
-                _groups = JsonConvert.DeserializeObject<List<Group>>(recipient_structure["structure"][0]["data"][5]["data"].ToString());
-
-                _students = new List<Student>();
-                var studentTasks = _groups.Select(async group =>
-                {
-                    JObject requset = JObject.Parse(await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.get_recipients_list&key1=school&key2=students&key3=2024%2F2025_1_{System.Web.HttpUtility.UrlEncode(group.Name)}%23%23%23%23%23{group.Key}&dep=null", _cookies));
-                    List<Student> students = JsonConvert.DeserializeObject<List<Student>>(requset["user_list"].ToString());
-                    foreach (var student in students)
-                    {
-                        student.Group = group;
-                    }
-                    _students.AddRange(students);
-                });
-
-                await Task.WhenAll(studentTasks);
-            }
-            catch (Exception ex)
-            {
-                DataLoadingErrorEvent?.Invoke(ex.Message);
-                return;
-            }
-        }
-
-        internal List<Student> GetStudents()
-        {
-            return _students;
-        }
-
-        internal async Task GetMailsFromAPI(int limit = 20, int offset = 0, Status status = Status.all)
-        {
-            try
-            {
-                BeginDataLoadingEvent?.Invoke("Загрузка данных, пожалуйста, подождите...");
-                string jsonResponse = await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.get_list&category=inbox&search=&limit={limit}&offset={offset}&teacher=0&status={(status == Status.all ? "" : status.ToString())}&companion=&minDate=0", _cookies);
-                JObject jsonData = JObject.Parse(jsonResponse);
-                _mails = JsonConvert.DeserializeObject<List<Mail>>(jsonData["list"].ToString());
-                _mails = _mails.Where(m => m.FromUser != null).ToList();
-                LoadDataSuccessEvent?.Invoke(_mails);
-            }
-            catch (Exception ex)
-            {
-                DataLoadingErrorEvent?.Invoke(ex.Message);
-                return;
-            }
-        }
-
-        internal List<Mail> GetMails()
-        {
-            return _mails;
         }
 
         internal async Task<string> SendRequestAsync(string url, CookieContainer cookies)
@@ -162,93 +79,15 @@ namespace EJournalWPF.Data
             }
         }
 
-        internal async void DownloadFile(List<Mail> mailsToDownload)
+        private void ChangeStatusMessage(Message message)
         {
-            BeginDataLoadingEvent?.Invoke($"Скачивание {mailsToDownload.Count} писем...");
-            
-            if (!Directory.Exists(_saveDirectory))
-            {
-                Directory.CreateDirectory(_saveDirectory);
-            }
-
-            using (WebClient client = new WebClient())
-            {
-                foreach (var mail in mailsToDownload)
-                {
-                    string group = null;
-                    string student = null;
-                    string subDirectory = null;
-                    string fileName = "";
-                    
-                    group = mail.FromUser.Group.Name;
-                    if (!Directory.Exists($"{_saveDirectory}/{group}"))
-                    {
-                        Directory.CreateDirectory($"{_saveDirectory}/{group}");
-                    }
-
-                    student = $"{mail.FromUser.LastName} {mail.FromUser.FirtsName}";
-                    if (!Directory.Exists($"{_saveDirectory}/{group}/{student}"))
-                    {
-                        Directory.CreateDirectory($"{_saveDirectory}/{group}/{student}");
-                    }
-
-                    if (mail.Files.Count > 1)
-                    {
-                        subDirectory = Regex.Replace(mail.Subject, @"[<>:""|?*]", string.Empty);
-                        if (subDirectory.Length > 30)
-                        {
-                            subDirectory = subDirectory.Remove(30);
-                        }
-                        if (!Directory.Exists($"{_saveDirectory}/{group}/{student}/{subDirectory}"))
-                        {
-                            Directory.CreateDirectory($"{_saveDirectory}/{group}/{student}/{subDirectory}");
-                        }
-                    }
-
-                    foreach (var file in mail.Files)
-                    {
-                        if (_saveDateTime)
-                        {
-                            fileName = $"{mail.Date.ToString("dd.MM HH-mm")}";
-                        }
-                        else
-                        {
-                            fileName = "";
-                        }
-                        fileName = $"{fileName} {Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty)}";
-                        if (subDirectory != null)
-                        {
-                            fileName = $"{_saveDirectory}/{group}/{student}/{subDirectory}/{fileName}";
-                        }
-                        else
-                        {
-                            fileName = $"{_saveDirectory}/{group}/{student}/{fileName}";
-                        }
-
-                        if (System.IO.File.Exists(fileName))
-                        {
-                            break;
-                        }
-
-                        byte[] fileBytes = client.DownloadData(file.URL);
-                        System.IO.File.WriteAllBytes(fileName, fileBytes);
-                    }
-                    await SendRequestAsync($"https://kip.eljur.ru/journal-api-messages-action?method=messages.note_read&idsString={mail.ID}", _cookies);
-                    CheckStatusMail(mail);
-                }
-            }
-            DownloadingFinishEvent?.Invoke();
-        }
-
-        private void CheckStatusMail(Mail mail)
-        {
-            mail.Status = Status.read;
-            mail.IsSelected = false;
+            message.Unread = false;
+            message.Selected = false;
         }
 
         private async Task SaveCacheData()
         {
-            CacheData cacheData = new CacheData(_students, _groups);
+            CacheData cacheData = new CacheData(_groups);
             System.IO.File.WriteAllText($"{Environment.CurrentDirectory}/cache.json", JsonConvert.SerializeObject(cacheData));
         }
 
@@ -258,19 +97,10 @@ namespace EJournalWPF.Data
             {
                 CacheData cache = JsonConvert.DeserializeObject<CacheData>(System.IO.File.ReadAllText($"{Environment.CurrentDirectory}/cache.json"));
                 _groups = cache.Groups;
-                _students = cache.Students;
-                if (_students.Count > 0)
-                {
-                    await GetMailsFromAPI();
-                }
-                else
-                {
-                    await LoadDataAPI();
-                }
             }
             catch
             {
-                await LoadDataAPI();
+                await LoadDataFromAPI();
             }
         }
 
@@ -306,26 +136,143 @@ namespace EJournalWPF.Data
         {
             _saveDateTime = !_saveDateTime;
         }
-        ////////////////////////////////////////////////////////////////////////////////////////
-        private DataRepository()
-        {
-            _authToken = TokenStorage.LoadToken();
-        }
 
         internal async Task Auth(string login, string password)
         {
-            var result = await APIv3.Auth(login, password);
-            if (result.IsSuccess)
+            Result<AuthResponse> result = await APIv3.Auth(login, password);
+            if (result.Success)
             {
-                AuthResult authResult = result.Data;
+                AuthResponse authResult = result.Data;
                 _authToken = authResult.Token;
                 TokenStorage.SaveToken(_authToken);
-                AuthEvent.Invoke(true, null);
+                AuthEvent?.Invoke(true, null);
             }
             else
             {
-                AuthEvent.Invoke(false, result.Error);
+                AuthEvent?.Invoke(false, result.Error);
             }
+        }
+
+        internal async Task GetMessages(FolderType folderType = FolderType.inbox, UnreadOnly unreadOnly = UnreadOnly.no, int limit = 20, int page = 1)
+        {
+            Result<MessagesResponse> result = await APIv3.GetMessages(folderType, unreadOnly, limit, page, _authToken);
+            if (result.Success)
+            {
+                _messages = result.Data.Messages;
+                GetMessagesEvent?.Invoke(true, result.Data.Messages, null);
+            }
+            else
+            {
+                GetMessagesEvent?.Invoke(false, null, result.Error);
+            }
+        }
+
+        internal async Task<MessageInfo> GetMessageInfo(string id)
+        {
+            Result<MessageInfoResponse> result = await APIv3.GetMessageInfo(id, _authToken);
+            if (result.Success)
+            {
+                result.Data.Message.User_From.GroupName = _groups.Find(u => u.Name == result.Data.Message.User_From.Name).Name;
+                return result.Data.Message;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        internal async Task GetMessageReceivers()
+        {
+            Result<MessageReceiversResponse> result = await APIv3.GetMessageReceivers(_authToken);
+            if (result.Success)
+            {
+                _groups = result.Data.Groups;
+            }
+            else
+            {
+                // DataLoadingError???
+            }
+        }
+
+        internal async void DownloadFile(List<Message> messagesToDownload)
+        {
+            // TODO BeginDataLoadingEvent?.Invoke($"Скачивание {messagesToDownload.Count} писем...");
+
+            if (!Directory.Exists(_saveDirectory))
+            {
+                Directory.CreateDirectory(_saveDirectory);
+            }
+
+            using (WebClient client = new WebClient())
+            {
+                foreach (Message message in messagesToDownload)
+                {
+                    string group = null;
+                    string student = null;
+                    string subDirectory = null;
+                    string filename = "";
+
+                    group = message.User_From.GroupName;
+
+                    MessageInfo messageInfo = await GetMessageInfo(message.ID);
+
+                    if (!Directory.Exists($"{_saveDirectory}/{group}"))
+                    {
+                        Directory.CreateDirectory($"{_saveDirectory}/{group}");
+                    }
+
+                    student = $"{messageInfo.User_From.LastName} {messageInfo.User_From.FirstName}";
+                    if (!Directory.Exists($"{_saveDirectory}/{group}/{student}"))
+                    {
+                        Directory.CreateDirectory($"{_saveDirectory}/{group}/{student}");
+                    }
+
+                    if (messageInfo.Files.Count > 1)
+                    {
+                        subDirectory = Regex.Replace(messageInfo.Subject, @"[<>:""|?*]", string.Empty);
+                        if (subDirectory.Length > 30)
+                        {
+                            subDirectory = subDirectory.Remove(30);
+                        }
+                        if (!Directory.Exists($"{_saveDirectory}/{group}/{student}/{subDirectory}"))
+                        {
+                            Directory.CreateDirectory($"{_saveDirectory}/{group}/{student}/{subDirectory}");
+                        }
+                    }
+
+                    foreach (Model.API.MessageModel.File file in messageInfo.Files)
+                    {
+                        if (_saveDateTime)
+                        {
+                            filename = $"{messageInfo.Date.ToString("dd.MM HH-mm")}";
+                        }
+                        else
+                        {
+                            filename = "";
+                        }
+                        filename = $"{filename} {Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty)}";
+                        if (subDirectory != null)
+                        {
+                            filename = $"{_saveDirectory}/{group}/{student}/{subDirectory}/{filename}";
+                        }
+                        else
+                        {
+                            filename = $"{_saveDirectory}/{group}/{student}/{filename}";
+                        }
+
+                        if (System.IO.File.Exists(filename))
+                        {
+                            break;
+                        }
+
+                        byte[] fileBytes = client.DownloadData(file.Link);
+                        System.IO.File.WriteAllBytes(filename, fileBytes);
+                    }
+                    ChangeStatusMessage(message);
+                    Thread.Sleep(100);
+                }
+            }
+            // TODO DownloadingFinishEvent?.Invoke();
         }
 
         internal bool IsAuthorized()
@@ -340,11 +287,6 @@ namespace EJournalWPF.Data
             }
         }
 
-        private void SecureSaveString()
-        {
-            
-        }
-
         public static void Initialize()
         {
             if (_instance == null)
@@ -354,20 +296,6 @@ namespace EJournalWPF.Data
                     if (_instance == null)
                     {
                         _instance = new DataRepository();
-                    }
-                }
-            }
-        }
-
-        public static void Initialize(List<CefSharp.Cookie> cefSharpCookies)
-        {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new DataRepository(cefSharpCookies);
                     }
                 }
             }

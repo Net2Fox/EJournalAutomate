@@ -54,7 +54,7 @@ namespace EJournalWPF
 
         private async void RedownloadDataMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            await DataRepository.GetInstance().LoadDataAPI();
+            await DataRepository.GetInstance().LoadDataFromAPI();
         }
 
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
