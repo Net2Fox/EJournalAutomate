@@ -16,8 +16,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using CefSharp;
-using CefSharp.DevTools.Network;
 using EJournalWPF.Model;
 using EJournalWPF.Pages;
 using EJournalWPF.Data;

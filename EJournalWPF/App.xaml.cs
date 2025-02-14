@@ -1,6 +1,4 @@
-﻿using CefSharp.Wpf;
-using CefSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -20,13 +18,6 @@ namespace EJournalWPF
         public App()
         {
             DataRepository.Initialize();
-
-            var settings = new CefSettings();
-            
-            settings.LogSeverity = LogSeverity.Verbose;
-            settings.CachePath = Path.Combine(Environment.CurrentDirectory, "CefSharp\\Cache");
-            
-            Cef.Initialize(settings);
         }
     }
 }

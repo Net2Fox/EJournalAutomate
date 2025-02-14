@@ -1,5 +1,4 @@
-﻿using CefSharp.DevTools.Network;
-using EJournalWPF.Model;
+﻿using EJournalWPF.Model;
 using EJournalWPF.Model.API;
 using EJournalWPF.Model.API.AuthModel;
 using EJournalWPF.Model.API.MessageModel;
