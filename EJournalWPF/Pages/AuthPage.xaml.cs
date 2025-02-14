@@ -34,7 +34,7 @@ namespace EJournalWPF.Pages
             if (isSuccess)
             {
                 MessageBox.Show("Авторизация успешна!");
-                // TODO Дальнейшая обработка
+                NavigationService.Navigate(new MainPage());
             }
             else
             {

@@ -36,8 +36,7 @@ namespace EJournalWPF
             _dataRepository = DataRepository.GetInstance();
             if (_dataRepository.IsAuthorized())
             {
-                //MainFrame.Navigate(new MainPage());
-                MessageBox.Show("Вы уже авторизированы, переходим на главную страницу...");
+                MainFrame.Navigate(new MainPage());
             }
         }
 
