@@ -25,7 +25,7 @@ namespace EJournalWPF.Data
 
         private List<Message> _messages;
 
-        private List<Model.API.MessageModel.Group> _groups;
+        private List<User> _users;
 
         private string _saveDirectory = $"{Environment.CurrentDirectory}\\Письма";
 
@@ -36,9 +36,6 @@ namespace EJournalWPF.Data
         public bool SaveDateTime { get { return _saveDateTime; } }
 
         public List<Message> Messages { get { return _messages; } }
-
-        public List<Model.API.MessageModel.Group> Groups { get { return _groups; } }
-
 
         internal delegate void AuthHandler(bool isSuccess, string error);
         internal event AuthHandler AuthEvent;
@@ -64,19 +61,7 @@ namespace EJournalWPF.Data
         internal async Task LoadDataFromAPI()
         {
             await GetMessageReceivers();
-            await SaveCacheData();
-        }
-
-        internal async Task<string> SendRequestAsync(string url, CookieContainer cookies)
-        {
-            using (HttpClientHandler handler = new HttpClientHandler { CookieContainer = cookies, UseCookies = true })
-            using (HttpClient client = new HttpClient(handler))
-            {
-                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36");
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStringAsync();
-            }
+            SaveCacheData();
         }
 
         private void ChangeStatusMessage(Message message)
@@ -85,19 +70,18 @@ namespace EJournalWPF.Data
             message.Selected = false;
         }
 
-        private async Task SaveCacheData()
+        private void SaveCacheData()
         {
-            CacheData cacheData = new CacheData(_groups);
-            System.IO.File.WriteAllText($"{Environment.CurrentDirectory}/cache.json", JsonConvert.SerializeObject(cacheData));
+            string json = JsonConvert.SerializeObject(_users);
+            System.IO.File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "cache.json"), json);
         }
 
         private async Task LoadDataFromCache()
         {
             try
             {
-                CacheData cache = JsonConvert.DeserializeObject<CacheData>(System.IO.File.ReadAllText($"{Environment.CurrentDirectory}/cache.json"));
-                _groups = cache.Groups;
-                if (cache.Groups == null)
+                _users = JsonConvert.DeserializeObject<List<User>>(System.IO.File.ReadAllText($"{Environment.CurrentDirectory}/cache.json"));
+                if (_users == null)
                 {
                     throw new Exception();
                 }
@@ -176,7 +160,7 @@ namespace EJournalWPF.Data
             Result<MessageInfoResponse> result = await APIv3.GetMessageInfo(id, _authToken);
             if (result.Success)
             {
-                result.Data.Message.User_From.GroupName = _groups.Find(u => u.Name == result.Data.Message.User_From.Name).Name;
+                result.Data.Message.User_From.GroupName = _users.Find(u => u.Name == result.Data.Message.User_From.Name).Name;
                 return result.Data.Message;
             }
             else
@@ -190,7 +174,19 @@ namespace EJournalWPF.Data
             Result<MessageReceiversResponse> result = await APIv3.GetMessageReceivers(_authToken);
             if (result.Success)
             {
-                _groups = result.Data.Groups;
+                var usersWithGroupNames = result.Data.Groups
+                    .Where(g => g.Key == "students")
+                    .ToList()[0].SubGroups
+                    .SelectMany(g => g.Users.Select(u => new User
+                    {
+                        Name = u.Name,
+                        LastName = u.LastName,
+                        FirstName = u.FirstName,
+                        MiddleName = u.MiddleName,
+                        GroupName = g.Name
+                    }))
+                    .ToList();
+                _users = usersWithGroupNames;
             }
             else
             {
