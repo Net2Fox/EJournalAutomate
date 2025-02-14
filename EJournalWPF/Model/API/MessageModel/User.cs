@@ -21,6 +21,7 @@ namespace EJournalWPF.Model.API.MessageModel
         [JsonProperty("middlename")]
         public string MiddleName { get; set; }
 
+        public string GroupName { get; set; }
         public string FullName
         {
             get

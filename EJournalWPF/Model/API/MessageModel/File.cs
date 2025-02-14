@@ -10,7 +10,7 @@ namespace EJournalWPF.Model.API.MessageModel
     internal class File
     {
         [JsonProperty("filename")]
-        internal string FileName { get; set; }
+        internal string Filename { get; set; }
 
         [JsonProperty("link")]
         internal Uri Link { get; set; }

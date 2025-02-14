@@ -17,7 +17,7 @@ namespace EJournalWPF.Model.API.MessageModel
         public User User_From { get; set; }
 
         [JsonProperty("id")]
-        public int ID { get; set; }
+        public string ID { get; set; }
 
         [JsonProperty("subject")]
         public string Subject { get; set; }
