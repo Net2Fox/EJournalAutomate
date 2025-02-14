@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EJournalWPF" 
         mc:Ignorable="d"
-        Title="ЭлЖур Десктоп" Height="470" Width="800" WindowStartupLocation="CenterScreen">
+        Title="EJournal Automate" Height="470" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
