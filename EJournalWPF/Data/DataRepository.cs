@@ -97,6 +97,10 @@ namespace EJournalWPF.Data
             {
                 CacheData cache = JsonConvert.DeserializeObject<CacheData>(System.IO.File.ReadAllText($"{Environment.CurrentDirectory}/cache.json"));
                 _groups = cache.Groups;
+                if (cache.Groups == null)
+                {
+                    throw new Exception();
+                }
             }
             catch
             {
