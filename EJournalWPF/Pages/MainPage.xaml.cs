@@ -1,8 +1,10 @@
 ﻿using EJournalWPF.Data;
 using EJournalWPF.Model;
+using EJournalWPF.Model.API.MessageModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -15,81 +17,81 @@ namespace EJournalWPF.Pages
     {
         private bool _isDataLoaded = false;
         private int _limit = 20;
-        private int _offset = 0;
+
         private DataRepository _dataRepository;
 
         public MainPage(List<CefSharp.Cookie> cefSharpCookies = null)
         {
             InitializeComponent();
-            DataRepository.Initialize(cefSharpCookies);
             _dataRepository = DataRepository.GetInstance();
-            _dataRepository.LoadDataSuccessEvent += LoadData;
-            _dataRepository.BeginDataLoadingEvent += DataLoadingProgress;
-            _dataRepository.DataLoadingErrorEvent += DataLoadingErrorEvent;
-            _dataRepository.DownloadingFinishEvent += DownloadingFinish;
-        }
+            _dataRepository.GetMessagesEvent += GetMessagesEvent;
 
-        private void DownloadingFinish()
-        {
-            Application.Current.Dispatcher.Invoke(() => {
-                MessageBox.Show("Вложения из писем успешно скачаны!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                LoadData(_dataRepository.GetMails());
+            Task.Run(async () =>
+            {
+                await _dataRepository.GetMessages();
             });
         }
 
-        private void DataLoadingErrorEvent(string errorMsg)
+        private void GetMessagesEvent(bool isSuccess, List<Message> messages, string error)
         {
             Application.Current.Dispatcher.Invoke(() => {
-                LoadingSplashPanel.Visibility = Visibility.Visible;
-                LoadingTextBlock.Text = errorMsg;
+                LoadData(messages);
             });
         }
 
-        private void LoadData(List<Mail> mails)
+        private void LoadData(List<Message> messages)
         {
-            Application.Current.Dispatcher.Invoke(() => {
-                EmailListBox.ItemsSource = mails;
-                EmailListBox.Items.Refresh();
-                _isDataLoaded = true;
-                Filter();
-                LoadingSplashPanel.Visibility = Visibility.Collapsed;
-                if (_offset >= _limit)
-                {
-                    BackButton.IsEnabled = true;
-                } 
-                else
-                {
-                    BackButton.IsEnabled = false;
-                }
-            });
+            EmailListBox.ItemsSource = messages;
+            EmailListBox.Items.Refresh();
+            _isDataLoaded = true;
+            Filter();
+            LoadingSplashPanel.Visibility = Visibility.Collapsed;
         }
 
-        private void DataLoadingProgress(string message)
-        {
-            Application.Current.Dispatcher.Invoke(() => {
-                LoadingTextBlock.Text = message;
-                LoadingSplashPanel.Visibility = Visibility.Visible;
-                _isDataLoaded = false;
-            });
-        }
+        //private void DownloadingFinish()
+        //{
+        //    Application.Current.Dispatcher.Invoke(() => {
+        //        MessageBox.Show("Вложения из писем успешно скачаны!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+        //        LoadData(_dataRepository.GetMails());
+        //    });
+        //}
+
+        //private void DataLoadingErrorEvent(string errorMsg)
+        //{
+        //    Application.Current.Dispatcher.Invoke(() => {
+        //        LoadingSplashPanel.Visibility = Visibility.Visible;
+        //        LoadingTextBlock.Text = errorMsg;
+        //    });
+        //}
+
+        //private void DataLoadingProgress(string message)
+        //{
+        //    Application.Current.Dispatcher.Invoke(() => {
+        //        LoadingTextBlock.Text = message;
+        //        LoadingSplashPanel.Visibility = Visibility.Visible;
+        //        _isDataLoaded = false;
+        //    });
+        //}
 
         private void Filter()
         {
-            List<Mail> filteredList = _dataRepository.GetMails();
+            List<Message> filteredList = _dataRepository.Messages;
+
+            
 
             if (SearchTextBox.Text != string.Empty && SearchTextBox.Text != "Поиск")
             {
                 string text = SearchTextBox.Text.ToLower();
                 filteredList = filteredList.Where(m =>
-                m.FromUser.FirtsName.ToLower().Contains(text)
-                || m.FromUser.LastName.ToLower().Contains(text)
-                || m.FromUser.MiddleName.ToLower().Contains(text)
+                m.User_From.FirstName.ToLower().Contains(text)
+                || m.User_From.LastName.ToLower().Contains(text)
+                || m.User_From.MiddleName.ToLower().Contains(text)
                 || m.Subject.ToLower().Contains(text)).ToList();
             }
 
             if (filteredList.Count != 0 && StatusComboBox.SelectedIndex != 0)
             {
-                filteredList = filteredList.Where(m => ((int)m.Status) == StatusComboBox.SelectedIndex).ToList();
+                filteredList = filteredList.Where(m => m.Unread == (StatusComboBox.SelectedIndex == 1 ? true : false)).ToList();
             }
 
             EmailListBox.ItemsSource = filteredList;
@@ -110,21 +112,6 @@ namespace EJournalWPF.Pages
             {
                 Filter();
             }
-        }
-
-        private async void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_offset >= _limit)
-            {
-                _offset -= _limit;
-            }
-            await _dataRepository.GetMailsFromAPI(_limit, _offset);
-        }
-
-        private async void ForwardButton_Click(object sender, RoutedEventArgs e)
-        {
-            _offset += _limit;
-            await _dataRepository.GetMailsFromAPI(_limit, _offset);
         }
 
         private void SearchTextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -163,22 +150,22 @@ namespace EJournalWPF.Pages
         {
             if (e.Key == System.Windows.Input.Key.Enter && _isDataLoaded && int.TryParse(CountTextBox.Text, out _limit))
             {
-                await _dataRepository.GetMailsFromAPI(_limit);
+                await _dataRepository.GetMessages(limit: _limit);
             }
         }
 
         private void SelectAllButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var mail in EmailListBox.Items.SourceCollection as List<Mail>)
+            foreach (var mail in EmailListBox.Items.SourceCollection as List<Message>)
             {
-                mail.IsSelected = true;
+                mail.Selected = true;
             }
             EmailListBox.Items.Refresh();
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-            _dataRepository.DownloadFile(_dataRepository.GetMails().Where(m => m.IsSelected == true && m.HasFiles == true).ToList());
+            _dataRepository.DownloadFile(_dataRepository.Messages.Where(m => m.Selected == true && m.With_Files == true).ToList());
         }
     }
 }
