@@ -93,6 +93,16 @@
     </Compile>
     <Compile Include="Model\API\AuthModel\AuthRequest.cs" />
     <Compile Include="Model\API\AuthModel\AuthResponse.cs" />
+    <Compile Include="Model\API\MessageModel\File.cs" />
+    <Compile Include="Model\API\MessageModel\FolderType.cs" />
+    <Compile Include="Model\API\MessageModel\Group.cs" />
+    <Compile Include="Model\API\MessageModel\Message.cs" />
+    <Compile Include="Model\API\MessageModel\MessageInfo.cs" />
+    <Compile Include="Model\API\MessageModel\MessageInfoResponse.cs" />
+    <Compile Include="Model\API\MessageModel\MessageReceiversResponse.cs" />
+    <Compile Include="Model\API\MessageModel\MessagesResponse.cs" />
+    <Compile Include="Model\API\MessageModel\UnreadOnly.cs" />
+    <Compile Include="Model\API\MessageModel\User.cs" />
     <Compile Include="Model\API\ResponseAPI.cs" />
     <Compile Include="Model\API\Result.cs" />
     <Compile Include="Model\CacheData.cs" />
