@@ -54,7 +54,7 @@ namespace EJournalWPF.Data
             {
                 if (System.IO.File.Exists($"{Environment.CurrentDirectory}/cache.json"))
                 {
-                    await LoadCacheData();
+                    await LoadDataFromCache();
                     return;
                 }
                 await LoadDataFromAPI();
@@ -91,7 +91,7 @@ namespace EJournalWPF.Data
             System.IO.File.WriteAllText($"{Environment.CurrentDirectory}/cache.json", JsonConvert.SerializeObject(cacheData));
         }
 
-        private async Task LoadCacheData()
+        private async Task LoadDataFromCache()
         {
             try
             {
