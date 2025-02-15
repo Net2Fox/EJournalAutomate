@@ -14,14 +14,12 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 
 namespace EJournalWPF.Data
 {
     internal class DataRepository
     {
-        private static DataRepository _instance;
-        private static readonly object _lock = new object();
-
         private AuthRepository _auth;
 
         private SettingsRepository _settings;
@@ -42,19 +40,30 @@ namespace EJournalWPF.Data
         internal event MessageReceiversLoadingHandler MessageReceiversLoadingEvent;
 
 
-        private DataRepository(AuthRepository authRepository, SettingsRepository settingsRepository)
+        internal DataRepository(AuthRepository authRepository, SettingsRepository settingsRepository)
         {
             _auth = authRepository;
             _settings = settingsRepository;
-            Task.Run(async () =>
+        }
+
+        internal async Task<bool> Initialize()
+        {
+            try
             {
                 if (System.IO.File.Exists($"{Environment.CurrentDirectory}/cache.json"))
                 {
                     await LoadDataFromCache();
-                    return;
                 }
-                await LoadDataFromAPI();
-            });
+                else
+                {
+                    await LoadDataFromAPI();
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         internal async Task LoadDataFromAPI()
@@ -120,9 +129,9 @@ namespace EJournalWPF.Data
         {
             // TODO BeginDataLoadingEvent?.Invoke($"Скачивание {messagesToDownload.Count} писем...");
 
-            if (!Directory.Exists(_settings.SaveDirectory))
+            if (!Directory.Exists(_settings.GetSaveDirectory))
             {
-                Directory.CreateDirectory(_settings.SaveDirectory);
+                Directory.CreateDirectory(_settings.GetSaveDirectory);
             }
 
             using (WebClient client = new WebClient())
@@ -138,15 +147,15 @@ namespace EJournalWPF.Data
 
                     MessageInfo messageInfo = await GetMessageInfo(message.ID);
 
-                    if (!Directory.Exists($"{_settings.SaveDirectory}/{group}"))
+                    if (!Directory.Exists($"{_settings.GetSaveDirectory}/{group}"))
                     {
-                        Directory.CreateDirectory($"{_settings.SaveDirectory}/{group}");
+                        Directory.CreateDirectory($"{_settings.GetSaveDirectory}/{group}");
                     }
 
                     student = $"{messageInfo.User_From.LastName} {messageInfo.User_From.FirstName}";
-                    if (!Directory.Exists($"{_settings.SaveDirectory}/{group}/{student}"))
+                    if (!Directory.Exists($"{_settings.GetSaveDirectory}/{group}/{student}"))
                     {
-                        Directory.CreateDirectory($"{_settings.SaveDirectory}/{group}/{student}");
+                        Directory.CreateDirectory($"{_settings.GetSaveDirectory}/{group}/{student}");
                     }
 
                     if (messageInfo.Files.Count > 1)
@@ -156,15 +165,15 @@ namespace EJournalWPF.Data
                         {
                             subDirectory = subDirectory.Remove(30);
                         }
-                        if (!Directory.Exists($"{_settings.SaveDirectory}/{group}/{student}/{subDirectory}"))
+                        if (!Directory.Exists($"{_settings.GetSaveDirectory}/{group}/{student}/{subDirectory}"))
                         {
-                            Directory.CreateDirectory($"{_settings.SaveDirectory}/{group}/{student}/{subDirectory}");
+                            Directory.CreateDirectory($"{_settings.GetSaveDirectory}/{group}/{student}/{subDirectory}");
                         }
                     }
 
                     foreach (Model.API.MessageModel.File file in messageInfo.Files)
                     {
-                        if (_settings.SaveDateTime)
+                        if (_settings.GetSaveDateTime)
                         {
                             filename = $"{messageInfo.Date.ToString("dd.MM HH-mm")}";
                         }
@@ -175,11 +184,11 @@ namespace EJournalWPF.Data
                         filename = $"{filename} {Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty)}";
                         if (subDirectory != null)
                         {
-                            filename = $"{_settings.SaveDirectory}/{group}/{student}/{subDirectory}/{filename}";
+                            filename = $"{_settings.GetSaveDirectory}/{group}/{student}/{subDirectory}/{filename}";
                         }
                         else
                         {
-                            filename = $"{_settings.SaveDirectory}/{group}/{student}/{filename}";
+                            filename = $"{_settings.GetSaveDirectory}/{group}/{student}/{filename}";
                         }
 
                         if (System.IO.File.Exists(filename))
@@ -211,41 +220,13 @@ namespace EJournalWPF.Data
 
         private async Task LoadDataFromCache()
         {
-            try
+            _users = JsonConvert.DeserializeObject<List<User>>(System.IO.File.ReadAllText($"{Environment.CurrentDirectory}/cache.json"));
+            if (_users == null)
             {
-                _users = JsonConvert.DeserializeObject<List<User>>(System.IO.File.ReadAllText($"{Environment.CurrentDirectory}/cache.json"));
-                if (_users == null)
-                {
-                    throw new Exception();
-                }
+                throw new Exception();
             }
-            catch
-            {
-                await LoadDataFromAPI();
-            }
-        }
-
-        internal static void Initialize(AuthRepository authRepository, SettingsRepository settingsRepository)
-        {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new DataRepository(authRepository, settingsRepository);
-                    }
-                }
-            }
-        }
-
-        internal static DataRepository GetInstance()
-        {
-            if (_instance == null)
-            {
-                throw new InvalidOperationException("DataRepository не был инициализирован. Вызовите Initialize перед первым использованием.");
-            }
-            return _instance;
+            await LoadDataFromAPI();
+            return;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using EJournalWPF.Data;
+﻿using EJournalAutomate.Data;
+using EJournalWPF.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,15 +22,15 @@ namespace EJournalWPF.Pages
     /// </summary>
     public partial class AuthPage : Page
     {
-        private DataRepository _dataRepository;
+        private AuthRepository _authRepository;
         public AuthPage()
         {
             InitializeComponent();
-            _dataRepository = DataRepository.GetInstance();
-            _dataRepository.AuthEvent += _dataRepository_AuthEvent;
+            _authRepository = (App.Current as App).GetAuthRepository;
+            _authRepository.AuthEvent += AuthEvent;
         }
 
-        private void _dataRepository_AuthEvent(bool isSuccess, string error)
+        private void AuthEvent(bool isSuccess, string error)
         {
             if (isSuccess)
             {
@@ -44,7 +45,7 @@ namespace EJournalWPF.Pages
 
         private async void AuthButton_Click(object sender, RoutedEventArgs e)
         {
-            await _dataRepository.Auth(LoginTextBox.Text, PasswordTextBox.Password);
+            await _authRepository.Auth(LoginTextBox.Text, PasswordTextBox.Password);
         }
     }
 }

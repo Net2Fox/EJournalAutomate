@@ -23,13 +23,32 @@ namespace EJournalWPF.Pages
         public MainPage()
         {
             InitializeComponent();
-            _dataRepository = DataRepository.GetInstance();
+            _dataRepository = (App.Current as App).GetDataRepository;
+            
             _dataRepository.GetMessagesEvent += GetMessagesEvent;
+
+            LoadingSplashPanel.Visibility = Visibility.Visible;
 
             Task.Run(async () =>
             {
-                await _dataRepository.GetMessages();
+                await InitializeData();
             });
+        }
+
+        private async Task InitializeData()
+        {
+            
+            bool result = await _dataRepository.Initialize();
+            if (result)
+            {
+                await _dataRepository.GetMessages();
+            }
+            else
+            {
+                Application.Current.Dispatcher.Invoke(() => {
+                    LoadingTextBlock.Text = "При инициализации данных произошла ошибка. Перезапустите программу!";
+                });
+            }
         }
 
         private void GetMessagesEvent(bool isSuccess, List<Message> messages, string error)

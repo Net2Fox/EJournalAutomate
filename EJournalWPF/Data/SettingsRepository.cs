@@ -8,15 +8,12 @@ namespace EJournalAutomate.Data
 {
     internal class SettingsRepository
     {
-        private static SettingsRepository _instance;
-        private static readonly object _lock = new object();
-
         private string _saveDirectory = $"{Environment.CurrentDirectory}\\Письма";
 
         private bool _saveDateTime = false;
 
-        internal string SaveDirectory { get { return _saveDirectory; } }
-        internal bool SaveDateTime { get { return _saveDateTime; } }
+        internal string GetSaveDirectory { get { return _saveDirectory; } }
+        internal bool GetSaveDateTime { get { return _saveDateTime; } }
 
         public SettingsRepository()
         {
@@ -54,29 +51,6 @@ namespace EJournalAutomate.Data
         internal void SetDateTimeSave()
         {
             _saveDateTime = !_saveDateTime;
-        }
-
-        internal static void Initialize()
-        {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new SettingsRepository();
-                    }
-                }
-            }
-        }
-
-        internal static SettingsRepository GetInstance()
-        {
-            if (_instance == null)
-            {
-                throw new InvalidOperationException("SettingsRepository не был инициализирован. Вызовите Initialize перед первым использованием.");
-            }
-            return _instance;
         }
     }
 }

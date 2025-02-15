@@ -1,4 +1,5 @@
-﻿using EJournalWPF.Data;
+﻿using EJournalAutomate.Data;
+using EJournalWPF.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +22,13 @@ namespace EJournalWPF
     /// </summary>
     public partial class DirectorySettingsWindow : Window
     {
+        private SettingsRepository _settingsRepository;
+
         public DirectorySettingsWindow()
         {
             InitializeComponent();
-            CurrentDirTextBox.Text = DataRepository.GetInstance().SaveDirectory;
+            _settingsRepository = (App.Current as App).GetSettingsRepository;
+            CurrentDirTextBox.Text = _settingsRepository.GetSaveDirectory;
         }
 
         private void ChangeDirButton_Click(object sender, RoutedEventArgs e)
@@ -32,10 +36,9 @@ namespace EJournalWPF
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
             if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                DataRepository dataRepository = DataRepository.GetInstance();
-                dataRepository.SetSaveDirectory(folderBrowserDialog.SelectedPath);
+                _settingsRepository.SetSaveDirectory(folderBrowserDialog.SelectedPath);
                 CurrentDirTextBox.Text = folderBrowserDialog.SelectedPath;
-                dataRepository.SaveSettings();
+                _settingsRepository.SaveSettings();
                 System.Windows.MessageBox.Show("Путь успешно установлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }

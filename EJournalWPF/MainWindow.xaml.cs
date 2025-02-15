@@ -19,6 +19,7 @@ using System.Windows.Shapes;
 using EJournalWPF.Model;
 using EJournalWPF.Pages;
 using EJournalWPF.Data;
+using EJournalAutomate.Data;
 
 namespace EJournalWPF
 {
@@ -27,12 +28,14 @@ namespace EJournalWPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private DataRepository _dataRepository;
+        private AuthRepository _authRepository;
+        private SettingsRepository _settingsRepository;
         public MainWindow()
         {
             InitializeComponent();
-            _dataRepository = DataRepository.GetInstance();
-            if (_dataRepository.IsAuthorized())
+            _authRepository = (App.Current as App).GetAuthRepository;
+            _settingsRepository = (App.Current as App).GetSettingsRepository;
+            if (_authRepository.IsAuthorized())
             {
                 MainFrame.Navigate(new MainPage());
             }
@@ -50,27 +53,20 @@ namespace EJournalWPF
             aboutWindow.ShowDialog();
         }
 
-        private async void RedownloadDataMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            await DataRepository.GetInstance().LoadDataFromAPI();
-        }
-
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
         {
             if (MainFrame.Content is MainPage)
             {
-                RedownloadDataMenuItem.IsEnabled = true;
                 SettingsMenuItem.IsEnabled = true;
-                DateMailSaveMenuItem.IsChecked = DataRepository.GetInstance().SaveDateTime;
+                DateMailSaveMenuItem.IsChecked = _settingsRepository.GetSaveDateTime;
             }
         }
 
         private void DateMailSaveMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            DataRepository dataRepository = DataRepository.GetInstance();
-            dataRepository.SetDateTimeSave();
-            dataRepository.SaveSettings();
-            DateMailSaveMenuItem.IsChecked = dataRepository.SaveDateTime;
+            _settingsRepository.SetDateTimeSave();
+            _settingsRepository.SaveSettings();
+            DateMailSaveMenuItem.IsChecked = _settingsRepository.GetSaveDateTime;
         }
     }
 }
