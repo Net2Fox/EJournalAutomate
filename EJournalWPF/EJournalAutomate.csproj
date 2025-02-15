@@ -75,7 +75,9 @@
       <DependentUpon>AboutWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\APIv3.cs" />
+    <Compile Include="Data\AuthRepository.cs" />
     <Compile Include="Data\DataRepository.cs" />
+    <Compile Include="Data\SettingsRepository.cs" />
     <Compile Include="Data\TokenStorage.cs" />
     <Compile Include="DirectorySettingsWindow.xaml.cs">
       <DependentUpon>DirectorySettingsWindow.xaml</DependentUpon>
