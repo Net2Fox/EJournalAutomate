@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 
 namespace EJournalWPF.Pages
 {
@@ -27,6 +28,8 @@ namespace EJournalWPF.Pages
             
             _dataRepository.GetMessagesEvent += GetMessagesEvent;
 
+            _dataRepository.DownloadMessagesEvent += DownloadMessagesEvent;
+
             LoadingSplashPanel.Visibility = Visibility.Visible;
 
             Task.Run(async () =>
@@ -34,6 +37,8 @@ namespace EJournalWPF.Pages
                 await InitializeData();
             });
         }
+
+        
 
         private async Task InitializeData()
         {
@@ -45,20 +50,38 @@ namespace EJournalWPF.Pages
             }
             else
             {
-                Application.Current.Dispatcher.Invoke(() => {
+                System.Windows.Application.Current.Dispatcher.Invoke(() => {
                     LoadingTextBlock.Text = "При инициализации данных произошла ошибка. Перезапустите программу!";
                 });
             }
         }
 
-        private void GetMessagesEvent(bool isSuccess, List<Message> messages, string error)
+        private void GetMessagesEvent(bool isSuccess, List<Model.API.MessageModel.Message> messages, string error)
         {
-            Application.Current.Dispatcher.Invoke(() => {
+            System.Windows.Application.Current.Dispatcher.Invoke(() => {
                 LoadData(messages);
             });
         }
 
-        private void LoadData(List<Message> messages)
+        private void DownloadMessagesEvent(bool isSuccess, string error)
+        {
+            if (isSuccess)
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() => {
+                    System.Windows.MessageBox.Show("Вложения из писем успешно скачаны!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadData(_dataRepository.Messages);
+                });
+            }
+            else
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() => {
+                    LoadingSplashPanel.Visibility = Visibility.Visible;
+                    LoadingTextBlock.Text = error;
+                });
+            }
+        }
+
+        private void LoadData(List<Model.API.MessageModel.Message> messages)
         {
             EmailListBox.ItemsSource = messages;
             EmailListBox.Items.Refresh();
@@ -67,36 +90,9 @@ namespace EJournalWPF.Pages
             LoadingSplashPanel.Visibility = Visibility.Collapsed;
         }
 
-        //private void DownloadingFinish()
-        //{
-        //    Application.Current.Dispatcher.Invoke(() => {
-        //        MessageBox.Show("Вложения из писем успешно скачаны!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-        //        LoadData(_dataRepository.GetMails());
-        //    });
-        //}
-
-        //private void DataLoadingErrorEvent(string errorMsg)
-        //{
-        //    Application.Current.Dispatcher.Invoke(() => {
-        //        LoadingSplashPanel.Visibility = Visibility.Visible;
-        //        LoadingTextBlock.Text = errorMsg;
-        //    });
-        //}
-
-        //private void DataLoadingProgress(string message)
-        //{
-        //    Application.Current.Dispatcher.Invoke(() => {
-        //        LoadingTextBlock.Text = message;
-        //        LoadingSplashPanel.Visibility = Visibility.Visible;
-        //        _isDataLoaded = false;
-        //    });
-        //}
-
         private void Filter()
         {
-            List<Message> filteredList = _dataRepository.Messages;
-
-            
+            List<Model.API.MessageModel.Message> filteredList = _dataRepository.Messages;
 
             if (SearchTextBox.Text != string.Empty && SearchTextBox.Text != "Поиск")
             {
@@ -108,7 +104,7 @@ namespace EJournalWPF.Pages
                 || m.Subject.ToLower().Contains(text)).ToList();
             }
 
-            if (filteredList.Count != 0 && StatusComboBox.SelectedIndex != 0)
+            if (filteredList?.Count != 0 && StatusComboBox.SelectedIndex != 0)
             {
                 filteredList = filteredList.Where(m => m.Unread == (StatusComboBox.SelectedIndex == 1 ? true : false)).ToList();
             }
@@ -169,22 +165,31 @@ namespace EJournalWPF.Pages
         {
             if (e.Key == System.Windows.Input.Key.Enter && _isDataLoaded && int.TryParse(CountTextBox.Text, out _limit))
             {
+                LoadingTextBlock.Text = $"Загрузка данных, пожалуйста подождите...";
+                LoadingSplashPanel.Visibility = Visibility.Visible;
+                _isDataLoaded = false;
                 await _dataRepository.GetMessages(limit: _limit);
             }
         }
 
         private void SelectAllButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var mail in EmailListBox.Items.SourceCollection as List<Message>)
+            foreach (var message in EmailListBox.Items.SourceCollection as List<Model.API.MessageModel.Message>)
             {
-                mail.Selected = true;
+                message.Selected = true;
             }
             EmailListBox.Items.Refresh();
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)
         {
-            _dataRepository.DownloadFile(_dataRepository.Messages.Where(m => m.Selected == true && m.With_Files == true).ToList());
+            var messagesToDownlaod = _dataRepository.Messages.Where(m => m.Selected == true && m.With_Files == true).ToList();
+
+            LoadingTextBlock.Text = $"Скачивание {messagesToDownlaod.Count} сообщений...";
+            LoadingSplashPanel.Visibility = Visibility.Visible;
+            _isDataLoaded = false;
+
+            _dataRepository.DownloadFile(messagesToDownlaod);
         }
     }
 }

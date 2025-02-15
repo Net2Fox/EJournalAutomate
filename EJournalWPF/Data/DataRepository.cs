@@ -33,12 +33,8 @@ namespace EJournalWPF.Data
         internal delegate void GetMessagesHandler(bool isSuccess, List<Message> messages, string error);
         internal event GetMessagesHandler GetMessagesEvent;
 
-        internal delegate void MessagesLoadingHandler(bool isSuccess, string error);
-        internal event MessagesLoadingHandler MessagesLoadingEvent;
-
-        internal delegate void MessageReceiversLoadingHandler(bool isSuccess, string error);
-        internal event MessageReceiversLoadingHandler MessageReceiversLoadingEvent;
-
+        internal delegate void DownloadMessagesHandler(bool isSuccess, string error);
+        internal event DownloadMessagesHandler DownloadMessagesEvent;
 
         internal DataRepository(AuthRepository authRepository, SettingsRepository settingsRepository)
         {
@@ -127,8 +123,6 @@ namespace EJournalWPF.Data
 
         internal async void DownloadFile(List<Message> messagesToDownload)
         {
-            // TODO BeginDataLoadingEvent?.Invoke($"Скачивание {messagesToDownload.Count} писем...");
-
             if (!Directory.Exists(_settings.GetSaveDirectory))
             {
                 Directory.CreateDirectory(_settings.GetSaveDirectory);
@@ -203,7 +197,7 @@ namespace EJournalWPF.Data
                     Thread.Sleep(100);
                 }
             }
-            // TODO DownloadingFinishEvent?.Invoke();
+            DownloadMessagesEvent?.Invoke(true, null);
         }
 
         private void ChangeStatusMessage(Message message)
