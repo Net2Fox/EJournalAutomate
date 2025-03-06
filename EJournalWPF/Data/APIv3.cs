@@ -16,7 +16,7 @@ namespace EJournalWPF.Data
 {
     internal static class APIv3
     {
-        private const string DevKey = "HERE_YOU_NEED_DEVKEY";
+        private const string DevKey = "YourDevKey";
 
         private static HttpClient _client = new HttpClient();
 
