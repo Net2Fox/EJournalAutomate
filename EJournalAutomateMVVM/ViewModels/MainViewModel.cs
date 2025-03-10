@@ -88,7 +88,7 @@ namespace EJournalAutomateMVVM.ViewModels
             }
         }
 
-        public ObservableCollection<Message> Messages { get; } = new ObservableCollection<Message>();
+        private ObservableCollection<Message> _messages = new ObservableCollection<Message>();
 
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
@@ -99,10 +99,41 @@ namespace EJournalAutomateMVVM.ViewModels
             _navigationService = navigationService ?? throw new ArgumentException(nameof(navigationService));
             _dispatcherService = dispatcherService ?? throw new ArgumentException(nameof(dispatcherService));
 
-            _filteredMessages = CollectionViewSource.GetDefaultView(Messages);
+            _filteredMessages = CollectionViewSource.GetDefaultView(_messages);
             _filteredMessages.Filter = MessageFilter;
 
+            _messages.CollectionChanged += _messages_CollectionChanged;
+
             Task.Run(async () => await InitializeAsync());
+        }
+
+        private void _messages_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            DownloadMessagesCommand.NotifyCanExecuteChanged();
+
+            if (e.OldItems != null)
+            {
+                foreach (INotifyPropertyChanged item in e.OldItems)
+                {
+                    item.PropertyChanged -= MessageItem_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (INotifyPropertyChanged item in e.NewItems)
+                {
+                    item.PropertyChanged += MessageItem_PropertyChanged;
+                }
+            }
+        }
+
+        private void MessageItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Message.Selected))
+            {
+                DownloadMessagesCommand.NotifyCanExecuteChanged();
+            }
         }
 
         private async Task InitializeAsync()
@@ -121,10 +152,10 @@ namespace EJournalAutomateMVVM.ViewModels
 
                 await _dispatcherService.InvokeOnUIThreadAsync(() =>
                 {
-                    Messages.Clear();
+                    _messages.Clear();
                     foreach (var message in messages)
                     {
-                        Messages.Add(message);
+                        _messages.Add(message);
                     }
                 });
 
@@ -184,7 +215,7 @@ namespace EJournalAutomateMVVM.ViewModels
         [RelayCommand]
         private void SelectAllMessages()
         {
-            foreach (Message message in Messages)
+            foreach (Message message in _messages)
             {
                 message.Selected = true;
             }
@@ -195,7 +226,7 @@ namespace EJournalAutomateMVVM.ViewModels
         {
             try
             {
-                var messagesToDownload = Messages.Where(m => m.Selected && m.WithFiles).ToList();
+                var messagesToDownload = _messages.Where(m => m.Selected && m.WithFiles).ToList();
 
                 if (messagesToDownload.Count == 0)
                 {
@@ -224,16 +255,7 @@ namespace EJournalAutomateMVVM.ViewModels
 
         private bool CanDownloadMessages()
         {
-            var messagesToDownload = Messages.Where(m => m.Selected && m.WithFiles).ToList();
-
-            if (messagesToDownload.Count == 0)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return _messages.Any(m => m.Selected && m.WithFiles);
         }
     }
 }
