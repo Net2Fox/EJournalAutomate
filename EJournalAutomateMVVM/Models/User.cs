@@ -25,6 +25,6 @@ namespace EJournalAutomateMVVM.Models
         public string FullName => $"{LastName} {FirstName} {MiddleName}";
 
         [JsonIgnore]
-        public string NameWithInitials => $"{LastName} {FirstName[0]} {MiddleName[0]}";
+        public string NameWithInitials => $"{LastName} {FirstName[0]}. {(!string.IsNullOrWhiteSpace(MiddleName) ? $"{MiddleName[0]}." : string.Empty)}";
     }
 }

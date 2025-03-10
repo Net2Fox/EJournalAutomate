@@ -26,7 +26,7 @@ namespace EJournalAutomateMVVM.Views
         {
             InitializeComponent();
 
-            DataContext = Ioc.Default.GetService<MainViewModel>() 
+            DataContext = Ioc.Default.GetService<MainViewModel>()
                 ?? throw new InvalidOperationException("Не удалось получить MainViewModel из DI контейнера.");
         }
     }

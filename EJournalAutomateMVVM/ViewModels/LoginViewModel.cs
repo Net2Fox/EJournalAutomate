@@ -1,17 +1,11 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EJournalAutomateMVVM.Services;
 using EJournalAutomateMVVM.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace EJournalAutomateMVVM.ViewModels
 {
-    public class LoginViewModel : ViewModelBase
+    public class LoginViewModel : ObservableRecipient
     {
         private readonly IApiService _apiService;
         private readonly INavigationService _navigationService;
@@ -19,29 +13,29 @@ namespace EJournalAutomateMVVM.ViewModels
         private string _login;
         public string Login
         {
-            get { return _login; }
-            set { _login = value; OnPropertyChanged(); }
+            get => _login;
+            set { SetProperty(ref _login, value); }
         }
 
         private string _password;
         public string Password
         {
-            get { return _password; }
-            set { _password = value; OnPropertyChanged(); }
+            get => _password;
+            set { SetProperty(ref _password, value); }
         }
 
         private string _errorMessage;
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); }
+            set { SetProperty(ref _errorMessage, value); }
         }
 
         private string _token;
         public string Token
         {
             get => _token;
-            set { _token = value; OnPropertyChanged(); }
+            set { SetProperty(ref _token, value); }
         }
 
         public IAsyncRelayCommand AuthenticateCommand { get; }

@@ -27,6 +27,7 @@ namespace EJournalAutomateMVVM
                 .AddSingleton<ITokenStorage, TokenStorage>()
                 .AddSingleton<IApiService, ApiService>()
                 .AddSingleton<INavigationService, NavigationService>()
+                .AddSingleton<IDispatcherService, DispatcherService>()
                 .AddTransient<ViewModels.LoginViewModel>()
                 //(provider =>
                 //    new ViewModels.LoginViewModel(

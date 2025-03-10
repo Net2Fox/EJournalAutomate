@@ -1,8 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using EJournalAutomateMVVM.ViewModels;
+using System.Text.Json.Serialization;
 
 namespace EJournalAutomateMVVM.Models
 {
-    public class Message
+    public class Message : ObservableObject
     {
         [JsonPropertyName("short_text")]
         public string ShortText { get; set; }
@@ -19,8 +21,13 @@ namespace EJournalAutomateMVVM.Models
         [JsonPropertyName("date")]
         public string Date { get; set; }
 
+        private bool _unread;
+
         [JsonPropertyName("unread")]
-        public bool Unread { get; set; }
+        public bool Unread {
+            get => _unread;
+            set { SetProperty(ref _unread, value); }
+        }
 
         [JsonPropertyName("with_files")]
         public bool WithFiles { get; set; }
@@ -28,7 +35,12 @@ namespace EJournalAutomateMVVM.Models
         [JsonPropertyName("with_resources")]
         public bool WithResources { get; set; }
 
+        private bool _selected;
+
         [JsonIgnore]
-        public bool Selected { get; set; }
+        public bool Selected {
+            get => _selected;
+            set { SetProperty(ref _selected, value); }
+        }
     }
 }
