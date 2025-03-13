@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace EJournalAutomateMVVM.Services
+namespace EJournalAutomateMVVM.Services.Storage
 {
     public class TokenStorage : ITokenStorage
     {
         private readonly string _tokenFilePath = Path.Combine(Environment.CurrentDirectory, "token.dat");
         public async Task SaveTokenAsync(string token)
         {
-            byte[] tokenBytes = UnicodeEncoding.UTF8.GetBytes(token);
+            byte[] tokenBytes = Encoding.UTF8.GetBytes(token);
 
             byte[] encryptedBytes = ProtectedData.Protect(tokenBytes, null, DataProtectionScope.CurrentUser);
 
@@ -33,7 +29,7 @@ namespace EJournalAutomateMVVM.Services
 
             byte[] decryptedBytes = ProtectedData.Unprotect(encryptedBytes, null, DataProtectionScope.CurrentUser);
 
-            string authToken = UnicodeEncoding.UTF8.GetString(decryptedBytes);
+            string authToken = Encoding.UTF8.GetString(decryptedBytes);
 
             Array.Clear(decryptedBytes, 0, decryptedBytes.Length);
 

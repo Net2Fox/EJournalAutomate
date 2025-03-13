@@ -1,8 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using EJournalAutomateMVVM.Services;
+using EJournalAutomateMVVM.Services.API;
+using EJournalAutomateMVVM.Services.Navigation;
+using EJournalAutomateMVVM.Services.Storage;
+using EJournalAutomateMVVM.Services.UI;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace EJournalAutomateMVVM

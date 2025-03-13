@@ -1,28 +1,15 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using EJournalAutomateMVVM.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace EJournalAutomateMVVM.Views
+namespace EJournalAutomateMVVM.Views.Pages
 {
     /// <summary>
     /// Логика взаимодействия для MainView.xaml
     /// </summary>
-    public partial class MainView : Page
+    public partial class MainPage : Page
     {
-        public MainView()
+        public MainPage()
         {
             InitializeComponent();
 

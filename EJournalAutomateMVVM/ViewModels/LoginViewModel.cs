@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EJournalAutomateMVVM.Services;
-using EJournalAutomateMVVM.Views;
+using EJournalAutomateMVVM.Services.API;
+using EJournalAutomateMVVM.Services.Navigation;
+using EJournalAutomateMVVM.Views.Pages;
 
 namespace EJournalAutomateMVVM.ViewModels
 {
@@ -52,7 +53,7 @@ namespace EJournalAutomateMVVM.ViewModels
             try
             {
                 await _apiService.AuthenticateAsync(Login, Password);
-                _navigationService.NavigateTo(typeof(MainView));
+                _navigationService.NavigateTo(typeof(MainPage));
             }
             catch (Exception ex)
             {

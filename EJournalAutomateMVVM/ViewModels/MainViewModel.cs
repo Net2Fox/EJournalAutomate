@@ -1,18 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
-using EJournalAutomateMVVM.Models;
-using EJournalAutomateMVVM.Services;
-using System;
-using System.Collections.Generic;
+using EJournalAutomateMVVM.Models.Domain;
+using EJournalAutomateMVVM.Services.API;
+using EJournalAutomateMVVM.Services.Navigation;
+using EJournalAutomateMVVM.Services.UI;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
-using System.Windows.Input;
 
 namespace EJournalAutomateMVVM.ViewModels
 {
@@ -44,8 +38,10 @@ namespace EJournalAutomateMVVM.ViewModels
             {
                 if (_searchText != value)
                 {
-                    SetProperty(ref _searchText, value);
-                    ApplyFilters();
+                    if (SetProperty(ref _searchText, value))
+                    {
+                        ApplyFilters();
+                    }
                 }
             }
         }
@@ -56,8 +52,10 @@ namespace EJournalAutomateMVVM.ViewModels
             get => _selectedStatusIndex;
             set
             {
-                SetProperty(ref _selectedStatusIndex, value);
-                ApplyFilters();
+                if (SetProperty(ref _selectedStatusIndex, value))
+                {
+                    ApplyFilters();
+                }
             }
         }
 
@@ -82,10 +80,7 @@ namespace EJournalAutomateMVVM.ViewModels
         public bool IsSearchFocused
         {
             get => _isSearchFocused;
-            set
-            {
-                SetProperty(ref _isSearchFocused, value);
-            }
+            set { SetProperty(ref _isSearchFocused, value); }
         }
 
         private ObservableCollection<Message> _messages = new ObservableCollection<Message>();

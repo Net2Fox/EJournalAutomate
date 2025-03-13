@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace EJournalAutomateMVVM.Models
+namespace EJournalAutomateMVVM.Models.Domain
 {
     public class File
     {

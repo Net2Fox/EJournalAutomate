@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using EJournalAutomateMVVM.ViewModels;
 using System.Text.Json.Serialization;
 
-namespace EJournalAutomateMVVM.Models
+namespace EJournalAutomateMVVM.Models.Domain
 {
     public class Message : ObservableObject
     {
@@ -24,7 +23,8 @@ namespace EJournalAutomateMVVM.Models
         private bool _unread;
 
         [JsonPropertyName("unread")]
-        public bool Unread {
+        public bool Unread
+        {
             get => _unread;
             set { SetProperty(ref _unread, value); }
         }
@@ -38,7 +38,8 @@ namespace EJournalAutomateMVVM.Models
         private bool _selected;
 
         [JsonIgnore]
-        public bool Selected {
+        public bool Selected
+        {
             get => _selected;
             set { SetProperty(ref _selected, value); }
         }

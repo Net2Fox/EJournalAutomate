@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using EJournalAutomateMVVM.Services;
+using EJournalAutomateMVVM.Services.API;
+using EJournalAutomateMVVM.Views.Pages;
 using System.Windows;
-using NavigationService = EJournalAutomateMVVM.Services.NavigationService;
+using NavigationService = EJournalAutomateMVVM.Services.Navigation.NavigationService;
 
 namespace EJournalAutomateMVVM.Views
 {
@@ -27,11 +28,11 @@ namespace EJournalAutomateMVVM.Views
             bool tokenExists = await apiService.LoadTokenFromAsync();
             if (tokenExists)
             {
-                MainFrame.Navigate(new MainView());
+                MainFrame.Navigate(new MainPage());
             }
             else
             {
-                MainFrame.Navigate(new LoginView());
+                MainFrame.Navigate(new LoginPage());
             }
         }
     }

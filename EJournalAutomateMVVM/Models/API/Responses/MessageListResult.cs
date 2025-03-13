@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using EJournalAutomateMVVM.Models.Domain;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
-namespace EJournalAutomateMVVM.Models
+namespace EJournalAutomateMVVM.Models.API.Responses
 {
     class MessageListResult
     {

@@ -1,10 +1,13 @@
 ﻿using EJournalAutomateMVVM.Exceptions;
-using EJournalAutomateMVVM.Models;
+using EJournalAutomateMVVM.Models.API.Requests;
+using EJournalAutomateMVVM.Models.API.Responses;
+using EJournalAutomateMVVM.Models.Domain;
+using EJournalAutomateMVVM.Services.Storage;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
-namespace EJournalAutomateMVVM.Services
+namespace EJournalAutomateMVVM.Services.API
 {
     public class ApiService : IApiService
     {
@@ -46,7 +49,7 @@ namespace EJournalAutomateMVVM.Services
                 throw new ApiException("Ошибка при выполнении запроса на аутентификацию.", ex);
             }
 
-            if(!response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
                 throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
             }

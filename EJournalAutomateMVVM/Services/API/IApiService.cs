@@ -1,11 +1,6 @@
-﻿using EJournalAutomateMVVM.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EJournalAutomateMVVM.Models.Domain;
 
-namespace EJournalAutomateMVVM.Services
+namespace EJournalAutomateMVVM.Services.API
 {
     public interface IApiService
     {
