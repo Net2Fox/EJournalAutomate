@@ -15,7 +15,7 @@ namespace EJournalAutomateMVVM.Services.API
         private const string DevKey = "YourDevKey";
         private const string Vendor = "kip";
 
-        private string _authToken = "";
+        private string _authToken = string.Empty;
 
         private readonly HttpClient _httpClient;
         private readonly ITokenStorage _tokenStorage;
@@ -32,6 +32,11 @@ namespace EJournalAutomateMVVM.Services.API
             return !string.IsNullOrEmpty(_authToken);
         }
 
+        // Альт авторизация через https://{subdomain}.eljur.ru/ajaxauthorize?
+        // https://github.com/Statuxia-API-Eljur-ru/API-Eljur-ru/blob/main/Eljur/auth.py
+        // https://github.com/ChePchik/Eljurnal
+
+        // оф доки элжура https://eljur.ru/api/
         public async Task AuthenticateAsync(string login, string password)
         {
             var url = $"{BaseUrl}/auth?devkey={DevKey}&out_format=json&vendor={Vendor}";
