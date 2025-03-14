@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace EJournalAutomateMVVM.Services.Storage
 {
-    public class DownloadService : IDownloadService
+    public interface ICacheService
     {
-        public Task DownloadMessagesAsync(List<Message> messages)
-        {
-            throw new Exception();
-        }
+        bool IsCacheAvailable { get; }
+
+        Task<List<User>> LoadCache();
+        void SaveCache(List<User> data);
     }
 }

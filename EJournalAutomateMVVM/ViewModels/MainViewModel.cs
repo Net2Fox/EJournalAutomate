@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using EJournalAutomateMVVM.Models.Domain;
 using EJournalAutomateMVVM.Services.API;
 using EJournalAutomateMVVM.Services.Navigation;
+using EJournalAutomateMVVM.Services.Storage;
 using EJournalAutomateMVVM.Services.UI;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -15,6 +16,7 @@ namespace EJournalAutomateMVVM.ViewModels
         private readonly IApiService _apiService;
         private readonly INavigationService _navigationService;
         private readonly IDispatcherService _dispatcherService;
+        private readonly ICacheService _cacheService;
 
         private bool _isLoading = true;
         public bool IsLoading
@@ -88,11 +90,14 @@ namespace EJournalAutomateMVVM.ViewModels
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
 
-        public MainViewModel(IApiService apiService, INavigationService navigationService, IDispatcherService dispatcherService)
+        private List<User> _students;
+
+        public MainViewModel(IApiService apiService, INavigationService navigationService, IDispatcherService dispatcherService, ICacheService cacheService)
         {
             _apiService = apiService ?? throw new ArgumentException(nameof(apiService));
             _navigationService = navigationService ?? throw new ArgumentException(nameof(navigationService));
             _dispatcherService = dispatcherService ?? throw new ArgumentException(nameof(dispatcherService));
+            _cacheService = cacheService ?? throw new ArgumentException(nameof(cacheService));
 
             _filteredMessages = CollectionViewSource.GetDefaultView(_messages);
             _filteredMessages.Filter = MessageFilter;
@@ -134,6 +139,7 @@ namespace EJournalAutomateMVVM.ViewModels
         private async Task InitializeAsync()
         {
             await LoadMessagesAsync();
+            await LoadStudentsAsync();
         }
 
         private async Task LoadMessagesAsync()
@@ -160,6 +166,22 @@ namespace EJournalAutomateMVVM.ViewModels
             {
                 LoadingMessage = $"Произошла ошибка: {ex.Message}";
             }
+        }
+
+        private async Task LoadStudentsAsync()
+        {
+            IsLoading = true;
+            LoadingMessage = "Загрузка данных, пожалуйста подождите...";
+            if (_cacheService.IsCacheAvailable)
+            {
+                _students = await _cacheService.LoadCache();
+            }
+            else
+            {
+                _students = await _apiService.GetMessageReceivers();
+                _cacheService.SaveCache(_students);
+            }
+            IsLoading = false;
         }
 
         [RelayCommand]
@@ -231,7 +253,10 @@ namespace EJournalAutomateMVVM.ViewModels
                 IsLoading = true;
                 LoadingMessage = $"Скачивание {messagesToDownload.Count()} сообщений...";
 
-                //TODO await _downloadService.DownloadMessageAsync(messagesToDownload);
+                if (_students != null)
+                {
+                    //TODO await _downloadService.DownloadMessageAsync(messagesToDownload);
+                }
 
                 foreach (var message in messagesToDownload)
                 {

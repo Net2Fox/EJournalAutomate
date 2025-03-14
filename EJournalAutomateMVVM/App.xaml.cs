@@ -30,6 +30,7 @@ namespace EJournalAutomateMVVM
                 .AddSingleton<INavigationService, NavigationService>()
                 .AddSingleton<IDispatcherService, DispatcherService>()
                 .AddSingleton<ISettingsStorage, SettingsStorage>()
+                .AddSingleton<ICacheService, CacheService>()
                 .AddTransient<ViewModels.LoginViewModel>()
                 //(provider =>
                 //    new ViewModels.LoginViewModel(

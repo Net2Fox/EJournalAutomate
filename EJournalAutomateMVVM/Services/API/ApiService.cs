@@ -153,5 +153,44 @@ namespace EJournalAutomateMVVM.Services.API
                 throw new Exception($"Ошибка API: {apiResponse?.Response?.Error}");
             }
         }
+
+        public async Task<List<User>> GetMessageReceivers()
+        {
+            var url = $"{BaseUrl}/getmessagereceivers?devkey={DevKey}&out_format=json&auth_token={_authToken}&vendor={Vendor}";
+
+            HttpResponseMessage response;
+            try
+            {
+                response = await _httpClient.GetAsync(url);
+            }
+            catch (Exception ex)
+            {
+                throw new ApiException("Ошибка при выполненни запроса на получение информации о сообщении.", ex);
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            List<User> students = await MessageReceiversExtensions.ExtractStudentsDirectlyAsync(json);
+
+            if (students == null)
+            {
+                throw new ApiException("Ответ API пустой или не может быть десериализован.");
+            }
+
+            return students;
+
+            //if (apiResponse.Response.State == 200 && apiResponse.Response.Result != null)
+            //{
+            //    return apiResponse.Response.Result.GetStudentsList();
+            //}
+            //else
+            //{
+            //    throw new Exception($"Ошибка API: {apiResponse?.Response?.Error}");
+            //}
+        }
     }
 }
