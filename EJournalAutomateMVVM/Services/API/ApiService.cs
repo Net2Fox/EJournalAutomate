@@ -174,7 +174,7 @@ namespace EJournalAutomateMVVM.Services.API
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            List<User> students = await MessageReceiversExtensions.ExtractStudentsDirectlyAsync(json);
+            List<User> students = await ExtractStudentsDirectlyAsync(json);
 
             if (students == null)
             {
@@ -182,15 +182,63 @@ namespace EJournalAutomateMVVM.Services.API
             }
 
             return students;
+        }
 
-            //if (apiResponse.Response.State == 200 && apiResponse.Response.Result != null)
-            //{
-            //    return apiResponse.Response.Result.GetStudentsList();
-            //}
-            //else
-            //{
-            //    throw new Exception($"Ошибка API: {apiResponse?.Response?.Error}");
-            //}
+        private async Task<List<User>> ExtractStudentsDirectlyAsync(string jsonContent)
+        {
+            var students = new List<User>();
+
+            using JsonDocument document = JsonDocument.Parse(jsonContent);
+
+            JsonElement root = document.RootElement;
+
+            if (root.TryGetProperty("response", out JsonElement response) &&
+                response.TryGetProperty("result", out JsonElement result) &&
+                result.TryGetProperty("groups", out JsonElement groups))
+            {
+                foreach (JsonElement group in groups.EnumerateArray())
+                {
+                    if (group.TryGetProperty("key", out JsonElement keyElement) &&
+                        keyElement.GetString() == "students" &&
+                        group.TryGetProperty("subgroups", out JsonElement subgroups))
+                    {
+                        foreach (JsonElement subgroup in subgroups.EnumerateArray())
+                        {
+                            string groupName = string.Empty;
+                            if (subgroup.TryGetProperty("name", out JsonElement nameElement))
+                            {
+                                groupName = nameElement.GetString();
+                            }
+
+                            if (subgroup.TryGetProperty("users", out JsonElement users))
+                            {
+                                foreach (JsonElement userElement in users.EnumerateArray())
+                                {
+                                    var user = new User
+                                    {
+                                        GroupName = groupName
+                                    };
+
+                                    if (userElement.TryGetProperty("lastname", out JsonElement lastnameEl))
+                                        user.LastName = lastnameEl.GetString();
+
+                                    if (userElement.TryGetProperty("firstname", out JsonElement firstnameEl))
+                                        user.FirstName = firstnameEl.GetString();
+
+                                    if (userElement.TryGetProperty("middlename", out JsonElement middlenameEl))
+                                        user.MiddleName = middlenameEl.GetString();
+
+                                    students.Add(user);
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return students;
         }
     }
 }

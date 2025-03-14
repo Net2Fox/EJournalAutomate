@@ -4,8 +4,6 @@ namespace EJournalAutomateMVVM.Models.Domain
 {
     public class User
     {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
 
         [JsonPropertyName("lastname")]
         public string LastName { get; set; }
@@ -22,7 +20,7 @@ namespace EJournalAutomateMVVM.Models.Domain
         [JsonIgnore]
         public string NameWithInitials => $"{LastName} {FirstName[0]}. {(!string.IsNullOrWhiteSpace(MiddleName) ? $"{MiddleName[0]}." : string.Empty)}";
 
-        [JsonIgnore]
+        [JsonPropertyName("groupname")]
         public string GroupName { get; set; }
     }
 }
