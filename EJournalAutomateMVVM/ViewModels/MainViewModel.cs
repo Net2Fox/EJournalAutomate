@@ -11,7 +11,7 @@ using System.Windows.Data;
 
 namespace EJournalAutomateMVVM.ViewModels
 {
-    public partial class MainViewModel : ObservableRecipient, IDisposable
+    public partial class MainViewModel : ObservableRecipient
     {
         private readonly IApiService _apiService;
         private readonly INavigationService _navigationService;
@@ -315,19 +315,6 @@ namespace EJournalAutomateMVVM.ViewModels
         private bool CanDownloadMessages()
         {
             return _messages.Any(m => m.Selected && m.WithFiles);
-        }
-
-        public void Dispose()
-        {
-            _messages.CollectionChanged -= _messages_CollectionChanged;
-
-            foreach (Message message in _messages)
-            {
-                if (message is INotifyPropertyChanged notifiable)
-                {
-                    notifiable.PropertyChanged -= MessageItem_PropertyChanged;
-                }
-            }
         }
     }
 }

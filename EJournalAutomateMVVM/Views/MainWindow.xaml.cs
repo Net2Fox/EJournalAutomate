@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using EJournalAutomateMVVM.Services.API;
+using EJournalAutomateMVVM.Services.Navigation;
 using EJournalAutomateMVVM.Views.Pages;
 using System.Windows;
 using NavigationService = EJournalAutomateMVVM.Services.Navigation.NavigationService;
@@ -18,21 +19,19 @@ namespace EJournalAutomateMVVM.Views
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var navigationService = Ioc.Default.GetService<NavigationService>();
-            if (navigationService != null)
-            {
-                navigationService.SetFrame(MainFrame);
-            }
+            var navigationService = Ioc.Default.GetService<INavigationService>();
+
+            navigationService.SetFrame(MainFrame);
 
             var apiService = Ioc.Default.GetService<IApiService>();
             bool tokenExists = await apiService.LoadTokenFromAsync();
             if (tokenExists)
             {
-                MainFrame.Navigate(new MainPage());
+                navigationService.NavigateTo(typeof(MainPage));
             }
             else
             {
-                MainFrame.Navigate(new LoginPage());
+                navigationService.NavigateTo(typeof(LoginPage));
             }
         }
     }
