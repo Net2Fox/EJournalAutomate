@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace EJournalAutomateMVVM.Services.Storage
 {
-    interface IDownloadService
+    public interface IDownloadService
     {
-        Task DownloadMessagesAsync(List<Message> messages);
+        Task DownloadMessagesAsync(List<Message> messages, List<User> users, IProgress<(int current, int total, string status)> progress);
     }
 }

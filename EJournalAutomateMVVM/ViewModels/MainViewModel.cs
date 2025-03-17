@@ -11,29 +11,30 @@ using System.Windows.Data;
 
 namespace EJournalAutomateMVVM.ViewModels
 {
-    public partial class MainViewModel : ObservableRecipient
+    public partial class MainViewModel : ObservableRecipient, IDisposable
     {
         private readonly IApiService _apiService;
         private readonly INavigationService _navigationService;
         private readonly IDispatcherService _dispatcherService;
         private readonly ICacheService _cacheService;
+        private readonly IDownloadService _downloadService;
 
         private bool _isLoading = true;
         public bool IsLoading
         {
             get => _isLoading;
-            set { SetProperty(ref _isLoading, value); }
+            set => SetProperty(ref _isLoading, value);
         }
 
-        private string _loadingMessage;
-        public string LoadingMessage
+        private string? _loadingMessage;
+        public string? LoadingMessage
         {
             get => _loadingMessage;
-            set { SetProperty(ref _loadingMessage, value); }
+            set => SetProperty(ref _loadingMessage, value);
         }
 
-        private string _searchText;
-        public string SearchText
+        private string? _searchText;
+        public string? SearchText
         {
             get => _searchText;
             set
@@ -82,22 +83,36 @@ namespace EJournalAutomateMVVM.ViewModels
         public bool IsSearchFocused
         {
             get => _isSearchFocused;
-            set { SetProperty(ref _isSearchFocused, value); }
+            set => SetProperty(ref _isSearchFocused, value);
         }
+
+        private bool _isAllSelected;
+
+        public bool IsAllSelected
+        {
+            get => _isAllSelected;
+            set => SetProperty(ref _isAllSelected, value);
+        }
+
 
         private ObservableCollection<Message> _messages = new ObservableCollection<Message>();
 
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
 
-        private List<User> _students;
+        private List<User>? _students;
 
-        public MainViewModel(IApiService apiService, INavigationService navigationService, IDispatcherService dispatcherService, ICacheService cacheService)
+        public MainViewModel(IApiService apiService,
+            INavigationService navigationService,
+            IDispatcherService dispatcherService,
+            ICacheService cacheService,
+            IDownloadService downloadService)
         {
             _apiService = apiService ?? throw new ArgumentException(nameof(apiService));
             _navigationService = navigationService ?? throw new ArgumentException(nameof(navigationService));
             _dispatcherService = dispatcherService ?? throw new ArgumentException(nameof(dispatcherService));
             _cacheService = cacheService ?? throw new ArgumentException(nameof(cacheService));
+            _downloadService = downloadService ?? throw new ArgumentException(nameof(downloadService));
 
             _filteredMessages = CollectionViewSource.GetDefaultView(_messages);
             _filteredMessages.Filter = MessageFilter;
@@ -232,9 +247,21 @@ namespace EJournalAutomateMVVM.ViewModels
         [RelayCommand]
         private void SelectAllMessages()
         {
-            foreach (Message message in _messages)
+            if (!IsAllSelected)
             {
-                message.Selected = true;
+                foreach (Message message in _messages)
+                {
+                    message.Selected = true;
+                }
+                IsAllSelected = true;
+            }
+            else
+            {
+                foreach (Message message in _messages)
+                {
+                    message.Selected = false;
+                }
+                IsAllSelected = false;
             }
         }
 
@@ -251,11 +278,23 @@ namespace EJournalAutomateMVVM.ViewModels
                 }
 
                 IsLoading = true;
+                //TotalItems = messagesToDownload.Count();
+                //CurrentProgress = 0;
                 LoadingMessage = $"Скачивание {messagesToDownload.Count()} сообщений...";
+                var progress = new Progress<(int current, int total, string status)>(progressInfo =>
+                {
+                    //CurrentProgress = progressInfo.current;
+                    //TotalItems = progressInfo.total;
+                    //ProgressStatus = progressInfo.status;
+
+                    double percentage = (double)progressInfo.current / progressInfo.total * 100;
+                    LoadingMessage = $"Скачивание: {progressInfo.current} из {progressInfo.total} ({percentage:F1}%)\n{progressInfo.status}";
+                });
+
 
                 if (_students != null)
                 {
-                    //TODO await _downloadService.DownloadMessageAsync(messagesToDownload);
+                    await _downloadService.DownloadMessagesAsync(messagesToDownload, _students, progress);
                 }
 
                 foreach (var message in messagesToDownload)
@@ -276,6 +315,19 @@ namespace EJournalAutomateMVVM.ViewModels
         private bool CanDownloadMessages()
         {
             return _messages.Any(m => m.Selected && m.WithFiles);
+        }
+
+        public void Dispose()
+        {
+            _messages.CollectionChanged -= _messages_CollectionChanged;
+
+            foreach (Message message in _messages)
+            {
+                if (message is INotifyPropertyChanged notifiable)
+                {
+                    notifiable.PropertyChanged -= MessageItem_PropertyChanged;
+                }
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace EJournalAutomateMVVM.Services.API
         public ApiService(ITokenStorage tokenStorage)
         {
             _httpClient = new HttpClient();
-            _tokenStorage = tokenStorage;
+            _tokenStorage = tokenStorage ?? throw new ArgumentNullException(nameof(tokenStorage));
         }
 
         public async Task<bool> LoadTokenFromAsync()
@@ -137,7 +137,7 @@ namespace EJournalAutomateMVVM.Services.API
 
             var json = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var apiResponse = JsonSerializer.Deserialize<ApiResponse<MessageInfo>>(json);
+            var apiResponse = JsonSerializer.Deserialize<ApiResponse<MessageInfoResult>>(json);
 
             if (apiResponse == null)
             {
@@ -146,7 +146,7 @@ namespace EJournalAutomateMVVM.Services.API
 
             if (apiResponse.Response.State == 200 && apiResponse.Response.Result != null)
             {
-                return apiResponse.Response.Result;
+                return apiResponse.Response.Result.Message;
             }
             else
             {

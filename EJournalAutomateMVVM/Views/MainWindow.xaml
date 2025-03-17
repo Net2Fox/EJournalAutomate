@@ -5,6 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EJournalAutomateMVVM" xmlns:vm="clr-namespace:EJournalAutomateMVVM.ViewModels"
         mc:Ignorable="d"
-        Title="EJournal Automate" WindowStartupLocation="CenterScreen" Height="450" Width="800" Loaded="MainWindow_Loaded">
+        Title="EJournal Automate"
+        WindowStartupLocation="CenterScreen"
+        Height="450" Width="800"
+        MinHeight="450" MinWidth="600"
+        Loaded="MainWindow_Loaded">
     <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
 </Window>

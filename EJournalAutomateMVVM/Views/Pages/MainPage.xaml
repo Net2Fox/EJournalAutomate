@@ -101,7 +101,18 @@
                 </Style>
             </ListBox.Resources>
         </ListBox>
-        <Button x:Name="SelectAllButton" Grid.Column="0" Grid.Row="2" Content="Выбрать всё" FontSize="14" Command="{Binding SelectAllMessagesCommand}"/>
+        <Button x:Name="SelectAllButton" Grid.Column="0" Grid.Row="2" FontSize="14" Command="{Binding SelectAllMessagesCommand}">
+            <Button.Style>
+                <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <Setter Property="Content" Value="Выбрать всё"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsAllSelected}" Value="True">
+                            <Setter Property="Content" Value="Снять выделение"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
         <Button x:Name="DownloadButton" Grid.Column="2" Grid.Row="2" Content="Скачать" FontSize="14" Command="{Binding DownloadMessagesCommand}"/>
 
         <DockPanel x:Name="LoadingSplashPanel" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
