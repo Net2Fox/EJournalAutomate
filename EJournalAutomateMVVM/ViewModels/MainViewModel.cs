@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using EJournalAutomateMVVM.Models.Domain;
 using EJournalAutomateMVVM.Services.API;
@@ -11,13 +12,16 @@ using System.Windows.Data;
 
 namespace EJournalAutomateMVVM.ViewModels
 {
+    /// <summary>
+    /// MainViewModel для MainPage
+    /// </summary>
     public partial class MainViewModel : ObservableRecipient
     {
-        private readonly IApiService _apiService;
-        private readonly INavigationService _navigationService;
-        private readonly IDispatcherService _dispatcherService;
-        private readonly ICacheService _cacheService;
-        private readonly IDownloadService _downloadService;
+        private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
+        private readonly INavigationService _navigationService = Ioc.Default.GetRequiredService<INavigationService>();
+        private readonly IDispatcherService _dispatcherService = Ioc.Default.GetRequiredService<IDispatcherService>();
+        private readonly ICacheService _cacheService = Ioc.Default.GetRequiredService<ICacheService>();
+        private readonly IDownloadService _downloadService = Ioc.Default.GetRequiredService<IDownloadService>();
 
         private bool _isLoading = true;
         public bool IsLoading
@@ -102,18 +106,8 @@ namespace EJournalAutomateMVVM.ViewModels
 
         private List<User>? _students;
 
-        public MainViewModel(IApiService apiService,
-            INavigationService navigationService,
-            IDispatcherService dispatcherService,
-            ICacheService cacheService,
-            IDownloadService downloadService)
+        public MainViewModel()
         {
-            _apiService = apiService ?? throw new ArgumentException(nameof(apiService));
-            _navigationService = navigationService ?? throw new ArgumentException(nameof(navigationService));
-            _dispatcherService = dispatcherService ?? throw new ArgumentException(nameof(dispatcherService));
-            _cacheService = cacheService ?? throw new ArgumentException(nameof(cacheService));
-            _downloadService = downloadService ?? throw new ArgumentException(nameof(downloadService));
-
             _filteredMessages = CollectionViewSource.GetDefaultView(_messages);
             _filteredMessages.Filter = MessageFilter;
 
@@ -278,17 +272,13 @@ namespace EJournalAutomateMVVM.ViewModels
                 }
 
                 IsLoading = true;
-                //TotalItems = messagesToDownload.Count();
-                //CurrentProgress = 0;
                 LoadingMessage = $"Скачивание {messagesToDownload.Count()} сообщений...";
-                var progress = new Progress<(int current, int total, string status)>(progressInfo =>
+
+                var progress = new Progress<(int current, int total)>(progressInfo =>
                 {
-                    //CurrentProgress = progressInfo.current;
-                    //TotalItems = progressInfo.total;
-                    //ProgressStatus = progressInfo.status;
 
                     double percentage = (double)progressInfo.current / progressInfo.total * 100;
-                    LoadingMessage = $"Скачивание: {progressInfo.current} из {progressInfo.total} ({percentage:F1}%)\n{progressInfo.status}";
+                    LoadingMessage = $"Скачивание: {progressInfo.current} из {progressInfo.total} ({percentage:F1}%)";
                 });
 
 

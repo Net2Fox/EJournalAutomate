@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using EJournalAutomateMVVM.Services.API;
 using EJournalAutomateMVVM.Services.Navigation;
@@ -8,8 +9,8 @@ namespace EJournalAutomateMVVM.ViewModels
 {
     public partial class LoginViewModel : ObservableRecipient
     {
-        private readonly IApiService _apiService;
-        private readonly INavigationService _navigationService;
+        private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
+        private readonly INavigationService _navigationService = Ioc.Default.GetRequiredService<INavigationService>();
 
         private string? _login;
         public string? Login
@@ -39,11 +40,11 @@ namespace EJournalAutomateMVVM.ViewModels
             set => SetProperty(ref _token, value);
         }
 
-        public LoginViewModel(IApiService apiService, INavigationService navigationService)
-        {
-            _apiService = apiService ?? throw new ArgumentException(nameof(apiService));
-            _navigationService = navigationService ?? throw new ArgumentException(nameof(navigationService));
-        }
+        //public LoginViewModel(IApiService apiService, INavigationService navigationService)
+        //{
+        //    _apiService = apiService ?? throw new ArgumentException(nameof(apiService));
+        //    _navigationService = navigationService ?? throw new ArgumentException(nameof(navigationService));
+        //}
 
         [RelayCommand]
         private async Task AuthenticateAsync()

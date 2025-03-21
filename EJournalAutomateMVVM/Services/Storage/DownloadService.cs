@@ -30,7 +30,7 @@ namespace EJournalAutomateMVVM.Services.Storage
         }
 
         public async Task DownloadMessagesAsync(List<Message> messages, List<User> users,
-                IProgress<(int current, int total, string status)>? progress = null)
+                IProgress<(int current, int total)>? progress = null)
         {
             if (messages == null || messages.Count == 0) return;
 
@@ -47,7 +47,7 @@ namespace EJournalAutomateMVVM.Services.Storage
             {
 
                 var message = messages[i];
-                progress?.Report((i + 1, messages.Count, $"Обработка сообщения: {message.Subject}"));
+                progress?.Report((i + 1, messages.Count));
 
                 try
                 {

@@ -5,8 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:EJournalAutomateMVVM.Views.Pages" xmlns:vm="clr-namespace:EJournalAutomateMVVM.ViewModels" d:DataContext="{d:DesignInstance Type=vm:MainViewModel}"
       mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="MainView">
+      d:DesignHeight="450" d:DesignWidth="800">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -19,12 +18,12 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
-        <ComboBox x:Name="StatusComboBox" Grid.Row="0" SelectedIndex="{Binding SelectedStatusIndex, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="16">
+        <ComboBox Grid.Row="0" SelectedIndex="{Binding SelectedStatusIndex, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="16">
             <ComboBoxItem>Все</ComboBoxItem>
             <ComboBoxItem>Непрочитанные</ComboBoxItem>
             <ComboBoxItem>Прочитанные</ComboBoxItem>
         </ComboBox>
-        <TextBox x:Name="SearchTextBox" Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" FontSize="14">
+        <TextBox Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" FontSize="14">
             <TextBox.Style>
                 <Style TargetType="TextBox">
                     <Style.Resources>
@@ -47,7 +46,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <TextBox x:Name="CountTextBox" Text="{Binding MessageLimit, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" FontSize="14" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="2">
+        <TextBox Text="{Binding MessageLimit, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" FontSize="14" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="2">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding ApplyLimitCommand}"/>
             </TextBox.InputBindings>
@@ -73,8 +72,8 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListBox x:Name="EmailListBox" ItemsSource="{Binding FilteredMessages}" Grid.Row="1" Grid.ColumnSpan="3">
-            <ListBox.ItemTemplate>
+        <ListView ItemsSource="{Binding FilteredMessages}" Grid.Row="1" Grid.ColumnSpan="3">
+            <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
                         <CheckBox x:Name="EmailCheckBox" IsChecked="{Binding Selected}" VerticalAlignment="Center" Margin="0,0,0,0"/>
@@ -94,14 +93,29 @@
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.Resources>
-                <Style TargetType="ListBoxItem">
+            </ListView.ItemTemplate>
+            <ListView.Resources>
+                <Style TargetType="ListViewItem">
                     <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="BorderBrush" Value="Gray"/>
+                    <Setter Property="Margin" Value="0,5,0,0"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListViewItem">
+                                <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
-            </ListBox.Resources>
-        </ListBox>
-        <Button x:Name="SelectAllButton" Grid.Column="0" Grid.Row="2" FontSize="14" Command="{Binding SelectAllMessagesCommand}">
+            </ListView.Resources>
+        </ListView>
+        <Button Grid.Column="0" Grid.Row="2" FontSize="14" Command="{Binding SelectAllMessagesCommand}">
             <Button.Style>
                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                     <Setter Property="Content" Value="Выбрать всё"/>
@@ -113,13 +127,13 @@
                 </Style>
             </Button.Style>
         </Button>
-        <Button x:Name="DownloadButton" Grid.Column="2" Grid.Row="2" Content="Скачать" FontSize="14" Command="{Binding DownloadMessagesCommand}"/>
+        <Button Grid.Column="2" Grid.Row="2" Content="Скачать" FontSize="14" Command="{Binding DownloadMessagesCommand}"/>
 
-        <DockPanel x:Name="LoadingSplashPanel" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <DockPanel Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
             <DockPanel.Background>
                 <SolidColorBrush Color="Gray" Opacity="0.9"/>
             </DockPanel.Background>
-            <TextBlock x:Name="LoadingTextBlock" Text="{Binding LoadingMessage}" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="WrapWithOverflow"/>
+            <TextBlock Text="{Binding LoadingMessage}" FontSize="30" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="WrapWithOverflow"/>
         </DockPanel>
     </Grid>
 </Page>

@@ -54,6 +54,11 @@ namespace EJournalAutomateMVVM.Services.API
                 throw new ApiException("Ошибка при выполнении запроса на аутентификацию.", ex);
             }
 
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                throw new ApiException("Логин и пароль указан неверно.");
+            }
+
             if (!response.IsSuccessStatusCode)
             {
                 throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
@@ -174,7 +179,7 @@ namespace EJournalAutomateMVVM.Services.API
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            List<User> students = await ExtractStudentsDirectlyAsync(json);
+            List<User> students = ExtractStudentsDirectly(json);
 
             if (students == null)
             {
@@ -184,7 +189,7 @@ namespace EJournalAutomateMVVM.Services.API
             return students;
         }
 
-        private async Task<List<User>> ExtractStudentsDirectlyAsync(string jsonContent)
+        private List<User> ExtractStudentsDirectly(string jsonContent)
         {
             var students = new List<User>();
 

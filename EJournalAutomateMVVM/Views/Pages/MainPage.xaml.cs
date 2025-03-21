@@ -12,7 +12,7 @@ namespace EJournalAutomateMVVM.Views.Pages
         public MainPage()
         {
             InitializeComponent();
-
+            
             DataContext = Ioc.Default.GetService<MainViewModel>()
                 ?? throw new InvalidOperationException("Не удалось получить MainViewModel из DI контейнера.");
         }

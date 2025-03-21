@@ -9,6 +9,6 @@ namespace EJournalAutomateMVVM.Services.Storage
 {
     public interface IDownloadService
     {
-        Task DownloadMessagesAsync(List<Message> messages, List<User> users, IProgress<(int current, int total, string status)> progress);
+        Task DownloadMessagesAsync(List<Message> messages, List<User> users, IProgress<(int current, int total)> progress);
     }
 }

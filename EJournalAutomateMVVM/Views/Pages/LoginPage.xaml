@@ -5,24 +5,21 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:EJournalAutomateMVVM.Views.Pages" xmlns:vm="clr-namespace:EJournalAutomateMVVM.ViewModels"
       mc:Ignorable="d"
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="LoginPage">
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock Text="Login:" VerticalAlignment="Center" Width="80"/>
-            <TextBox Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Width="200"/>
+      d:DesignHeight="450" d:DesignWidth="800">
+    
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="Логин" HorizontalAlignment="Left" Width="80"/>
+                <TextBox Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Width="200" Margin="0,10,0,0"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                <TextBlock Text="Пароль" HorizontalAlignment="Left" Width="80"/>
+                <PasswordBox x:Name="PasswordBox" Width="200" Margin="0,10,0,0"/>
+            </StackPanel>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,0,0,10">
-            <TextBlock Text="Password:" VerticalAlignment="Center" Width="80"/>
-            <PasswordBox x:Name="PasswordBox" Width="200"/>
-        </StackPanel>
-        <Button Content="Login" Grid.Row="2" Width="100" Command="{Binding AuthenticateCommand}" Click="LoginButton_Click"/>
-        <TextBlock Grid.Row="3" Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,10,0,0"/>
-    </Grid>
+
+        <Button Content="Войти" Width="100" Command="{Binding AuthenticateCommand}" Click="LoginButton_Click" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+        <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,10,0,0"/>
+    </StackPanel>
 </Page>
