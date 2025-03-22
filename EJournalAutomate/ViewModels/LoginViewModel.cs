@@ -40,12 +40,6 @@ namespace EJournalAutomateMVVM.ViewModels
             set => SetProperty(ref _token, value);
         }
 
-        //public LoginViewModel(IApiService apiService, INavigationService navigationService)
-        //{
-        //    _apiService = apiService ?? throw new ArgumentException(nameof(apiService));
-        //    _navigationService = navigationService ?? throw new ArgumentException(nameof(navigationService));
-        //}
-
         [RelayCommand]
         private async Task AuthenticateAsync()
         {

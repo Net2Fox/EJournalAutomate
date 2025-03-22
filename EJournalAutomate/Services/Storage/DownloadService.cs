@@ -41,8 +41,7 @@ namespace EJournalAutomateMVVM.Services.Storage
                 }
                 catch (Exception ex)
                 {
-                    // Логирование ошибки, но продолжение обработки других сообщений
-                    // Logger.LogError($"Ошибка при скачивании файлов сообщения {message.ID}: {ex.Message}");
+                    // TODO Logger.LogError($"Ошибка при скачивании файлов сообщения {message.ID}: {ex.Message}");
                 }
                 await Task.Delay(100);
             }
@@ -72,7 +71,7 @@ namespace EJournalAutomateMVVM.Services.Storage
 
             if (messageInfo.Files.Count > 1)
             {
-                //Path.GetInvalidPathChars
+                // TODO Использовать Path.GetInvalidPathChars?
                 subDirectory = Regex.Replace(messageInfo.Subject, @"[<>:""|?*]", string.Empty);
                 if (subDirectory.Length > 30)
                 {
@@ -86,7 +85,7 @@ namespace EJournalAutomateMVVM.Services.Storage
             {
                 if (_settingsStorage.SaveDate)
                 {
-                    filename = $"{messageInfo.Date}";//.ToString("dd.MM HH-mm")}";
+                    filename = $"{messageInfo.Date}";// TODO .ToString("dd.MM HH-mm")}";
                 }
                 else
                 {
