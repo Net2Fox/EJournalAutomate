@@ -1,4 +1,5 @@
-﻿using EJournalAutomateMVVM.Models.Domain;
+﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using EJournalAutomateMVVM.Models.Domain;
 using EJournalAutomateMVVM.Services.API;
 using System.IO;
 using System.Net.Http;
@@ -8,18 +9,9 @@ namespace EJournalAutomateMVVM.Services.Storage
 {
     public class DownloadService : IDownloadService
     {
-        private readonly ISettingsStorage _settingsStorage;
-        private readonly IApiService _apiService;
-        private readonly ICacheService _cacheService;
-
-        private List<User>? _users;
-
-        public DownloadService(ISettingsStorage settingsStorage, IApiService apiService, ICacheService cacheService)
-        {
-            _settingsStorage = settingsStorage ?? throw new ArgumentException(nameof(settingsStorage));
-            _apiService = apiService ?? throw new ArgumentException(nameof(apiService));
-            _cacheService = cacheService ?? throw new ArgumentException(nameof(cacheService));
-        }
+        private readonly ISettingsStorage _settingsStorage = Ioc.Default.GetRequiredService<ISettingsStorage>();
+        private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
+        private readonly IUserRepository _userRepository = Ioc.Default.GetRequiredService<IUserRepository>();
 
         private void EnsureDirectoryExists(string directory)
         {
@@ -29,15 +21,9 @@ namespace EJournalAutomateMVVM.Services.Storage
             }
         }
 
-        public async Task DownloadMessagesAsync(List<Message> messages, List<User> users,
-                IProgress<(int current, int total)>? progress = null)
+        public async Task DownloadMessagesAsync(List<Message> messages, IProgress<(int current, int total)>? progress = null)
         {
             if (messages == null || messages.Count == 0) return;
-
-            if(_users == null)
-            {
-                _users = users;
-            }
 
             EnsureDirectoryExists(_settingsStorage.SavePath);
 
@@ -75,7 +61,8 @@ namespace EJournalAutomateMVVM.Services.Storage
 
             student = messageInfo.User_From.FullName;
 
-            messageInfo.User_From.GroupName = _users.Find(u => u.LastName == messageInfo.User_From.LastName).GroupName;
+            messageInfo.User_From.GroupName = _userRepository.Users.ToList()
+                .Find(u => u.LastName == messageInfo.User_From.LastName).GroupName;
 
             group = messageInfo.User_From.GroupName;
 

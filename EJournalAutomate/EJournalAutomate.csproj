@@ -6,6 +6,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Images\favicon.ico</ApplicationIcon>
+
+	<Version>3.0.0</Version>
+	<Product>EJournal Automate</Product>
+	<AssemblyName>EJournal Automate</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Images\favicon.ico" />
@@ -13,9 +17,6 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\favicon.ico" />

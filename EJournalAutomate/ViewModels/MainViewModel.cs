@@ -17,10 +17,9 @@ namespace EJournalAutomateMVVM.ViewModels
     /// </summary>
     public partial class MainViewModel : ObservableRecipient
     {
-        private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
+        private readonly ILocalStorage _localStorage = Ioc.Default.GetRequiredService<ILocalStorage>();
         private readonly INavigationService _navigationService = Ioc.Default.GetRequiredService<INavigationService>();
         private readonly IDispatcherService _dispatcherService = Ioc.Default.GetRequiredService<IDispatcherService>();
-        private readonly ICacheService _cacheService = Ioc.Default.GetRequiredService<ICacheService>();
         private readonly IDownloadService _downloadService = Ioc.Default.GetRequiredService<IDownloadService>();
 
         private bool _isLoading = true;
@@ -98,105 +97,55 @@ namespace EJournalAutomateMVVM.ViewModels
             set => SetProperty(ref _isAllSelected, value);
         }
 
-
-        private ObservableCollection<Message> _messages = new ObservableCollection<Message>();
-
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
 
-        private List<User>? _students;
-
         public MainViewModel()
         {
-            _filteredMessages = CollectionViewSource.GetDefaultView(_messages);
+            _localStorage.StatusChanged += LocalStorage_StatusChanged;
+
+            _filteredMessages = CollectionViewSource.GetDefaultView(_localStorage.Messages);
             _filteredMessages.Filter = MessageFilter;
 
-            _messages.CollectionChanged += _messages_CollectionChanged;
+            _localStorage.Messages.CollectionChanged += _messages_CollectionChanged;
 
             Task.Run(async () => await InitializeAsync());
         }
 
-        private void _messages_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            DownloadMessagesCommand.NotifyCanExecuteChanged();
-
-            if (e.OldItems != null)
-            {
-                foreach (INotifyPropertyChanged item in e.OldItems)
-                {
-                    item.PropertyChanged -= MessageItem_PropertyChanged;
-                }
-            }
-
-            if (e.NewItems != null)
-            {
-                foreach (INotifyPropertyChanged item in e.NewItems)
-                {
-                    item.PropertyChanged += MessageItem_PropertyChanged;
-                }
-            }
-        }
-
-        private void MessageItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(Message.Selected))
-            {
-                DownloadMessagesCommand.NotifyCanExecuteChanged();
-            }
-        }
-
         private async Task InitializeAsync()
-        {
-            await LoadMessagesAsync();
-            await LoadStudentsAsync();
-        }
-
-        private async Task LoadMessagesAsync()
         {
             try
             {
-                IsLoading = true;
-                LoadingMessage = "Загрузка данных, пожалуйста подождите...";
-
-                var messages = await _apiService.GetMessagesAsync(_messageLimit);
-
-                await _dispatcherService.InvokeOnUIThreadAsync(() =>
-                {
-                    _messages.Clear();
-                    foreach (var message in messages)
-                    {
-                        _messages.Add(message);
-                    }
-                });
-
-                IsLoading = false;
+                await _localStorage.InitializeAsync();
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                LoadingMessage = $"Произошла ошибка: {ex.Message}";
+                IsLoading = true;
+                LoadingMessage = $"Ошибка при инициализации данных: {ex.Message}";
             }
         }
 
-        private async Task LoadStudentsAsync()
+        private void LocalStorage_StatusChanged(object? sender, Helpers.StatusChangeEventArgs e)
         {
-            IsLoading = true;
-            LoadingMessage = "Загрузка данных, пожалуйста подождите...";
-            if (_cacheService.IsCacheAvailable)
-            {
-                _students = await _cacheService.LoadCache();
-            }
-            else
-            {
-                _students = await _apiService.GetMessageReceivers();
-                _cacheService.SaveCache(_students);
-            }
-            IsLoading = false;
+            IsLoading = e.IsLoading;
+            LoadingMessage = e.Message;
         }
 
         [RelayCommand]
         private async Task ApplyLimitAsync()
         {
-            await LoadMessagesAsync();
+            if (int.TryParse(MessageLimit, out int limit) && limit > 0)
+            {
+                try
+                {
+                    await _localStorage.RefreshMessagesAsync(limit);
+                    ApplyFilters();
+                }
+                catch (Exception ex)
+                {
+                    LoadingMessage = $"Ошибка при обновлении сообщений: {ex.Message}";
+                }
+            }
         }
 
         private bool MessageFilter(object item)
@@ -243,7 +192,7 @@ namespace EJournalAutomateMVVM.ViewModels
         {
             if (!IsAllSelected)
             {
-                foreach (Message message in _messages)
+                foreach (Message message in _localStorage.Messages)
                 {
                     message.Selected = true;
                 }
@@ -251,7 +200,7 @@ namespace EJournalAutomateMVVM.ViewModels
             }
             else
             {
-                foreach (Message message in _messages)
+                foreach (Message message in _localStorage.Messages)
                 {
                     message.Selected = false;
                 }
@@ -264,7 +213,7 @@ namespace EJournalAutomateMVVM.ViewModels
         {
             try
             {
-                var messagesToDownload = _messages.Where(m => m.Selected && m.WithFiles).ToList();
+                var messagesToDownload = _localStorage.Messages.Where(m => m.Selected && m.WithFiles).ToList();
 
                 if (messagesToDownload.Count == 0)
                 {
@@ -281,11 +230,7 @@ namespace EJournalAutomateMVVM.ViewModels
                     LoadingMessage = $"Скачивание: {progressInfo.current} из {progressInfo.total} ({percentage:F1}%)";
                 });
 
-
-                if (_students != null)
-                {
-                    await _downloadService.DownloadMessagesAsync(messagesToDownload, _students, progress);
-                }
+                await _downloadService.DownloadMessagesAsync(messagesToDownload, progress);
 
                 foreach (var message in messagesToDownload)
                 {
@@ -304,7 +249,36 @@ namespace EJournalAutomateMVVM.ViewModels
 
         private bool CanDownloadMessages()
         {
-            return _messages.Any(m => m.Selected && m.WithFiles);
+            return _localStorage.Messages.Any(m => m.Selected && m.WithFiles);
+        }
+
+        private void _messages_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            DownloadMessagesCommand.NotifyCanExecuteChanged();
+
+            if (e.OldItems != null)
+            {
+                foreach (INotifyPropertyChanged item in e.OldItems)
+                {
+                    item.PropertyChanged -= MessageItem_PropertyChanged;
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (INotifyPropertyChanged item in e.NewItems)
+                {
+                    item.PropertyChanged += MessageItem_PropertyChanged;
+                }
+            }
+        }
+
+        private void MessageItem_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Message.Selected))
+            {
+                DownloadMessagesCommand.NotifyCanExecuteChanged();
+            }
         }
     }
 }

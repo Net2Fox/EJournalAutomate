@@ -15,14 +15,6 @@ namespace EJournalAutomateMVVM
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            //Ioc.Default.ConfigureServices(
-            //    new ServiceCollection()
-            //    .AddSingleton<ITokenStorage, TokenStorage>()
-            //    .AddSingleton<IApiService, ApiService>()
-            //    .AddTransient<ViewModels.LoginViewModel>()
-            //    .AddTransient<ViewModels.MainViewModel>()
-            //    .BuildServiceProvider());
-
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
                 .AddSingleton<ITokenStorage, TokenStorage>()
@@ -31,18 +23,14 @@ namespace EJournalAutomateMVVM
                 .AddSingleton<IDispatcherService, DispatcherService>()
                 .AddSingleton<ISettingsStorage, SettingsStorage>()
                 .AddSingleton<ICacheService, CacheService>()
+                .AddSingleton<IMessageRepository, MessageRepository>()
+                .AddSingleton<IUserRepository, UserRepository>()
                 .AddSingleton<IDownloadService, DownloadService>()
+                .AddSingleton<ILocalStorage, LocalStorage>()
                 .AddTransient<ViewModels.LoginViewModel>()
-                //(provider =>
-                //    new ViewModels.LoginViewModel(
-                //        provider.GetRequiredService<IApiService>(),
-                //        provider.GetRequiredService<INavigationService>()))
                 .AddTransient<ViewModels.MainViewModel>()
-                //(provider =>
-                //    new ViewModels.MainViewModel(
-                //        provider.GetRequiredService<IApiService>(),
-                //        provider.GetRequiredService<INavigationService>()))
                 .BuildServiceProvider());
+
             base.OnStartup(e);
         }
     }
