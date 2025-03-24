@@ -5,18 +5,18 @@ namespace EJournalAutomate.Models.API.Responses
     public class ApiResponse<T>
     {
         [JsonPropertyName("response")]
-        public ResponseData<T> Response { get; set; }
+        public required ResponseData<T> Response { get; set; }
     }
 
     public class ResponseData<T>
     {
         [JsonPropertyName("state")]
-        public int State { get; set; }
+        public required int State { get; set; }
 
         [JsonPropertyName("error")]
-        public string Error { get; set; }
+        public required string Error { get; set; }
 
         [JsonPropertyName("result")]
-        public T Result { get; set; }
+        public required T Result { get; set; }
     }
 }

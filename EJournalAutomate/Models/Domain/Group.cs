@@ -10,15 +10,15 @@ namespace EJournalAutomate.Models.Domain
     public class Group
     {
         [JsonPropertyName("users")]
-        public List<User> Users { get; set; }
+        public required List<User> Users { get; set; }
 
         [JsonPropertyName("subgroups")]
-        public List<Group> SubGroups { get; set; }
+        public List<Group>? SubGroups { get; set; }
 
         [JsonPropertyName("name")]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [JsonPropertyName("key")]
-        public string Key { get; set; }
+        public required string Key { get; set; }
     }
 }

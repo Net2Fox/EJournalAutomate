@@ -11,6 +11,6 @@ namespace EJournalAutomate.Models.API.Responses
     class MessageInfoResult
     {
         [JsonPropertyName("message")]
-        public MessageInfo Message { get; set; }
+        public required MessageInfo Message { get; set; }
     }
 }

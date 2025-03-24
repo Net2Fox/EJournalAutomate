@@ -5,9 +5,9 @@ namespace EJournalAutomate.Models.API.Responses
     public class AuthResult
     {
         [JsonPropertyName("token")]
-        public string Token { get; set; }
+        public required string Token { get; set; }
 
         [JsonPropertyName("expires")]
-        public string Expires { get; set; }
+        public required string Expires { get; set; }
     }
 }

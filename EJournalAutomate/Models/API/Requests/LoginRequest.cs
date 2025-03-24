@@ -5,9 +5,9 @@ namespace EJournalAutomate.Models.API.Requests
     public class LoginRequest
     {
         [JsonPropertyName("login")]
-        public string Login { get; set; }
+        public required string Login { get; set; }
 
         [JsonPropertyName("password")]
-        public string Password { get; set; }
+        public required string Password { get; set; }
     }
 }

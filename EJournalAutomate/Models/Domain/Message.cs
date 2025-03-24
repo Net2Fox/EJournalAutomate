@@ -6,19 +6,19 @@ namespace EJournalAutomate.Models.Domain
     public class Message : ObservableObject
     {
         [JsonPropertyName("short_text")]
-        public string ShortText { get; set; }
+        public required string ShortText { get; set; }
 
         [JsonPropertyName("user_from")]
-        public User UserFrom { get; set; }
+        public required User UserFrom { get; set; }
 
         [JsonPropertyName("id")]
-        public string ID { get; set; }
+        public required string ID { get; set; }
 
         [JsonPropertyName("subject")]
-        public string Subject { get; set; }
+        public required string Subject { get; set; }
 
         [JsonPropertyName("date")]
-        public string Date { get; set; }
+        public required string Date { get; set; }
 
         private bool _unread;
 

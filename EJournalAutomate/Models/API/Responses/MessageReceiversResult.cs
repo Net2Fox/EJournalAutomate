@@ -11,6 +11,6 @@ namespace EJournalAutomate.Models.API.Responses
     public class MessageReceiversResult
     {
         [JsonPropertyName("groups")]
-        public List<Group> Groups { get; set; }
+        public required List<Group> Groups { get; set; }
     }
 }
