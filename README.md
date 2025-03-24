@@ -22,7 +22,8 @@
    git clone https://github.com/Net2Fox/EJournalDesktop.git
    ```
 2. Откройте проект в Visual Studio 2022.
-3. Соберите и запустите проект.
+3. Для корректной работы с API, необходимо получить ключ разработчика (DevKey). Получить его можно через тех. поддержку. Этот DevKey необходимо вставить в переменную "DevKey" в файле "EJournalAutomate/Services/API/ApiService.cs".
+4. Соберите и запустите проект.
 
 ## Документация API
 
