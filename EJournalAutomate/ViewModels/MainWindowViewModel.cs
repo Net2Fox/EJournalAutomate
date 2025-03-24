@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EJournalAutomate.Services.Storage.Settings;
+using EJournalAutomate.Views.Windows;
 
 namespace EJournalAutomate.ViewModels
 {
@@ -28,6 +29,13 @@ namespace EJournalAutomate.ViewModels
         {
             _settingsStorage.SetSaveDate(SaveDate);
             await _settingsStorage.SaveSettings();
+        }
+
+        [RelayCommand]
+        private void ShowWindowAbout()
+        {
+            AboutWindow aboutWindow = new AboutWindow();
+            aboutWindow.ShowDialog();
         }
     }
 }
