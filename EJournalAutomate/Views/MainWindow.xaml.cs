@@ -3,7 +3,6 @@ using EJournalAutomateMVVM.Services.API;
 using EJournalAutomateMVVM.Services.Navigation;
 using EJournalAutomateMVVM.Views.Pages;
 using System.Windows;
-using NavigationService = EJournalAutomateMVVM.Services.Navigation.NavigationService;
 
 namespace EJournalAutomateMVVM.Views
 {

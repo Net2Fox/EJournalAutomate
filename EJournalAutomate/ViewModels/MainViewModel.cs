@@ -4,10 +4,8 @@ using CommunityToolkit.Mvvm.Input;
 using EJournalAutomate.Services.Download;
 using EJournalAutomate.Services.Storage.Repository;
 using EJournalAutomateMVVM.Models.Domain;
-using EJournalAutomateMVVM.Services.API;
 using EJournalAutomateMVVM.Services.Navigation;
 using EJournalAutomateMVVM.Services.UI;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
 

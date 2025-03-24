@@ -3,12 +3,7 @@ using EJournalAutomateMVVM.Helpers;
 using EJournalAutomateMVVM.Models.Domain;
 using EJournalAutomateMVVM.Services.API;
 using EJournalAutomateMVVM.Services.UI;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EJournalAutomate.Services.Storage.Repository
 {
