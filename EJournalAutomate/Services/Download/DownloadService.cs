@@ -51,19 +51,23 @@ namespace EJournalAutomate.Services.Download
 
         private async Task DownloadMessageFilesAsync(Message message, HttpClient httpClient)
         {
-            string group = null;
-            string student = null;
-            string subDirectory = null;
-            string filename = "";
+            string? group = null;
+            string? student = null;
+            string? subDirectory = null;
+            string? filename = null;
 
+            var user = _userRepository.Users.FirstOrDefault(u => u.FullName == message.UserFrom.FullName);
 
+            if (user == null)
+            {
+                return;
+            }
 
             MessageInfo messageInfo = await _apiService.GetMessageInfoAsync(message.ID);
 
             student = messageInfo.User_From.FullName;
 
-            messageInfo.User_From.GroupName = _userRepository.Users.ToList()
-                .Find(u => u.LastName == messageInfo.User_From.LastName).GroupName;
+            messageInfo.User_From.GroupName = user.GroupName;
 
             group = messageInfo.User_From.GroupName;
 
