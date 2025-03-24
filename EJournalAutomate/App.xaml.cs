@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using EJournalAutomate.Services.Download;
 using EJournalAutomate.Services.Storage.Cache;
-using EJournalAutomate.Services.Storage.Repository;
 using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomate.Services.Storage.Token;
 using EJournalAutomate.Services.API;
@@ -9,6 +8,8 @@ using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Services.UI;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
+using EJournalAutomate.Repositories;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace EJournalAutomate
 {
@@ -21,6 +22,7 @@ namespace EJournalAutomate
         {
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
+                .AddSingleton<IMessenger>(WeakReferenceMessenger.Default)
                 .AddSingleton<ITokenStorage, TokenStorage>()
                 .AddSingleton<IApiService, ApiService>()
                 .AddSingleton<INavigationService, NavigationService>()

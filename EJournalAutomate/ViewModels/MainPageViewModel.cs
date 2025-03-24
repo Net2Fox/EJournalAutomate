@@ -2,19 +2,21 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using EJournalAutomate.Services.Download;
-using EJournalAutomate.Services.Storage.Repository;
 using EJournalAutomate.Models.Domain;
 using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Services.UI;
 using System.ComponentModel;
 using System.Windows.Data;
+using EJournalAutomate.Repositories;
+using CommunityToolkit.Mvvm.Messaging;
+using EJournalAutomate.Messages;
 
 namespace EJournalAutomate.ViewModels
 {
     /// <summary>
     /// MainPageViewModel для MainPage
     /// </summary>
-    public partial class MainPageViewModel : ObservableRecipient
+    public partial class MainPageViewModel : ObservableRecipient, IRecipient<StatusMessage>
     {
         private readonly ILocalStorage _localStorage;
         private readonly IDownloadService _downloadService;
@@ -97,12 +99,13 @@ namespace EJournalAutomate.ViewModels
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
 
-        public MainPageViewModel(ILocalStorage localStorage, IDownloadService downloadService)
+        public MainPageViewModel(ILocalStorage localStorage, IDownloadService downloadService, IMessenger messenger)
+            : base(messenger)
         {
             _localStorage = localStorage;
             _downloadService = downloadService;
 
-            _localStorage.StatusChanged += LocalStorage_StatusChanged;
+            IsActive = true;
 
             _filteredMessages = CollectionViewSource.GetDefaultView(_localStorage.Messages);
             _filteredMessages.Filter = MessageFilter;
@@ -114,21 +117,7 @@ namespace EJournalAutomate.ViewModels
 
         private async Task InitializeAsync()
         {
-            try
-            {
-                await _localStorage.InitializeAsync();
-            }
-            catch(Exception ex)
-            {
-                IsLoading = true;
-                LoadingMessage = $"Ошибка при инициализации данных: {ex.Message}";
-            }
-        }
-
-        private void LocalStorage_StatusChanged(object? sender, Helpers.StatusChangeEventArgs e)
-        {
-            IsLoading = e.IsLoading;
-            LoadingMessage = e.Message;
+            await _localStorage.InitializeAsync();
         }
 
         [RelayCommand]
@@ -279,6 +268,12 @@ namespace EJournalAutomate.ViewModels
             {
                 DownloadMessagesCommand.NotifyCanExecuteChanged();
             }
+        }
+
+        public void Receive(StatusMessage message)
+        {
+            LoadingMessage = message.Message;
+            IsLoading = message.IsLoading;
         }
     }
 }

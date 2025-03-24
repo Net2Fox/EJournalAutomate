@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using EJournalAutomate.Services.Storage.Repository;
 using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomate.Models.Domain;
 using EJournalAutomate.Services.API;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using EJournalAutomate.Repositories;
 
 namespace EJournalAutomate.Services.Download
 {
