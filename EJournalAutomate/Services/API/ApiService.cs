@@ -184,6 +184,10 @@ namespace EJournalAutomate.Services.API
             return students;
         }
 
+        /*
+         * Ручная обработка Json для метода GetMessageReceivers
+         * Нужно, так как автоматическая десериализация очень медленная для обработки этого Json
+         */
         private List<User> ExtractStudentsDirectly(string jsonContent)
         {
             var students = new List<User>();
@@ -204,7 +208,7 @@ namespace EJournalAutomate.Services.API
                     {
                         foreach (JsonElement subgroup in subgroups.EnumerateArray())
                         {
-                            string groupName = string.Empty;
+                            string? groupName = null;
                             if (subgroup.TryGetProperty("name", out JsonElement nameElement))
                             {
                                 groupName = nameElement.GetString();
@@ -214,30 +218,26 @@ namespace EJournalAutomate.Services.API
                             {
                                 foreach (JsonElement userElement in users.EnumerateArray())
                                 {
+
+                                    if (userElement.TryGetProperty("lastname", out JsonElement lastnameEl)
+                                        && userElement.TryGetProperty("firstname", out JsonElement firstnameEl))
+                                    {
                                     var user = new User
                                     {
-                                        GroupName = groupName
+                                            GroupName = groupName,
+                                            LastName = lastnameEl.GetString(),
+                                            FirstName = firstnameEl.GetString(),
+                                            MiddleName = userElement.TryGetProperty("middlename", out JsonElement middlenameEl) ? middlenameEl.GetString() : null
                                     };
-
-                                    if (userElement.TryGetProperty("lastname", out JsonElement lastnameEl))
-                                        user.LastName = lastnameEl.GetString();
-
-                                    if (userElement.TryGetProperty("firstname", out JsonElement firstnameEl))
-                                        user.FirstName = firstnameEl.GetString();
-
-                                    if (userElement.TryGetProperty("middlename", out JsonElement middlenameEl))
-                                        user.MiddleName = middlenameEl.GetString();
-
                                     students.Add(user);
                                 }
                             }
                         }
-
+                        }
                         break;
                     }
                 }
             }
-
             return students;
         }
     }
