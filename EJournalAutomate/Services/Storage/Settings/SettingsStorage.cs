@@ -28,7 +28,7 @@ namespace EJournalAutomate.Services.Storage.Settings
 
                     if (!string.IsNullOrEmpty(settings[1]))
                     {
-                        if (bool.TryParse(settings[0], out bool result))
+                        if (bool.TryParse(settings[1], out bool result))
                         {
                             _saveDate = result;
                         }
