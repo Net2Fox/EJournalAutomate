@@ -32,7 +32,7 @@ namespace EJournalAutomate
                 .AddSingleton<IDownloadService, DownloadService>()
                 .AddSingleton<ILocalStorage, LocalStorage>()
                 .AddTransient<ViewModels.LoginViewModel>()
-                .AddTransient<ViewModels.MainViewModel>()
+                .AddTransient<ViewModels.MainPageViewModel>()
                 .BuildServiceProvider());
 
             base.OnStartup(e);

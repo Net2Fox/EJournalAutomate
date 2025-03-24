@@ -12,9 +12,9 @@ using System.Windows.Data;
 namespace EJournalAutomate.ViewModels
 {
     /// <summary>
-    /// MainViewModel для MainPage
+    /// MainPageViewModel для MainPage
     /// </summary>
-    public partial class MainViewModel : ObservableRecipient
+    public partial class MainPageViewModel : ObservableRecipient
     {
         private readonly ILocalStorage _localStorage = Ioc.Default.GetRequiredService<ILocalStorage>();
         private readonly INavigationService _navigationService = Ioc.Default.GetRequiredService<INavigationService>();
@@ -99,7 +99,7 @@ namespace EJournalAutomate.ViewModels
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
 
-        public MainViewModel()
+        public MainPageViewModel()
         {
             _localStorage.StatusChanged += LocalStorage_StatusChanged;
 
