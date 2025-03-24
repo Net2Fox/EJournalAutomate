@@ -1,7 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using EJournalAutomate.Services.Download;
+using EJournalAutomate.Services.Storage.Cache;
+using EJournalAutomate.Services.Storage.Repository;
+using EJournalAutomate.Services.Storage.Settings;
+using EJournalAutomate.Services.Storage.Token;
 using EJournalAutomateMVVM.Services.API;
 using EJournalAutomateMVVM.Services.Navigation;
-using EJournalAutomateMVVM.Services.Storage;
 using EJournalAutomateMVVM.Services.UI;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;

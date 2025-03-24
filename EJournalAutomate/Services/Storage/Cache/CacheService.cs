@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace EJournalAutomateMVVM.Services.Storage
+namespace EJournalAutomate.Services.Storage.Cache
 {
     public class CacheService : ICacheService
     {

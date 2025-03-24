@@ -7,13 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EJournalAutomateMVVM.Services.Storage
+namespace EJournalAutomate.Services.Storage.Repository
 {
-    public interface IUserRepository
+    public interface ILocalStorage
     {
+        ObservableCollection<Message> Messages { get; }
         ObservableCollection<User> Users { get; }
 
-        Task LoadUsersAsync();
+        Task InitializeAsync();
+        Task RefreshMessagesAsync(int limit = 20);
 
         bool IsLoading { get; }
         string LoadingMessage { get; }

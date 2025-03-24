@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace EJournalAutomateMVVM.Services.Storage
+namespace EJournalAutomate.Services.Storage.Token
 {
     public class TokenStorage : ITokenStorage
     {

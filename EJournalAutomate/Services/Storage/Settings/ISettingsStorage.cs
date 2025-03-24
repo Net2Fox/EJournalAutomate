@@ -1,4 +1,4 @@
-﻿namespace EJournalAutomateMVVM.Services.Storage
+﻿namespace EJournalAutomate.Services.Storage.Settings
 {
     public interface ISettingsStorage
     {

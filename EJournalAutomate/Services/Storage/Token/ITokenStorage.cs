@@ -1,4 +1,4 @@
-﻿namespace EJournalAutomateMVVM.Services.Storage
+﻿namespace EJournalAutomate.Services.Storage.Token
 {
     public interface ITokenStorage
     {

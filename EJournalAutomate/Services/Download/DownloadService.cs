@@ -1,11 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using EJournalAutomate.Services.Storage.Repository;
+using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomateMVVM.Models.Domain;
 using EJournalAutomateMVVM.Services.API;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 
-namespace EJournalAutomateMVVM.Services.Storage
+namespace EJournalAutomate.Services.Download
 {
     public class DownloadService : IDownloadService
     {

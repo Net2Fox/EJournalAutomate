@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using EJournalAutomate.Services.Storage.Cache;
 using EJournalAutomateMVVM.Helpers;
 using EJournalAutomateMVVM.Models.Domain;
 using EJournalAutomateMVVM.Services.API;
-using EJournalAutomateMVVM.Services.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,17 +10,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EJournalAutomateMVVM.Services.Storage
+namespace EJournalAutomate.Services.Storage.Repository
 {
-    public class MessageRepository : IMessageRepository
+    public class UserRepository : IUserRepository
     {
         private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
-        private readonly IDispatcherService _dispatcherService = Ioc.Default.GetRequiredService<IDispatcherService>();
-        private readonly ObservableCollection<Message> _messages = new();
+        private readonly ICacheService _cacheService = Ioc.Default.GetRequiredService<ICacheService>();
+        private readonly ObservableCollection<User> _users = new();
         private bool _isLoading;
         private string _loadingMessage = string.Empty;
 
-        public ObservableCollection<Message> Messages => _messages;
+        public ObservableCollection<User> Users => _users;
 
         public bool IsLoading
         {
@@ -42,32 +42,41 @@ namespace EJournalAutomateMVVM.Services.Storage
             }
         }
 
-
         public event EventHandler<StatusChangeEventArgs> StatusChanged;
 
-
-        public async Task LoadMessagesAsync(int limit = 20)
+        public async Task LoadUsersAsync()
         {
             try
             {
                 IsLoading = true;
-                LoadingMessage = "Загрузка сообщений...";
+                LoadingMessage = "Загрузка данных пользователей...";
 
-                var messages = await _apiService.GetMessagesAsync(limit);
+                List<User> users;
 
-                await _dispatcherService.InvokeOnUIThreadAsync(() => {
-                    _messages.Clear();
-                    foreach (var message in messages)
-                    {
-                        _messages.Add(message);
-                    }
-                });
+                if (_cacheService.IsCacheAvailable)
+                {
+                    LoadingMessage = "Загрузка данных пользователей из кэша...";
+                    users = await _cacheService.LoadCache();
+                }
+                else
+                {
+                    LoadingMessage = "Загрузка данных пользователей из API...";
+                    users = await _apiService.GetMessageReceivers();
+                    _cacheService.SaveCache(users);
+                }
+
+                _users.Clear();
+
+                foreach (var user in users)
+                {
+                    _users.Add(user);
+                }
 
                 IsLoading = false;
             }
             catch (Exception ex)
             {
-                LoadingMessage = $"Ошибка загрузки сообщений: {ex.Message}";
+                LoadingMessage = $"Ошибка загрузки пользователей: {ex.Message}";
                 throw;
             }
         }

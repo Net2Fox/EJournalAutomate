@@ -1,8 +1,8 @@
-﻿using EJournalAutomateMVVM.Exceptions;
+﻿using EJournalAutomate.Services.Storage.Token;
+using EJournalAutomateMVVM.Exceptions;
 using EJournalAutomateMVVM.Models.API.Requests;
 using EJournalAutomateMVVM.Models.API.Responses;
 using EJournalAutomateMVVM.Models.Domain;
-using EJournalAutomateMVVM.Services.Storage;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
