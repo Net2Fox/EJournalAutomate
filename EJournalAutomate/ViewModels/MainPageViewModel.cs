@@ -1,10 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using EJournalAutomate.Services.Download;
 using EJournalAutomate.Models.Domain;
-using EJournalAutomate.Services.Navigation;
-using EJournalAutomate.Services.UI;
 using System.ComponentModel;
 using System.Windows.Data;
 using EJournalAutomate.Repositories;
