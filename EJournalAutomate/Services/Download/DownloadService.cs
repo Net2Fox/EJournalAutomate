@@ -11,10 +11,16 @@ namespace EJournalAutomate.Services.Download
 {
     public class DownloadService : IDownloadService
     {
-        private readonly ISettingsStorage _settingsStorage = Ioc.Default.GetRequiredService<ISettingsStorage>();
-        private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
-        private readonly IUserRepository _userRepository = Ioc.Default.GetRequiredService<IUserRepository>();
+        private readonly ISettingsStorage _settingsStorage;
+        private readonly IApiService _apiService;
+        private readonly IUserRepository _userRepository;
 
+        public DownloadService(ISettingsStorage settingsStorage, IApiService apiService, IUserRepository userRepository)
+        {
+            _settingsStorage = settingsStorage;
+            _apiService = apiService;
+            _userRepository = userRepository;
+        }
         private void EnsureDirectoryExists(string directory)
         {
             if (!Directory.Exists(directory))

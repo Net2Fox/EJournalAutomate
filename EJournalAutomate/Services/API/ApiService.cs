@@ -23,7 +23,7 @@ namespace EJournalAutomate.Services.API
         public ApiService(ITokenStorage tokenStorage)
         {
             _httpClient = new HttpClient();
-            _tokenStorage = tokenStorage ?? throw new ArgumentNullException(nameof(tokenStorage));
+            _tokenStorage = tokenStorage;
         }
 
         public async Task<bool> LoadTokenFromAsync()

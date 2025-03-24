@@ -11,8 +11,8 @@ namespace EJournalAutomate.ViewModels
 {
     public partial class LoginViewModel : ObservableRecipient
     {
-        private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
-        private readonly INavigationService _navigationService = Ioc.Default.GetRequiredService<INavigationService>();
+        private readonly IApiService _apiService;
+        private readonly INavigationService _navigationService;
 
         private string? _login;
         public string? Login
@@ -40,6 +40,12 @@ namespace EJournalAutomate.ViewModels
         {
             get => _token;
             set => SetProperty(ref _token, value);
+        }
+
+        public LoginViewModel(IApiService apiService, INavigationService navigationService)
+        {
+            _apiService = apiService;
+            _navigationService = navigationService;
         }
 
         [RelayCommand]

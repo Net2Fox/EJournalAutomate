@@ -7,8 +7,8 @@ namespace EJournalAutomate.Services.Storage.Repository
 {
     public class LocalStorage : ILocalStorage
     {
-        private readonly IMessageRepository _messageRepository = Ioc.Default.GetRequiredService<IMessageRepository>();
-        private readonly IUserRepository _userRepository = Ioc.Default.GetRequiredService<IUserRepository>();
+        private readonly IMessageRepository _messageRepository;
+        private readonly IUserRepository _userRepository;
         private bool _isLoading;
         private string _loadingMessage = string.Empty;
 
@@ -38,8 +38,11 @@ namespace EJournalAutomate.Services.Storage.Repository
 
         public event EventHandler<StatusChangeEventArgs> StatusChanged;
 
-        public LocalStorage()
+        public LocalStorage(IMessageRepository messageRepository, IUserRepository userRepository)
         {
+            _messageRepository = messageRepository;
+            _userRepository = userRepository;
+
             _messageRepository.StatusChanged += Repository_StatusChanged;
             _userRepository.StatusChanged += Repository_StatusChanged;
         }

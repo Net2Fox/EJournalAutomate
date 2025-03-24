@@ -16,10 +16,8 @@ namespace EJournalAutomate.ViewModels
     /// </summary>
     public partial class MainPageViewModel : ObservableRecipient
     {
-        private readonly ILocalStorage _localStorage = Ioc.Default.GetRequiredService<ILocalStorage>();
-        private readonly INavigationService _navigationService = Ioc.Default.GetRequiredService<INavigationService>();
-        private readonly IDispatcherService _dispatcherService = Ioc.Default.GetRequiredService<IDispatcherService>();
-        private readonly IDownloadService _downloadService = Ioc.Default.GetRequiredService<IDownloadService>();
+        private readonly ILocalStorage _localStorage;
+        private readonly IDownloadService _downloadService;
 
         private bool _isLoading = true;
         public bool IsLoading
@@ -99,8 +97,11 @@ namespace EJournalAutomate.ViewModels
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
 
-        public MainPageViewModel()
+        public MainPageViewModel(ILocalStorage localStorage, IDownloadService downloadService)
         {
+            _localStorage = localStorage;
+            _downloadService = downloadService;
+
             _localStorage.StatusChanged += LocalStorage_StatusChanged;
 
             _filteredMessages = CollectionViewSource.GetDefaultView(_localStorage.Messages);

@@ -9,8 +9,8 @@ namespace EJournalAutomate.Services.Storage.Repository
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
-        private readonly IDispatcherService _dispatcherService = Ioc.Default.GetRequiredService<IDispatcherService>();
+        private readonly IApiService _apiService;
+        private readonly IDispatcherService _dispatcherService;
         private readonly ObservableCollection<Message> _messages = new();
         private bool _isLoading;
         private string _loadingMessage = string.Empty;
@@ -40,6 +40,11 @@ namespace EJournalAutomate.Services.Storage.Repository
 
         public event EventHandler<StatusChangeEventArgs> StatusChanged;
 
+        public MessageRepository(IApiService apiService, IDispatcherService dispatcherService)
+        {
+            _apiService = apiService;
+            _dispatcherService = dispatcherService;
+        }
 
         public async Task LoadMessagesAsync(int limit = 20)
         {

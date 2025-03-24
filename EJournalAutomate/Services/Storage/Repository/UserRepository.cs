@@ -9,8 +9,8 @@ namespace EJournalAutomate.Services.Storage.Repository
 {
     public class UserRepository : IUserRepository
     {
-        private readonly IApiService _apiService = Ioc.Default.GetRequiredService<IApiService>();
-        private readonly ICacheService _cacheService = Ioc.Default.GetRequiredService<ICacheService>();
+        private readonly IApiService _apiService;
+        private readonly ICacheService _cacheService;
         private readonly ObservableCollection<User> _users = new();
         private bool _isLoading;
         private string _loadingMessage = string.Empty;
@@ -38,6 +38,12 @@ namespace EJournalAutomate.Services.Storage.Repository
         }
 
         public event EventHandler<StatusChangeEventArgs> StatusChanged;
+
+        public UserRepository(IApiService apiService, ICacheService cacheService)
+        {
+            _apiService = apiService;
+            _cacheService = cacheService;
+        }
 
         public async Task LoadUsersAsync()
         {
