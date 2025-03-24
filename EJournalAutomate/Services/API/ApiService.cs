@@ -1,13 +1,13 @@
 ﻿using EJournalAutomate.Services.Storage.Token;
-using EJournalAutomateMVVM.Exceptions;
-using EJournalAutomateMVVM.Models.API.Requests;
-using EJournalAutomateMVVM.Models.API.Responses;
-using EJournalAutomateMVVM.Models.Domain;
+using EJournalAutomate.Exceptions;
+using EJournalAutomate.Models.API.Requests;
+using EJournalAutomate.Models.API.Responses;
+using EJournalAutomate.Models.Domain;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
-namespace EJournalAutomateMVVM.Services.API
+namespace EJournalAutomate.Services.API
 {
     public class ApiService : IApiService
     {

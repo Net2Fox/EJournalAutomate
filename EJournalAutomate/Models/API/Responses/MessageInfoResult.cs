@@ -1,4 +1,4 @@
-﻿using EJournalAutomateMVVM.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace EJournalAutomateMVVM.Models.API.Responses
+namespace EJournalAutomate.Models.API.Responses
 {
     class MessageInfoResult
     {

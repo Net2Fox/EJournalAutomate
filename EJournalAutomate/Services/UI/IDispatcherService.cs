@@ -1,4 +1,4 @@
-﻿namespace EJournalAutomateMVVM.Services.UI
+﻿namespace EJournalAutomate.Services.UI
 {
     public interface IDispatcherService
     {

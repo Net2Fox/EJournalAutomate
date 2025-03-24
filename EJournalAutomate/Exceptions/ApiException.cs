@@ -1,4 +1,4 @@
-﻿namespace EJournalAutomateMVVM.Exceptions
+﻿namespace EJournalAutomate.Exceptions
 {
     public class ApiException : Exception
     {

@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using EJournalAutomate.Services.Storage.Cache;
-using EJournalAutomateMVVM.Helpers;
-using EJournalAutomateMVVM.Models.Domain;
-using EJournalAutomateMVVM.Services.API;
+using EJournalAutomate.Helpers;
+using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Services.API;
 using System.Collections.ObjectModel;
 
 namespace EJournalAutomate.Services.Storage.Repository

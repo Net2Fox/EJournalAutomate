@@ -1,4 +1,4 @@
-﻿using EJournalAutomateMVVM.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
 
 namespace EJournalAutomate.Services.Download
 {

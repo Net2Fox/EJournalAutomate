@@ -1,10 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using EJournalAutomateMVVM.Services.API;
-using EJournalAutomateMVVM.Services.Navigation;
-using EJournalAutomateMVVM.Views.Pages;
+using EJournalAutomate.Services.API;
+using EJournalAutomate.Services.Navigation;
+using EJournalAutomate.Views.Pages;
 using System.Windows;
 
-namespace EJournalAutomateMVVM.Views
+namespace EJournalAutomate.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -4,13 +4,13 @@ using EJournalAutomate.Services.Storage.Cache;
 using EJournalAutomate.Services.Storage.Repository;
 using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomate.Services.Storage.Token;
-using EJournalAutomateMVVM.Services.API;
-using EJournalAutomateMVVM.Services.Navigation;
-using EJournalAutomateMVVM.Services.UI;
+using EJournalAutomate.Services.API;
+using EJournalAutomate.Services.Navigation;
+using EJournalAutomate.Services.UI;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
-namespace EJournalAutomateMVVM
+namespace EJournalAutomate
 {
     /// <summary>
     /// Interaction logic for App.xaml

@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using EJournalAutomateMVVM.ViewModels;
+using EJournalAutomate.ViewModels;
 using System.Windows.Controls;
 
-namespace EJournalAutomateMVVM.Views.Pages
+namespace EJournalAutomate.Views.Pages
 {
     /// <summary>
     /// Логика взаимодействия для LoginView.xaml

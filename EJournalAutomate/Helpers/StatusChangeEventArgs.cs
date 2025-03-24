@@ -1,4 +1,4 @@
-﻿namespace EJournalAutomateMVVM.Helpers
+﻿namespace EJournalAutomate.Helpers
 {
     public class StatusChangeEventArgs : EventArgs
     {

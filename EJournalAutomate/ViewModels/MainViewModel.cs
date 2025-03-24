@@ -3,13 +3,13 @@ using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using EJournalAutomate.Services.Download;
 using EJournalAutomate.Services.Storage.Repository;
-using EJournalAutomateMVVM.Models.Domain;
-using EJournalAutomateMVVM.Services.Navigation;
-using EJournalAutomateMVVM.Services.UI;
+using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Services.Navigation;
+using EJournalAutomate.Services.UI;
 using System.ComponentModel;
 using System.Windows.Data;
 
-namespace EJournalAutomateMVVM.ViewModels
+namespace EJournalAutomate.ViewModels
 {
     /// <summary>
     /// MainViewModel для MainPage

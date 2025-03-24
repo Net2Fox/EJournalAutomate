@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
-using EJournalAutomateMVVM.Services.API;
-using EJournalAutomateMVVM.Services.Navigation;
-using EJournalAutomateMVVM.Views.Pages;
+using EJournalAutomate.Services.API;
+using EJournalAutomate.Services.Navigation;
+using EJournalAutomate.Views.Pages;
 
-namespace EJournalAutomateMVVM.ViewModels
+namespace EJournalAutomate.ViewModels
 {
     public partial class LoginViewModel : ObservableRecipient
     {

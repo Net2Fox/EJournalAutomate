@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using EJournalAutomate.Services.Storage.Repository;
 using EJournalAutomate.Services.Storage.Settings;
-using EJournalAutomateMVVM.Models.Domain;
-using EJournalAutomateMVVM.Services.API;
+using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Services.API;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;

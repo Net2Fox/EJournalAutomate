@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace EJournalAutomateMVVM.Services.UI
+namespace EJournalAutomate.Services.UI
 {
     public class DispatcherService : IDispatcherService
     {

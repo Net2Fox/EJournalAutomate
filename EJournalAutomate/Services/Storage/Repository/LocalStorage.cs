@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using EJournalAutomateMVVM.Helpers;
-using EJournalAutomateMVVM.Models.Domain;
+using EJournalAutomate.Helpers;
+using EJournalAutomate.Models.Domain;
 using System.Collections.ObjectModel;
 
 namespace EJournalAutomate.Services.Storage.Repository

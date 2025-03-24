@@ -1,4 +1,4 @@
-﻿using EJournalAutomateMVVM.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
 using System.IO;
 using System.Text.Json;
 

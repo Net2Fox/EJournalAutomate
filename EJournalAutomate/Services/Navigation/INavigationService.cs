@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace EJournalAutomateMVVM.Services.Navigation
+namespace EJournalAutomate.Services.Navigation
 {
     public interface INavigationService
     {

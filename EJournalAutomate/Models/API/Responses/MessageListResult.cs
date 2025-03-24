@@ -1,7 +1,7 @@
-﻿using EJournalAutomateMVVM.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
 using System.Text.Json.Serialization;
 
-namespace EJournalAutomateMVVM.Models.API.Responses
+namespace EJournalAutomate.Models.API.Responses
 {
     class MessageListResult
     {

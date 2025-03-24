@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace EJournalAutomateMVVM.Models.API.Responses
+namespace EJournalAutomate.Models.API.Responses
 {
     public class AuthResult
     {

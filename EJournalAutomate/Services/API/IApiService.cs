@@ -1,6 +1,6 @@
-﻿using EJournalAutomateMVVM.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
 
-namespace EJournalAutomateMVVM.Services.API
+namespace EJournalAutomate.Services.API
 {
     public interface IApiService
     {

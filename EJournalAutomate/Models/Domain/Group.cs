@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace EJournalAutomateMVVM.Models.Domain
+namespace EJournalAutomate.Models.Domain
 {
     public class Group
     {

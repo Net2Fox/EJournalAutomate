@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace EJournalAutomateMVVM.Models.API.Requests
+namespace EJournalAutomate.Models.API.Requests
 {
     public class LoginRequest
     {
