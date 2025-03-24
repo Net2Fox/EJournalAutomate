@@ -6,6 +6,7 @@ using EJournalAutomate.Models.Domain;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using EJournalAutomate.Helpers;
 
 namespace EJournalAutomate.Services.API
 {
@@ -20,10 +21,15 @@ namespace EJournalAutomate.Services.API
         private readonly HttpClient _httpClient;
         private readonly ITokenStorage _tokenStorage;
 
+        private readonly JsonSerializerOptions _jsonOptions;
+
         public ApiService(ITokenStorage tokenStorage)
         {
             _httpClient = new HttpClient();
             _tokenStorage = tokenStorage;
+
+            _jsonOptions = new();
+            _jsonOptions.Converters.Add(new DateTimeConverter());
         }
 
         public async Task<bool> LoadTokenFromAsync()
@@ -60,8 +66,7 @@ namespace EJournalAutomate.Services.API
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var apiResponse = JsonSerializer.Deserialize<ApiResponse<AuthResult>>(json);
+            var apiResponse = JsonSerializer.Deserialize<ApiResponse<AuthResult>>(json, _jsonOptions);
 
             if (apiResponse == null)
             {
@@ -98,8 +103,7 @@ namespace EJournalAutomate.Services.API
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var apiResponse = JsonSerializer.Deserialize<ApiResponse<MessageListResult>>(json);
+            var apiResponse = JsonSerializer.Deserialize<ApiResponse<MessageListResult>>(json, _jsonOptions);
 
             if (apiResponse == null)
             {
@@ -136,8 +140,7 @@ namespace EJournalAutomate.Services.API
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var apiResponse = JsonSerializer.Deserialize<ApiResponse<MessageInfoResult>>(json);
+            var apiResponse = JsonSerializer.Deserialize<ApiResponse<MessageInfoResult>>(json, _jsonOptions);
 
             if (apiResponse == null)
             {
@@ -220,14 +223,18 @@ namespace EJournalAutomate.Services.API
                                 {
 
                                     if (userElement.TryGetProperty("lastname", out JsonElement lastnameEl)
-                                        && userElement.TryGetProperty("firstname", out JsonElement firstnameEl))
+                                        && userElement.TryGetProperty("firstname", out JsonElement firstnameEl)
+                                        && userElement.TryGetProperty("name", out JsonElement id))
                                     {
                                     var user = new User
                                     {
-                                            GroupName = groupName,
+                                            ID = id.GetString(),
+
                                             LastName = lastnameEl.GetString(),
                                             FirstName = firstnameEl.GetString(),
-                                            MiddleName = userElement.TryGetProperty("middlename", out JsonElement middlenameEl) ? middlenameEl.GetString() : null
+                                            MiddleName = userElement.TryGetProperty("middlename", out JsonElement middlenameEl) ? middlenameEl.GetString() : null,
+
+                                            GroupName = groupName
                                     };
                                     students.Add(user);
                                 }

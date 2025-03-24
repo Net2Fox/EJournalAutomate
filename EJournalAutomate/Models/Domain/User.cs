@@ -4,6 +4,8 @@ namespace EJournalAutomate.Models.Domain
 {
     public class User
     {
+        [JsonPropertyName("name")]
+        public required string ID { get; set; }
 
         [JsonPropertyName("lastname")]
         public required string LastName { get; set; }

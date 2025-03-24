@@ -49,7 +49,7 @@ namespace EJournalAutomate.Services.Download
                 }
                 catch (Exception ex)
                 {
-                    // TODO Logger.LogError($"Ошибка при скачивании файлов сообщения {message.ID}: {ex.Message}");
+                    throw new Exception($"Ошибка при скачивании файлов сообщения {message.ID}: {ex.Message}");
                 }
                 await Task.Delay(100);
             }
@@ -62,7 +62,7 @@ namespace EJournalAutomate.Services.Download
             string? subDirectory = null;
             string? filename = null;
 
-            var user = _userRepository.Users.FirstOrDefault(u => u.FullName == message.UserFrom.FullName);
+            var user = _userRepository.Users.FirstOrDefault(u => u.ID.Equals(message.UserFrom.ID));
 
             if (user == null)
             {
@@ -83,7 +83,6 @@ namespace EJournalAutomate.Services.Download
 
             if (messageInfo.Files.Count > 1)
             {
-                // TODO Использовать Path.GetInvalidPathChars?
                 subDirectory = Regex.Replace(messageInfo.Subject, @"[<>:""|?*]", string.Empty);
                 if (subDirectory.Length > 30)
                 {
@@ -97,7 +96,7 @@ namespace EJournalAutomate.Services.Download
             {
                 if (_settingsStorage.SaveDate)
                 {
-                    filename = $"{messageInfo.Date}";// TODO .ToString("dd.MM HH-mm")}";
+                    filename = $"{messageInfo.Date.ToString("dd.MM HH-mm")}";
                 }
                 else
                 {

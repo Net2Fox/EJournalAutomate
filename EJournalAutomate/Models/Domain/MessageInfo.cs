@@ -26,6 +26,6 @@ namespace EJournalAutomate.Models.Domain
         public required string Subject { get; set; }
 
         [JsonPropertyName("date")]
-        public required string Date { get; set; }
+        public required DateTime Date { get; set; }
     }
 }
