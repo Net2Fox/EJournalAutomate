@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.Input;
 using EJournalAutomate.Services.API;
 using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Views.Pages;
+using System.Text;
+using System.Windows;
 
 namespace EJournalAutomate.ViewModels
 {
@@ -43,6 +45,24 @@ namespace EJournalAutomate.ViewModels
         [RelayCommand]
         private async Task AuthenticateAsync()
         {
+            StringBuilder errorsString = new StringBuilder();
+
+            if (string.IsNullOrWhiteSpace(Login))
+            {
+                errorsString.AppendLine("Введите логин!");
+            }
+
+            if (string.IsNullOrWhiteSpace(Password))
+            {
+                errorsString.AppendLine("Введите пароль!");
+            }
+
+            if (errorsString.Length > 0)
+            {
+                ErrorMessage = errorsString.ToString();
+                return;
+            }
+
             try
             {
                 await _apiService.AuthenticateAsync(Login, Password);
