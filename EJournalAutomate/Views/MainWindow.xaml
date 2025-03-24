@@ -3,12 +3,28 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:EJournalAutomate" xmlns:vm="clr-namespace:EJournalAutomate.ViewModels"
+        xmlns:local="clr-namespace:EJournalAutomate" xmlns:vm="clr-namespace:EJournalAutomate.ViewModels" d:DataContext="{d:DesignInstance Type=vm:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="EJournal Automate"
         WindowStartupLocation="CenterScreen"
         Height="450" Width="800"
         MinHeight="450" MinWidth="600"
         Loaded="MainWindow_Loaded">
-    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu x:Name="MainMenu" Height="20" VerticalAlignment="Top" Grid.Row="0">
+            <MenuItem Header="Файл" Height="20">
+                <MenuItem x:Name="RedownloadDataMenuItem" IsCheckable="False" Header="Повторно получить данные" IsEnabled="False"/>
+                <MenuItem x:Name="AboutMenuItem" IsCheckable="False" Header="О программе"/>
+            </MenuItem>
+            <MenuItem x:Name="SettingsMenuItem" Header="Настройки" Height="20" IsEnabled="True">
+                <MenuItem x:Name="ChangeSaveDirectoryMenuItem" IsCheckable="False" Header="Указать новую папку для скачивания писем" Height="20"/>
+                <MenuItem x:Name="SaveDateMenuItem" Header="Сохранение времени отправки файла в названии" IsCheckable="True" IsChecked="{Binding SaveDate}" Command="{Binding ToggleSaveDateCommand}" Height="20"/>
+            </MenuItem>
+        </Menu>
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Grid.Row="1"/>
+    </Grid>
 </Window>

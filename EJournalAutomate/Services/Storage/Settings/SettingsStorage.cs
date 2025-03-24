@@ -36,6 +36,10 @@ namespace EJournalAutomate.Services.Storage.Settings
 
                 }
             }
+            else
+            {
+                await SaveSettings();
+            }
         }
 
         public async Task SaveSettings()

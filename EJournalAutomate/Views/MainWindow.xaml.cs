@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using EJournalAutomate.Services.API;
 using EJournalAutomate.Services.Navigation;
+using EJournalAutomate.ViewModels;
 using EJournalAutomate.Views.Pages;
 using System.Windows;
 
@@ -14,6 +15,9 @@ namespace EJournalAutomate.Views
         public MainWindow()
         {
             InitializeComponent();
+
+            DataContext = Ioc.Default.GetService<MainWindowViewModel>()
+                ?? throw new InvalidOperationException("Не удалось получить MainWindowViewModel из DI контейнера.");
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
