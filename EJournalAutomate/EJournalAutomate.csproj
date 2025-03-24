@@ -11,6 +11,12 @@
 	<Product>EJournal Automate</Product>
 	<AssemblyName>EJournal Automate</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
   <ItemGroup>
     <Content Include="Images\favicon.ico" />
   </ItemGroup>
