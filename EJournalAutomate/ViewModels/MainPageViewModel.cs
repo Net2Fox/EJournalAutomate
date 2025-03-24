@@ -112,10 +112,10 @@ namespace EJournalAutomate.ViewModels
 
             _localStorage.Messages.CollectionChanged += _messages_CollectionChanged;
 
-            Task.Run(async () => await InitializeAsync());
+            InitializeAsync();
         }
 
-        private async Task InitializeAsync()
+        private async void InitializeAsync()
         {
             await _localStorage.InitializeAsync();
         }
