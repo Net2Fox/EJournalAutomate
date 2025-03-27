@@ -10,7 +10,7 @@
         MaxHeight="150" MaxWidth="400" MinHeight="150" MinWidth="400">
 
     <StackPanel Orientation="Horizontal" Margin="20,20,0,20">
-        <Image Source="/Images/favicon.ico" Width="70" Height="70"/>
+        <Image Source="/Images/icon.ico" Width="70" Height="70"/>
         <StackPanel Margin="30,0,0,0" VerticalAlignment="Center" Width="260">
             <TextBlock Text="EJournal Automate" FontWeight="Bold"/>
             <TextBlock Text="Программа для просмотра и скачивания писем с ЭлЖур" TextWrapping="Wrap"/>
