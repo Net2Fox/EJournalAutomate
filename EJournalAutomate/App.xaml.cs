@@ -20,6 +20,8 @@ namespace EJournalAutomate
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
                 .AddSingleton<IMessenger>(WeakReferenceMessenger.Default)
@@ -39,6 +41,12 @@ namespace EJournalAutomate
                 .BuildServiceProvider());
 
             base.OnStartup(e);
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var ex = e.ExceptionObject as Exception;
+            MessageBox.Show($"Произошла непредвиденная ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
