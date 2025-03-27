@@ -17,11 +17,18 @@
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
                 <TextBlock Text="by Net2Fox" FontSize="9"/>
                 <TextBlock FontSize="9" Margin="10,0,0,0">
-                <Hyperlink
-                    NavigateUri="https://github.com/Net2Fox/EJournalAutomate"
-                    RequestNavigate="Hyperlink_RequestNavigate">
-                    Исходный код
-                </Hyperlink>
+                    <Hyperlink
+                        NavigateUri="https://github.com/Net2Fox/EJournalAutomate"
+                        RequestNavigate="Hyperlink_RequestNavigate">
+                        Исходный код
+                    </Hyperlink>
+                </TextBlock>
+                <TextBlock FontSize="9" Margin="10,0,0,0">
+                     <Hyperlink
+                        NavigateUri="https://eljur.ru"
+                        RequestNavigate="Hyperlink_RequestNavigate">
+                        Сайт ЭлЖур
+                     </Hyperlink>
                 </TextBlock>
             </StackPanel>
         </StackPanel>
