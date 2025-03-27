@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using EJournalAutomate.Services.API;
 using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Views.Pages;
+using Microsoft.Extensions.Logging;
 using System.Text;
 using System.Windows;
 
@@ -13,6 +14,7 @@ namespace EJournalAutomate.ViewModels
     {
         private readonly IApiService _apiService;
         private readonly INavigationService _navigationService;
+        private readonly ILogger<LoginViewModel> _logger;
 
         private string? _login;
         public string? Login
@@ -42,15 +44,20 @@ namespace EJournalAutomate.ViewModels
             set => SetProperty(ref _token, value);
         }
 
-        public LoginViewModel(IApiService apiService, INavigationService navigationService)
+        public LoginViewModel(IApiService apiService, INavigationService navigationService, ILogger<LoginViewModel> logger)
         {
             _apiService = apiService;
             _navigationService = navigationService;
+            _logger = logger;
+
+            _logger.LogDebug("LoginViewModel создана");
         }
 
         [RelayCommand]
         private async Task AuthenticateAsync()
         {
+            _logger.LogInformation("Начата авторизация");
+
             StringBuilder errorsString = new StringBuilder();
 
             if (string.IsNullOrWhiteSpace(Login))
@@ -66,16 +73,23 @@ namespace EJournalAutomate.ViewModels
             if (errorsString.Length > 0)
             {
                 ErrorMessage = errorsString.ToString();
+
+                _logger.LogInformation(errorsString.ToString());
+
                 return;
             }
 
             try
             {
                 await _apiService.AuthenticateAsync(Login, Password);
+
+                _logger.LogInformation("Успешная авторизация");
+
                 _navigationService.NavigateTo(typeof(MainPage));
             }
             catch (Exception ex)
             {
+                _logger.LogError(exception:ex, "Ошибка авторизации");
                 ErrorMessage = ex.Message;
             }
         }
