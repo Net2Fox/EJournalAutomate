@@ -56,14 +56,23 @@ namespace EJournalAutomate.Services.API
                 throw new ApiException("Ошибка при выполнении запроса на аутентификацию.", ex);
             }
 
-            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            {
-                throw new ApiException("Логин и пароль указан неверно.");
-            }
+            //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            //{
+            //    throw new ApiException("Логин и пароль указан неверно.");
+            //}
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                try
+                {
+                    var errorJson = await response.Content.ReadAsStringAsync();
+                    var errorApiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(errorJson, _jsonOptions);
+                    throw new ApiException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
+                }
+                catch (JsonException)
+                {
+                    throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                }
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -100,7 +109,16 @@ namespace EJournalAutomate.Services.API
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                try
+                {
+                    var errorJson = await response.Content.ReadAsStringAsync();
+                    var errorApiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(errorJson, _jsonOptions);
+                    throw new ApiException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
+                }
+                catch (JsonException)
+                {
+                    throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                }
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -117,7 +135,7 @@ namespace EJournalAutomate.Services.API
             }
             else
             {
-                throw new Exception($"Ошибка API: {apiResponse?.Response?.Error}");
+                throw new ApiException($"Ошибка API: {apiResponse?.Response?.Error}");
             }
         }
 
@@ -137,7 +155,16 @@ namespace EJournalAutomate.Services.API
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                try
+                {
+                    var errorJson = await response.Content.ReadAsStringAsync();
+                    var errorApiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(errorJson, _jsonOptions);
+                    throw new ApiException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
+                }
+                catch (JsonException)
+                {
+                    throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                }
             }
 
             var json = await response.Content.ReadAsStringAsync();
@@ -154,7 +181,7 @@ namespace EJournalAutomate.Services.API
             }
             else
             {
-                throw new Exception($"Ошибка API: {apiResponse?.Response?.Error}");
+                throw new ApiException($"Ошибка API: {apiResponse?.Response?.Error}");
             }
         }
 
@@ -174,7 +201,16 @@ namespace EJournalAutomate.Services.API
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                try
+                {
+                    var errorJson = await response.Content.ReadAsStringAsync();
+                    var errorApiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(errorJson, _jsonOptions);
+                    throw new ApiException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
+                }
+                catch (JsonException)
+                {
+                    throw new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                }
             }
 
             var json = await response.Content.ReadAsStringAsync();
