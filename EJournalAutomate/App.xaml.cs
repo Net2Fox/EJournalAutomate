@@ -7,9 +7,13 @@ using EJournalAutomate.Services.API;
 using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Services.UI;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Windows;
 using EJournalAutomate.Repositories;
 using CommunityToolkit.Mvvm.Messaging;
+using System.IO;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using EJournalAutomate.Services.Logger;
 
 namespace EJournalAutomate
 {
@@ -20,10 +24,17 @@ namespace EJournalAutomate
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            var logPath = Path.Combine(Environment.CurrentDirectory, "logs", "app.log");
+
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             Ioc.Default.ConfigureServices(
                 new ServiceCollection()
+                .AddLogging(builder =>
+                {
+                    builder.AddProvider(new FileLoggerProvider(logPath));
+                    builder.SetMinimumLevel(LogLevel.Information);
+                })
                 .AddSingleton<IMessenger>(WeakReferenceMessenger.Default)
                 .AddSingleton<ITokenStorage, TokenStorage>()
                 .AddSingleton<IApiService, ApiService>()
@@ -49,5 +60,4 @@ namespace EJournalAutomate
             MessageBox.Show($"Произошла непредвиденная ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
-
 }
