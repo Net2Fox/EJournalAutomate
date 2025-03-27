@@ -26,6 +26,7 @@ namespace EJournalAutomate.Services.API
         public ApiService(ITokenStorage tokenStorage)
         {
             _httpClient = new HttpClient();
+            _httpClient.Timeout = TimeSpan.FromSeconds(30);
             _tokenStorage = tokenStorage;
 
             _jsonOptions = new();
@@ -226,8 +227,8 @@ namespace EJournalAutomate.Services.API
                                         && userElement.TryGetProperty("firstname", out JsonElement firstnameEl)
                                         && userElement.TryGetProperty("name", out JsonElement id))
                                     {
-                                    var user = new User
-                                    {
+                                        var user = new User
+                                        {
                                             ID = id.GetString(),
 
                                             LastName = lastnameEl.GetString(),
@@ -235,11 +236,11 @@ namespace EJournalAutomate.Services.API
                                             MiddleName = userElement.TryGetProperty("middlename", out JsonElement middlenameEl) ? middlenameEl.GetString() : null,
 
                                             GroupName = groupName
-                                    };
-                                    students.Add(user);
+                                        };
+                                        students.Add(user);
+                                    }
                                 }
                             }
-                        }
                         }
                         break;
                     }
