@@ -28,10 +28,19 @@ namespace EJournalAutomate.Services.Download
         }
         private void EnsureDirectoryExists(string directory)
         {
-            _logger.LogInformation($"Проверка, существует ли директория: {Directory.Exists(directory)}, {directory}");
             if (!Directory.Exists(directory))
             {
-                Directory.CreateDirectory(directory);
+                _logger.LogDebug($"Создание директории: {directory}");
+                try
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                catch (Exception ex)
+                {
+                    var exception = new Exception($"Ошибка при создании директории: {directory}", ex);
+                    _logger.LogError(exception, $"Ошибка при создании директории: {directory}");
+                    throw exception;
+                }
             }
         }
 
