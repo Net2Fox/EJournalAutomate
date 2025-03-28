@@ -1,14 +1,14 @@
 ﻿using EJournalAutomate.Services.Storage.Token;
 using EJournalAutomate.Exceptions;
+using EJournalAutomate.Helpers;
 using EJournalAutomate.Models.API.Requests;
 using EJournalAutomate.Models.API.Responses;
 using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Services.Storage.Token;
+using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using EJournalAutomate.Helpers;
-using Microsoft.Extensions.Logging;
-using System.Windows.Xps;
 
 namespace EJournalAutomate.Services.API
 {
@@ -65,11 +65,6 @@ namespace EJournalAutomate.Services.API
                 _logger.LogError(exception: apiException, "Ошибка при входе");
                 throw apiException;
             }
-
-            //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            //{
-            //    throw new ApiException("Логин и пароль указан неверно.");
-            //}
 
             if (!response.IsSuccessStatusCode)
             {
