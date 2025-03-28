@@ -1,10 +1,12 @@
-﻿using System.IO;
+﻿using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace EJournalAutomate.Services.Storage.Settings
 {
     public class SettingsStorage : ISettingsStorage
     {
         private readonly string _settingsPath = Path.Combine(Environment.CurrentDirectory, "settings");
+        private readonly ILogger<SettingsStorage> _logger;
 
         private string _savePath = Path.Combine(Environment.CurrentDirectory, "Письма");
         public string SavePath => _savePath;
@@ -12,8 +14,16 @@ namespace EJournalAutomate.Services.Storage.Settings
         private bool _saveDate = false;
         public bool SaveDate => _saveDate;
 
+        public SettingsStorage(ILogger<SettingsStorage> logger)
+        {
+            _logger = logger;
+
+            _logger.LogInformation("SettingsStorage инициализирован");
+        }
+
         public async Task LoadSettings()
         {
+            _logger.LogInformation("Попытка загрузить настройки");
             if (File.Exists(_settingsPath))
             {
                 string settingsContent = await File.ReadAllTextAsync(_settingsPath);
@@ -33,18 +43,36 @@ namespace EJournalAutomate.Services.Storage.Settings
                             _saveDate = result;
                         }
                     }
-
+                    _logger.LogInformation("Настройки успешно загружены");
+                }
+                else
+                {
+                    _logger.LogInformation("Файл с настройками отсутствует, создание нового файла");
+                    await SaveSettings();
                 }
             }
             else
             {
+                _logger.LogInformation("Файл с настройками отсутствует, создание нового файла");
                 await SaveSettings();
             }
         }
 
         public async Task SaveSettings()
         {
-            await File.WriteAllTextAsync(_settingsPath, $"{_savePath}\n{_saveDate}");
+            _logger.LogInformation("Попытка сохранения настроек");
+            try
+            {
+                await File.WriteAllTextAsync(_settingsPath, $"{_savePath}\n{_saveDate}");
+                _logger.LogInformation("Настройки успешно сохранены");
+            }
+            catch (Exception ex)
+            {
+                var exception = new Exception("Не удалось сохранить настройки", ex);
+                _logger.LogError(ex, "Не удалось сохранить настройки");
+                throw exception;
+            }
+
         }
 
         public void SetSavePath(string savePath)
