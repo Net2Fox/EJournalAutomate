@@ -1,11 +1,8 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using EJournalAutomate.Services.Storage.Cache;
-using EJournalAutomate.Helpers;
-using EJournalAutomate.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
 using EJournalAutomate.Services.API;
+using EJournalAutomate.Services.Storage.Cache;
+using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.Messaging;
-using EJournalAutomate.Messages;
 
 namespace EJournalAutomate.Repositories
 {
@@ -13,18 +10,24 @@ namespace EJournalAutomate.Repositories
     {
         private readonly IApiService _apiService;
         private readonly ICacheService _cacheService;
+        private readonly ILogger<UserRepository> _logger;
 
         private readonly ObservableCollection<User> _users = new();
         public ObservableCollection<User> Users => _users;
 
-        public UserRepository(IApiService apiService, ICacheService cacheService)
+        public UserRepository(IApiService apiService, ICacheService cacheService, ILogger<UserRepository> logger)
         {
             _apiService = apiService;
             _cacheService = cacheService;
+            _logger = logger;
+
+            _logger.LogInformation("UserRepository инициализирован");
         }
 
         public async Task LoadUsersAsync()
         {
+            _logger.LogInformation("Попытка загрузки пользователей");
+
             try
             {
                 List<User> users;
@@ -45,10 +48,14 @@ namespace EJournalAutomate.Repositories
                 {
                     _users.Add(user);
                 }
+
+                _logger.LogInformation("Пользователи успешно загружены");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Ошибка загрузки пользователей: {ex.Message}");
+                var exception = new Exception($"Ошибка загрузки пользователей: {ex.Message}");
+                _logger.LogError(exception, "Ошибка загрузки пользователей");
+                throw exception;
             }
         }
     }
