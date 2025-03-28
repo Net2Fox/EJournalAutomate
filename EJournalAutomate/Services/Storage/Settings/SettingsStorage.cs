@@ -101,7 +101,7 @@ namespace EJournalAutomate.Services.Storage.Settings
         public void SetSaveLogs(bool saveLogs)
         {
             _saveLogs = saveLogs;
-            LoggingService.SaveLogsToFile = saveLogs;
+            LoggingService.SetSettingsSaveLogs(saveLogs);
         }
 
         private bool IsValidPath(string path)

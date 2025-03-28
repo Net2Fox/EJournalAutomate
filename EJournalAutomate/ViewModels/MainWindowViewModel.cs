@@ -66,7 +66,6 @@ namespace EJournalAutomate.ViewModels
             try
             {
                 _settingsStorage.SetSaveLogs(SaveLogs);
-                LoggingService.SetSettingsLoaded(SaveLogs);
                 await _settingsStorage.SaveSettings();
                 _logger.LogInformation($"Настройка логов изменена: {SaveLogs}");
             }

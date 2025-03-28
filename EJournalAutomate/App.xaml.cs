@@ -71,7 +71,7 @@ namespace EJournalAutomate
                     {
                         await settingsService.LoadSettings();
                         Application.Current.Dispatcher.Invoke(() => {
-                            LoggingService.SaveLogsToFile = settingsService.SaveLogs;
+                            LoggingService.SetSettingsSaveLogs(settingsService.SaveLogs);
                         });
                     });
                 }

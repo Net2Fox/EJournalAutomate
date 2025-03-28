@@ -27,18 +27,6 @@ namespace EJournalAutomate.Services.Logger
             _categoryName = categoryName;
         }
 
-        public static bool SaveLogsToFile
-        {
-            get => _saveLogsToFile;
-            set
-            {
-                if (!_settingsLoaded)
-                    SetSettingsLoaded(value);
-                else
-                    _saveLogsToFile = value;
-            }
-        }
-
         public IDisposable BeginScope<TState>(TState state) => default!;
         public bool IsEnabled(LogLevel logLevel) => true;
 
@@ -66,7 +54,7 @@ namespace EJournalAutomate.Services.Logger
             }
         }
 
-        public static void SetSettingsLoaded(bool saveToFile)
+        public static void SetSettingsSaveLogs(bool saveToFile)
         {
             lock (_fileLock)
             {
