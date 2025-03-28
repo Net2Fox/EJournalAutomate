@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using EJournalAutomate.Services.Logger;
+using Microsoft.Extensions.Logging;
 using System.IO;
 
 namespace EJournalAutomate.Services.Storage.Settings
@@ -13,6 +14,9 @@ namespace EJournalAutomate.Services.Storage.Settings
 
         private bool _saveDate = false;
         public bool SaveDate => _saveDate;
+
+        private bool _saveLogs = false;
+        public bool SaveLogs => _saveLogs;
 
         public SettingsStorage(ILogger<SettingsStorage> logger)
         {
@@ -29,7 +33,7 @@ namespace EJournalAutomate.Services.Storage.Settings
                 string settingsContent = await File.ReadAllTextAsync(_settingsPath);
                 string[] settings = settingsContent.Split("\n");
 
-                if (settings.Length == 2)
+                if (settings.Length == 3)
                 {
                     if (!string.IsNullOrEmpty(settings[0]) && IsValidPath(settings[0]))
                     {
@@ -43,6 +47,15 @@ namespace EJournalAutomate.Services.Storage.Settings
                             _saveDate = result;
                         }
                     }
+
+                    if (!string.IsNullOrEmpty(settings[2]))
+                    {
+                        if (bool.TryParse(settings[2], out bool result))
+                        {
+                            _saveLogs = result;
+                        }
+                    }
+
                     _logger.LogInformation("Настройки успешно загружены");
                 }
                 else
@@ -83,6 +96,12 @@ namespace EJournalAutomate.Services.Storage.Settings
         public void SetSaveDate(bool saveDate)
         {
             _saveDate = saveDate;
+        }
+
+        public void SetSaveLogs(bool saveLogs)
+        {
+            _saveLogs = saveLogs;
+            LoggingService.SaveLogsToFile = saveLogs;
         }
 
         private bool IsValidPath(string path)
