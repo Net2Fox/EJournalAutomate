@@ -76,7 +76,7 @@ namespace EJournalAutomate.Services.Storage.Settings
             _logger.LogInformation("Попытка сохранения настроек");
             try
             {
-                await File.WriteAllTextAsync(_settingsPath, $"{_savePath}\n{_saveDate}");
+                await File.WriteAllTextAsync(_settingsPath, $"{_savePath}\n{_saveDate}\n{_saveLogs}");
                 _logger.LogInformation("Настройки успешно сохранены");
             }
             catch (Exception ex)

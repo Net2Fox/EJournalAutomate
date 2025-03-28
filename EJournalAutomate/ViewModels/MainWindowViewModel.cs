@@ -20,14 +20,13 @@ namespace EJournalAutomate.ViewModels
             _settingsStorage = settingsStorage;
             _logger = logger;
 
-            InitializeAsync();
+            Initialize();
         }
 
-        private async void InitializeAsync()
+        private void Initialize()
         {
             try
             {
-                await _settingsStorage.LoadSettings();
                 SaveDate = _settingsStorage.SaveDate;
                 _logger.LogDebug("MainWindowViewModel инициализирована");
             }

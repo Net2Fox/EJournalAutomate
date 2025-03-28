@@ -68,7 +68,7 @@ namespace EJournalAutomate
                 var settingsService = Ioc.Default.GetService<ISettingsStorage>();
                 if (settingsService != null)
                 {
-                    settingsService.LoadSettings().Wait();
+                    settingsService.LoadSettings();
                     LoggingService.SaveLogsToFile = settingsService.SaveLogs;
                 }
             }

@@ -13,7 +13,7 @@ namespace EJournalAutomate.Services.Logger
     {
         private readonly string _logFilePath;
         private readonly string _categoryName;
-        private static readonly ConcurrentQueue<string> _memoryLogs = new(capacity: 1000);
+        private static readonly ConcurrentQueue<string> _memoryLogs = new();
         private static readonly object _fileLock = new object();
 
         private static bool _saveLogsToFile;
@@ -24,10 +24,6 @@ namespace EJournalAutomate.Services.Logger
         {
             _logFilePath = path;
             _categoryName = categoryName;
-
-            var logDir = Path.GetDirectoryName(_logFilePath);
-            if (!Directory.Exists(logDir) && logDir != null)
-                Directory.CreateDirectory(logDir);
         }
 
         public static bool SaveLogsToFile
@@ -52,6 +48,10 @@ namespace EJournalAutomate.Services.Logger
 
             if (_saveLogsToFile || logLevel >= LogLevel.Critical)
             {
+                var logDir = Path.GetDirectoryName(_logFilePath);
+                if (!Directory.Exists(logDir) && logDir != null)
+                    Directory.CreateDirectory(logDir);
+
                 lock (_fileLock)
                 {
                     File.AppendAllText(_logFilePath, message + Environment.NewLine);
@@ -61,6 +61,10 @@ namespace EJournalAutomate.Services.Logger
 
         public static void SaveLogsOnCrash(string path)
         {
+            var logDir = Path.GetDirectoryName(path);
+            if (!Directory.Exists(logDir) && logDir != null)
+                Directory.CreateDirectory(logDir);
+
             lock (_fileLock)
             {
                 var allLogs = new StringBuilder();
