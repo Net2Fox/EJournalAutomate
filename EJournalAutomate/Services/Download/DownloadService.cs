@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using EJournalAutomate.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace EJournalAutomate.Services.Download
 {
@@ -14,15 +15,20 @@ namespace EJournalAutomate.Services.Download
         private readonly ISettingsStorage _settingsStorage;
         private readonly IApiService _apiService;
         private readonly IUserRepository _userRepository;
+        private readonly ILogger<DownloadService> _logger;
 
-        public DownloadService(ISettingsStorage settingsStorage, IApiService apiService, IUserRepository userRepository)
+        public DownloadService(ISettingsStorage settingsStorage, IApiService apiService, IUserRepository userRepository, ILogger<DownloadService> logger)
         {
             _settingsStorage = settingsStorage;
             _apiService = apiService;
             _userRepository = userRepository;
+
+            _logger = logger;
+            _logger.LogInformation("DownloadService инициализирован");
         }
         private void EnsureDirectoryExists(string directory)
         {
+            _logger.LogInformation($"Проверка, существует ли директория: {Directory.Exists(directory)}, {directory}");
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
@@ -31,6 +37,8 @@ namespace EJournalAutomate.Services.Download
 
         public async Task DownloadMessagesAsync(List<Message> messages, IProgress<(int current, int total)>? progress = null)
         {
+            _logger.LogInformation($"Скачивание сообщений: {messages.Count()}");
+
             if (messages == null || messages.Count == 0) return;
 
             EnsureDirectoryExists(_settingsStorage.SavePath);
@@ -49,7 +57,9 @@ namespace EJournalAutomate.Services.Download
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Ошибка при скачивании файлов сообщения {message.ID}: {ex.Message}");
+                    var exception = new Exception($"Ошибка при скачивании файлов сообщения {message.ID}: {ex.Message}");
+                    _logger.LogError(exception, "Ошибка при скачивании сообщений");
+                    throw exception;
                 }
                 await Task.Delay(100);
             }
@@ -57,6 +67,8 @@ namespace EJournalAutomate.Services.Download
 
         private async Task DownloadMessageFilesAsync(Message message, HttpClient httpClient)
         {
+            _logger.LogInformation($"Попытка скачать сообщение: {message.ID}");
+
             string? group = null;
             string? student = null;
             string? subDirectory = null;
@@ -121,6 +133,7 @@ namespace EJournalAutomate.Services.Download
 
                 byte[] fileBytes = await httpClient.GetByteArrayAsync(file.Link);
                 await System.IO.File.WriteAllBytesAsync(filename, fileBytes);
+                _logger.LogInformation($"Сообщение успешно скачано: {message.ID}");
             }
         }
     }
