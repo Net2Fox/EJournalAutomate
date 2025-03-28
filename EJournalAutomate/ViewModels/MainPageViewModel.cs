@@ -7,6 +7,7 @@ using System.Windows.Data;
 using EJournalAutomate.Repositories;
 using CommunityToolkit.Mvvm.Messaging;
 using EJournalAutomate.Messages;
+using Microsoft.Extensions.Logging;
 
 namespace EJournalAutomate.ViewModels
 {
@@ -17,6 +18,7 @@ namespace EJournalAutomate.ViewModels
     {
         private readonly ILocalStorage _localStorage;
         private readonly IDownloadService _downloadService;
+        private readonly ILogger<MainPageViewModel> _logger;
 
         private bool _isLoading = true;
         public bool IsLoading
@@ -96,11 +98,12 @@ namespace EJournalAutomate.ViewModels
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
 
-        public MainPageViewModel(ILocalStorage localStorage, IDownloadService downloadService, IMessenger messenger)
+        public MainPageViewModel(ILocalStorage localStorage, IDownloadService downloadService, IMessenger messenger, ILogger<MainPageViewModel> logger)
             : base(messenger)
         {
             _localStorage = localStorage;
             _downloadService = downloadService;
+            _logger = logger;
 
             IsActive = true;
 
@@ -115,6 +118,7 @@ namespace EJournalAutomate.ViewModels
         private async void InitializeAsync()
         {
             await _localStorage.InitializeAsync();
+            _logger.LogDebug("MainPageViewModel инициализирована");
         }
 
         [RelayCommand]
@@ -122,6 +126,7 @@ namespace EJournalAutomate.ViewModels
         {
             if (int.TryParse(MessageLimit, out int limit) && limit > 0)
             {
+                _logger.LogInformation($"Обновление сообщений по новому лимиту: {limit}");
                 try
                 {
                     await _localStorage.RefreshMessagesAsync(limit);
@@ -129,6 +134,7 @@ namespace EJournalAutomate.ViewModels
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, $"Ошибка при обновлении сообщений");
                     LoadingMessage = $"Ошибка при обновлении сообщений: {ex.Message}";
                 }
             }
@@ -171,6 +177,7 @@ namespace EJournalAutomate.ViewModels
         private void ApplyFilters()
         {
             FilteredMessages.Refresh();
+            _logger.LogDebug($"Применены фильтры: Поиск='{SearchText}', Статус={SelectedStatusIndex}");
         }
 
         [RelayCommand]
@@ -192,6 +199,7 @@ namespace EJournalAutomate.ViewModels
                 }
                 IsAllSelected = false;
             }
+            _logger.LogInformation($"Пользователь {(IsAllSelected ? "выбрал" : "снял выбор со")} всех сообщений. Затронуто: {_localStorage.Messages.Count}");
         }
 
         [RelayCommand(CanExecute = nameof(CanDownloadMessages))]
@@ -199,10 +207,12 @@ namespace EJournalAutomate.ViewModels
         {
             try
             {
+                _logger.LogInformation("Попытка скачать выбранные сообщения");
                 var messagesToDownload = _localStorage.Messages.Where(m => m.Selected && m.WithFiles).ToList();
 
                 if (messagesToDownload.Count == 0)
                 {
+                    _logger.LogInformation("Нет выбранных сообщений");
                     return;
                 }
 
@@ -226,9 +236,11 @@ namespace EJournalAutomate.ViewModels
 
                 ApplyFilters();
                 IsLoading = false;
+                _logger.LogInformation("Выбранные сообщения успешно скачаны");
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Ошибка при скачивании");
                 LoadingMessage = $"Ошибка при скачивании: {ex.Message}";
             }
         }
