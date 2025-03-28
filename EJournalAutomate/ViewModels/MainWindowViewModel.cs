@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EJournalAutomate.Services.Logger;
 using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomate.Views.Windows;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,9 @@ namespace EJournalAutomate.ViewModels
         [ObservableProperty]
         private bool _saveDate;
 
+        [ObservableProperty]
+        private bool _saveLogs;
+
         public MainWindowViewModel(ISettingsStorage settingsStorage, ILogger<MainWindowViewModel> logger)
         {
             _settingsStorage = settingsStorage;
@@ -28,6 +32,7 @@ namespace EJournalAutomate.ViewModels
             try
             {
                 SaveDate = _settingsStorage.SaveDate;
+                SaveLogs = _settingsStorage.SaveLogs;
                 _logger.LogDebug("MainWindowViewModel инициализирована");
             }
             catch (Exception ex)
@@ -53,6 +58,23 @@ namespace EJournalAutomate.ViewModels
                 _logger.LogError(ex, $"Настройка даты не изменена");
             }
 
+        }
+
+        [RelayCommand]
+        private async Task ToggleSaveLogs()
+        {
+            try
+            {
+                _settingsStorage.SetSaveLogs(SaveLogs);
+                LoggingService.SetSettingsLoaded(SaveLogs);
+                await _settingsStorage.SaveSettings();
+                _logger.LogInformation($"Настройка логов изменена: {SaveLogs}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                _logger.LogError(ex, $"Настройка логов не изменена");
+            }
         }
 
         [RelayCommand]

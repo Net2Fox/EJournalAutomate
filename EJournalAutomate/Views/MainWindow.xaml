@@ -23,6 +23,7 @@
             <MenuItem x:Name="SettingsMenuItem" Header="Настройки" Height="20" IsEnabled="True">
                 <MenuItem x:Name="ChangeSaveDirectoryMenuItem" IsCheckable="False" Header="Указать новую папку для скачивания писем" Height="20"/>
                 <MenuItem x:Name="SaveDateMenuItem" Header="Сохранение времени отправки файла в названии" IsCheckable="True" IsChecked="{Binding SaveDate}" Command="{Binding ToggleSaveDateCommand}" Height="20"/>
+                <MenuItem Header="Сохранение логов" IsCheckable="True" IsChecked="{Binding SaveLogs}" Command="{Binding ToggleSaveLogsCommand}" Height="20"/>
             </MenuItem>
         </Menu>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Grid.Row="1"/>

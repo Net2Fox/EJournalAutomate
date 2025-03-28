@@ -61,15 +61,19 @@ namespace EJournalAutomate
                 .BuildServiceProvider());
 
                 _logger = Ioc.Default.GetRequiredService<ILogger<App>>();
-
                 _logger.LogInformation($"--- Приложение запущено v{typeof(App).Assembly.GetName().Version} ---");
                 _logger.LogInformation($"Платформа: {Environment.OSVersion}, .NET: {Environment.Version}");
 
                 var settingsService = Ioc.Default.GetService<ISettingsStorage>();
                 if (settingsService != null)
                 {
-                    settingsService.LoadSettings();
-                    LoggingService.SaveLogsToFile = settingsService.SaveLogs;
+                    Task.Run(async () =>
+                    {
+                        await settingsService.LoadSettings();
+                        Application.Current.Dispatcher.Invoke(() => {
+                            LoggingService.SaveLogsToFile = settingsService.SaveLogs;
+                        });
+                    });
                 }
             }
             catch (Exception ex)
