@@ -25,10 +25,11 @@ namespace EJournalAutomate
     public partial class App : Application
     {
         private ILogger<App>? _logger;
+        private string _logPath;
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            var logPath = Path.Combine(Environment.CurrentDirectory, "logs", "app.log");
+            _logPath = Path.Combine(Environment.CurrentDirectory, "logs", "app.log");
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             DispatcherUnhandledException += App_DispatcherUnhandledException;
@@ -40,7 +41,7 @@ namespace EJournalAutomate
                 new ServiceCollection()
                 .AddLogging(builder =>
                 {
-                    builder.AddProvider(new FileLoggerProvider(logPath));
+                    builder.AddProvider(new LoggingServiceProvider(_logPath));
                     builder.SetMinimumLevel(LogLevel.Information);
                 })
                 .AddSingleton<IMessenger>(WeakReferenceMessenger.Default)
@@ -63,11 +64,18 @@ namespace EJournalAutomate
 
                 _logger.LogInformation($"--- Приложение запущено v{typeof(App).Assembly.GetName().Version} ---");
                 _logger.LogInformation($"Платформа: {Environment.OSVersion}, .NET: {Environment.Version}");
+
+                var settingsService = Ioc.Default.GetService<ISettingsStorage>();
+                if (settingsService != null)
+                {
+                    settingsService.LoadSettings().Wait();
+                    LoggingService.SaveLogsToFile = settingsService.SaveLogs;
+                }
             }
             catch (Exception ex)
             {
                 var errorMsg = $"Критическая ошибка при инициализации приложения: {ex}";
-                File.AppendAllText(logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [CRITICAL] {errorMsg}{Environment.NewLine}");
+                File.AppendAllText(_logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [CRITICAL] {errorMsg}{Environment.NewLine}");
                 MessageBox.Show($"Не удалось запустить приложение: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 Shutdown(-1);
                 return;
@@ -78,27 +86,54 @@ namespace EJournalAutomate
 
         private void App_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            _logger?.LogCritical(e.Exception, "Необработанное исключение в UI потоке");
+            HandleCriticalException(e.Exception);
             e.Handled = true;
         }
 
         private void TaskScheduler_UnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
         {
-            _logger?.LogCritical(e.Exception, "Необработанное исключение в асинхронной задаче");
+            HandleCriticalException(e.Exception);
             e.SetObserved();
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            var ex = e.ExceptionObject as Exception;
-            _logger?.LogCritical(ex, "Необработанное исключение в домене приложения. Фатальное: {Fatal}", e.IsTerminating);
-            MessageBox.Show($"Произошла непредвиденная ошибка: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            HandleCriticalException(e.ExceptionObject as Exception);
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
             _logger?.LogInformation($"--- Приложение завершено с кодом {e.ApplicationExitCode} ---");
             base.OnExit(e);
+        }
+
+        private void HandleCriticalException(Exception exception)
+        {
+            var crashLogPath = Path.Combine(
+                Path.GetDirectoryName(_logPath) ?? Environment.CurrentDirectory,
+                $"crash_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log");
+
+            try
+            {
+                LoggingService.SaveLogsOnCrash(crashLogPath);
+
+                var logger = Ioc.Default.GetService<ILogger<App>>();
+                logger?.LogCritical(exception, "Необработанное исключение в приложении");
+
+                MessageBox.Show(
+                    $"Произошла критическая ошибка: {exception.Message}\n\nДетали сохранены в лог: {crashLogPath}",
+                    "Ошибка приложения",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch
+            {
+                MessageBox.Show(
+                    $"Критическая ошибка: {exception.Message}",
+                    "Ошибка приложения",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
     }
 }

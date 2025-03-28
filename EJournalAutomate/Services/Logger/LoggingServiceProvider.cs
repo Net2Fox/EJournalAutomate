@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace EJournalAutomate.Services.Logger
 {
-    public class FileLoggerProvider : ILoggerProvider
+    public class LoggingServiceProvider : ILoggerProvider
     {
         private readonly string _logFilePath;
 
-        public FileLoggerProvider(string path)
+        public LoggingServiceProvider(string path)
         {
             _logFilePath = path;
         }
 
-        public ILogger CreateLogger(string categoryName) => new FileLogger(_logFilePath, categoryName);
+        public ILogger CreateLogger(string categoryName) => new LoggingService(_logFilePath, categoryName);
         public void Dispose() { }
     }
 }
