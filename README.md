@@ -34,8 +34,8 @@
 Этот проект использует следующие библиотеки с открытым исходным кодом:
 
 - **CommunityToolkit.Mvvm** - лицензируется под MIT License. См. [CommunityToolkit.Mvvm License](https://github.com/CommunityToolkit/dotnet?tab=License-1-ov-file#mit-license-mit).
-- **Microsoft.Extensions.DependencyInjection** - лицензируется под BSD License. См. [Microsoft.Extensions.DependencyInjection License](https://github.com/dotnet/runtime?tab=MIT-1-ov-file).
-- **Microsoft.Extensions.Logging** - лицензируется под BSD License. См. [Microsoft.Extensions.Logging License](https://github.com/dotnet/runtime?tab=MIT-1-ov-file).
+- **Microsoft.Extensions.DependencyInjection** - лицензируется под MIT License. См. [Microsoft.Extensions.DependencyInjection License](https://github.com/dotnet/runtime?tab=MIT-1-ov-file).
+- **Microsoft.Extensions.Logging** - лицензируется под MIT License. См. [Microsoft.Extensions.Logging License](https://github.com/dotnet/runtime?tab=MIT-1-ov-file).
 
 ## Лицензия
 Этот проект находится под лицензией MIT. Подробности см. в файле [LICENSE](LICENSE).
