@@ -44,6 +44,15 @@ namespace EJournalAutomate.ViewModels
             set => SetProperty(ref _token, value);
         }
 
+        private string _vendor;
+
+        public string Vendor
+        {
+            get => _vendor;
+            set => SetProperty(ref _vendor, value);
+        }
+
+
         public LoginViewModel(IApiService apiService, INavigationService navigationService, ILogger<LoginViewModel> logger)
         {
             _apiService = apiService;
@@ -59,6 +68,11 @@ namespace EJournalAutomate.ViewModels
             _logger.LogInformation("Начата авторизация");
 
             StringBuilder errorsString = new StringBuilder();
+
+            if (string.IsNullOrWhiteSpace(Vendor))
+            {
+                errorsString.AppendLine("Введите поддомен учебного заведения!");
+            }
 
             if (string.IsNullOrWhiteSpace(Login))
             {
@@ -81,7 +95,7 @@ namespace EJournalAutomate.ViewModels
 
             try
             {
-                await _apiService.AuthenticateAsync(Login, Password);
+                await _apiService.AuthenticateAsync(Login, Password, Vendor);
 
                 _logger.LogInformation("Успешная авторизация");
 

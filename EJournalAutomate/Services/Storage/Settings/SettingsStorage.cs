@@ -18,11 +18,15 @@ namespace EJournalAutomate.Services.Storage.Settings
         private bool _saveLogs = false;
         public bool SaveLogs => _saveLogs;
 
+        private string _vendor = string.Empty;
+
+        public string Vendor => _vendor;
+
         public SettingsStorage(ILogger<SettingsStorage> logger)
         {
             _logger = logger;
 
-            _logger.LogInformation("SettingsStorage инициализирован");
+            _logger.LogDebug("SettingsStorage инициализирована");
         }
 
         public async Task LoadSettings()
@@ -33,7 +37,7 @@ namespace EJournalAutomate.Services.Storage.Settings
                 string settingsContent = await File.ReadAllTextAsync(_settingsPath);
                 string[] settings = settingsContent.Split("\n");
 
-                if (settings.Length == 3)
+                if (settings.Length == 4)
                 {
                     if (!string.IsNullOrEmpty(settings[0]) && IsValidPath(settings[0]))
                     {
@@ -53,6 +57,14 @@ namespace EJournalAutomate.Services.Storage.Settings
                         if (bool.TryParse(settings[2], out bool result))
                         {
                             _saveLogs = result;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(settings[3]))
+                    {
+                        if (!string.IsNullOrWhiteSpace(settings[3]))
+                        {
+                            _vendor = settings[3];
                         }
                     }
 
@@ -76,7 +88,7 @@ namespace EJournalAutomate.Services.Storage.Settings
             _logger.LogInformation("Попытка сохранения настроек");
             try
             {
-                await File.WriteAllTextAsync(_settingsPath, $"{_savePath}\n{_saveDate}\n{_saveLogs}");
+                await File.WriteAllTextAsync(_settingsPath, $"{_savePath}\n{_saveDate}\n{_saveLogs}\n{_vendor}");
                 _logger.LogInformation("Настройки успешно сохранены");
             }
             catch (Exception ex)
@@ -102,6 +114,11 @@ namespace EJournalAutomate.Services.Storage.Settings
         {
             _saveLogs = saveLogs;
             LoggingService.SetSettingsSaveLogs(saveLogs);
+        }
+
+        public void SetVendor(string vendor)
+        {
+            _vendor = vendor;
         }
 
         private bool IsValidPath(string path)
