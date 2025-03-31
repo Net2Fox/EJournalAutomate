@@ -13,7 +13,7 @@ namespace EJournalAutomate.Services.API
 {
     public class ApiService : IApiService
     {
-        private const string BaseUrl = "https://kip.eljur.ru/apiv3";
+        private const string BaseUrl = "https://api.eljur.ru/api";
         private const string DevKey = "YourDevKey";
         private const string Vendor = "kip";
 
