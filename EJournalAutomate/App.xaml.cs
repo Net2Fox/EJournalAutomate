@@ -80,9 +80,7 @@ namespace EJournalAutomate
             }
             catch (Exception ex)
             {
-                var errorMsg = $"Критическая ошибка при инициализации приложения: {ex}";
-                File.AppendAllText(_logPath, $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} [CRITICAL] {errorMsg}{Environment.NewLine}");
-                MessageBox.Show($"Не удалось запустить приложение: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandleCriticalException(ex);
                 Shutdown(-1);
                 return;
             }
@@ -121,10 +119,11 @@ namespace EJournalAutomate
 
             try
             {
-                LoggingService.SaveLogsOnCrash(crashLogPath);
 
                 var logger = Ioc.Default.GetService<ILogger<App>>();
                 logger?.LogCritical(exception, "Необработанное исключение в приложении");
+
+                LoggingService.SaveLogsOnCrash(crashLogPath);
 
                 MessageBox.Show(
                     $"Произошла критическая ошибка: {exception.Message}\n\nДетали сохранены в лог: {crashLogPath}",

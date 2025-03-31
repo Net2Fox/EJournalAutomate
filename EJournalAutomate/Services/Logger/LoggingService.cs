@@ -41,7 +41,7 @@ namespace EJournalAutomate.Services.Logger
             _memoryLogs.Enqueue(message);
             while (_memoryLogs.Count > MaxMemoryLogs && _memoryLogs.TryDequeue(out _)) { }
 
-            if (_saveLogsToFile || logLevel >= LogLevel.Critical)
+            if (_saveLogsToFile)
             {
                 lock (_fileLock)
                 {
