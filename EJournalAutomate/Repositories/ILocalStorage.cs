@@ -6,7 +6,7 @@ namespace EJournalAutomate.Repositories
 {
     public interface ILocalStorage
     {
-        ObservableCollection<Message> Messages { get; }
+        ObservableCollection<Models.Domain.Message> Messages { get; }
         ObservableCollection<User> Users { get; }
 
         Task InitializeAsync();

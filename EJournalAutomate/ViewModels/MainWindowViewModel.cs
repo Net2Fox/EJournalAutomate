@@ -5,6 +5,7 @@ using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomate.Views.Windows;
 using Microsoft.Extensions.Logging;
 using System.Windows;
+using MessageBox = System.Windows.MessageBox;
 
 namespace EJournalAutomate.ViewModels
 {
@@ -12,6 +13,9 @@ namespace EJournalAutomate.ViewModels
     {
         private readonly ISettingsStorage _settingsStorage;
         private readonly ILogger<MainWindowViewModel> _logger;
+
+        [ObservableProperty]
+        private string _savePath;
 
         [ObservableProperty]
         private bool _saveDate;
@@ -31,6 +35,7 @@ namespace EJournalAutomate.ViewModels
         {
             try
             {
+                SavePath = _settingsStorage.SavePath;
                 SaveDate = _settingsStorage.SaveDate;
                 SaveLogs = _settingsStorage.SaveLogs;
                 _logger.LogDebug("MainWindowViewModel инициализирована");
@@ -82,6 +87,29 @@ namespace EJournalAutomate.ViewModels
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.ShowDialog();
             _logger.LogInformation("Окно \"О программе\" успешно открыто");
+        }
+
+        [RelayCommand]
+        private async Task ShowWindowDirectorySettingsAsync()
+        {
+            DirectorySettingsWindow settingsWindow = new DirectorySettingsWindow();
+            _logger.LogInformation("Окно \"Настройки\" успешно открыто");
+            settingsWindow.SavePath = SavePath;
+            if (settingsWindow.ShowDialog() == true)
+            {
+                SavePath = settingsWindow.SavePath;
+                try
+                {
+                    _settingsStorage.SetSavePath(SavePath);
+                    await _settingsStorage.SaveSettings();
+                    _logger.LogInformation($"Настройка пути скачивания: {SavePath}");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _logger.LogError(ex, $"Настройка пути скачивания не изменена");
+                }
+            }
         }
     }
 }

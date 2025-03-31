@@ -1,5 +1,4 @@
-﻿using EJournalAutomate.Services.Storage.Token;
-using EJournalAutomate.Exceptions;
+﻿using EJournalAutomate.Exceptions;
 using EJournalAutomate.Helpers;
 using EJournalAutomate.Models.API.Requests;
 using EJournalAutomate.Models.API.Responses;
@@ -110,7 +109,7 @@ namespace EJournalAutomate.Services.API
             }
         }
 
-        public async Task<List<Message>> GetMessagesAsync(int limit = 20)
+        public async Task<List<Models.Domain.Message>> GetMessagesAsync(int limit = 20)
         {
             _logger.LogInformation($"Попытка получить список сообщений, лимит: {limit}");
 

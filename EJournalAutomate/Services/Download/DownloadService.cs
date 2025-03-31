@@ -44,7 +44,7 @@ namespace EJournalAutomate.Services.Download
             }
         }
 
-        public async Task DownloadMessagesAsync(List<Message> messages, IProgress<(int current, int total)>? progress = null)
+        public async Task DownloadMessagesAsync(List<Models.Domain.Message> messages, IProgress<(int current, int total)>? progress = null)
         {
             _logger.LogInformation($"Скачивание сообщений: {messages.Count()}");
 
@@ -74,7 +74,7 @@ namespace EJournalAutomate.Services.Download
             }
         }
 
-        private async Task DownloadMessageFilesAsync(Message message, HttpClient httpClient)
+        private async Task DownloadMessageFilesAsync(Models.Domain.Message message, HttpClient httpClient)
         {
             _logger.LogInformation($"Попытка скачать сообщение: {message.ID}");
 

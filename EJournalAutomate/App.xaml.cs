@@ -16,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using EJournalAutomate.Services.Logger;
 using System.Windows.Threading;
 using System;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace EJournalAutomate
 {

@@ -6,7 +6,7 @@ namespace EJournalAutomate.Repositories
 {
     public interface IMessageRepository
     {
-        ObservableCollection<Message> Messages { get; }
+        ObservableCollection<Models.Domain.Message> Messages { get; }
 
         Task LoadMessagesAsync(int limit = 20);
      }

@@ -8,6 +8,7 @@ using EJournalAutomate.Repositories;
 using CommunityToolkit.Mvvm.Messaging;
 using EJournalAutomate.Messages;
 using Microsoft.Extensions.Logging;
+using Message = EJournalAutomate.Models.Domain.Message;
 
 namespace EJournalAutomate.ViewModels
 {
