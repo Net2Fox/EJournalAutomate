@@ -186,7 +186,7 @@ namespace EJournalAutomate.ViewModels
         {
             if (!IsAllSelected)
             {
-                foreach (Message message in _localStorage.Messages)
+                foreach (Message message in _filteredMessages)
                 {
                     message.Selected = true;
                 }
@@ -194,7 +194,7 @@ namespace EJournalAutomate.ViewModels
             }
             else
             {
-                foreach (Message message in _localStorage.Messages)
+                foreach (Message message in _filteredMessages)
                 {
                     message.Selected = false;
                 }
