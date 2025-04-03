@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CommunityToolkit.Mvvm.Messaging;
+using EJournalAutomate.Messages;
+using Microsoft.Extensions.Logging;
 using System.Windows.Controls;
 
 namespace EJournalAutomate.Services.Navigation
@@ -7,10 +9,12 @@ namespace EJournalAutomate.Services.Navigation
     {
         private Frame _frame;
         private readonly Dictionary<string, Type> _pages = new Dictionary<string, Type>();
+        private readonly IMessenger _messenger;
         private readonly ILogger<NavigationService> _logger;
 
-        public NavigationService(ILogger<NavigationService> logger)
+        public NavigationService(IMessenger messenger, ILogger<NavigationService> logger)
         {
+            _messenger = messenger;
             _logger = logger;
 
             _logger.LogInformation("NavigationService инициализирован");
@@ -54,6 +58,8 @@ namespace EJournalAutomate.Services.Navigation
 
             _frame.Navigate(page);
 
+            _messenger.Send(new NavigationMessage(pageType));
+
             _logger.LogInformation($"Переход на страницу прошёл успешно: {pageType}");
         }
 
@@ -70,6 +76,10 @@ namespace EJournalAutomate.Services.Navigation
             if (_frame.CanGoBack)
             {
                 _frame.GoBack();
+                if (_frame.Content is Page page)
+                {
+                    _messenger.Send(new NavigationMessage(page.GetType()));
+                }
                 _logger.LogInformation("Переход на страницу назад прошёл успешно");
             }
         }
