@@ -17,7 +17,7 @@ namespace EJournalAutomate.Models.Domain
         public string? MiddleName { get; set; }
 
         [JsonIgnore]
-        public string FullName => $"{LastName} {FirstName} {(!string.IsNullOrWhiteSpace(MiddleName) ? $"{MiddleName}" : string.Empty)}";
+        public string FullName => $"{LastName} {FirstName}{(!string.IsNullOrWhiteSpace(MiddleName) ? $" {MiddleName}" : "")}";
 
         [JsonIgnore]
         public string NameWithInitials => $"{LastName} {FirstName[0]}. {(!string.IsNullOrWhiteSpace(MiddleName) ? $"{MiddleName[0]}." : string.Empty)}";
