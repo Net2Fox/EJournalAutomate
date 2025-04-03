@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EJournalAutomate.Services.Download
 {
@@ -93,23 +94,20 @@ namespace EJournalAutomate.Services.Download
 
             student = messageInfo.User_From.FullName;
 
-            messageInfo.User_From.GroupName = user.GroupName;
-
-            group = messageInfo.User_From.GroupName;
-
-            EnsureDirectoryExists(Path.Combine(_settingsStorage.SavePath, group));
+            group = user.GroupName;
 
             EnsureDirectoryExists(Path.Combine(_settingsStorage.SavePath, group, student));
 
-            if (messageInfo.Files.Count > 1)
+            if (messageInfo.Files.Count > 1 || !IsOnlySignature(messageInfo.Text))
             {
                 subDirectory = Regex.Replace(messageInfo.Subject, @"[<>:""|?*]", string.Empty);
                 if (subDirectory.Length > 30)
                 {
                     subDirectory = subDirectory.Remove(30);
                 }
-
                 EnsureDirectoryExists(Path.Combine(_settingsStorage.SavePath, group, student, subDirectory));
+
+                await SaveMessageText(Path.Combine(_settingsStorage.SavePath, group, student, subDirectory), messageInfo.Text);
             }
 
             foreach (Models.Domain.File file in messageInfo.Files)
@@ -143,6 +141,31 @@ namespace EJournalAutomate.Services.Download
                 await System.IO.File.WriteAllBytesAsync(filename, fileBytes);
                 _logger.LogInformation($"Сообщение успешно скачано: {message.ID}");
             }
+        }
+
+        private async Task SaveMessageText(string directory, string text)
+        {
+            await System.IO.File.WriteAllTextAsync(Path.Combine(directory, "Сообщение.txt"), CleanAllHtmlTags(text));
+        }
+
+        private string CleanAllHtmlTags(string htmlText)
+        {
+            if (string.IsNullOrEmpty(htmlText))
+                return htmlText;
+
+            return Regex.Replace(htmlText, @"<.*?>", string.Empty);
+        }
+
+        private bool IsOnlySignature(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return false;
+
+            string cleanText = CleanAllHtmlTags(text);
+
+            cleanText = Regex.Replace(cleanText, @"\s+", " ").Trim();
+
+            return Regex.IsMatch(cleanText, @"^(-+\s*)?С уважением,\s+[\p{L}\s\-\.]+$", RegexOptions.IgnoreCase);
         }
     }
 }
