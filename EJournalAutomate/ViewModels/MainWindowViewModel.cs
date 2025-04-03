@@ -102,6 +102,7 @@ namespace EJournalAutomate.ViewModels
                 {
                     _settingsStorage.SetSavePath(SavePath);
                     await _settingsStorage.SaveSettings();
+                    System.Windows.MessageBox.Show("Путь успешно установлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     _logger.LogInformation($"Настройка пути скачивания: {SavePath}");
                 }
                 catch (Exception ex)

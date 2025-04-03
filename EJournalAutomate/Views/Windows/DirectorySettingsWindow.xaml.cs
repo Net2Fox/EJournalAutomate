@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -35,12 +36,10 @@ namespace EJournalAutomate.Views.Windows
 
         private void ChangeDirButton_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
-            if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            Microsoft.Win32.OpenFolderDialog folderDialog = new();
+            if (folderDialog.ShowDialog() == true)
             {
-                CurrentDirTextBox.Text = folderBrowserDialog.SelectedPath;
-
-                System.Windows.MessageBox.Show("Путь успешно установлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CurrentDirTextBox.Text = folderDialog.FolderName;
                 this.DialogResult = true;
             }
         }
