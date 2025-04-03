@@ -1,13 +1,19 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using EJournalAutomate.Messages;
+using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Services.Storage.Settings;
+using EJournalAutomate.Services.Storage.Token;
+using EJournalAutomate.Views.Pages;
 using EJournalAutomate.Views.Windows;
 using Microsoft.Extensions.Logging;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace EJournalAutomate.ViewModels
 {
-    public partial class MainWindowViewModel : ObservableObject
+    public partial class MainWindowViewModel : ObservableRecipient, IRecipient<NavigationMessage>
     {
         private readonly ISettingsStorage _settingsStorage;
         private readonly ILogger<MainWindowViewModel> _logger;
@@ -21,10 +27,16 @@ namespace EJournalAutomate.ViewModels
         [ObservableProperty]
         private bool _saveLogs;
 
-        public MainWindowViewModel(ISettingsStorage settingsStorage, ILogger<MainWindowViewModel> logger)
+        [ObservableProperty]
+        private bool _isSettingsMenuItemEnabled = true;
+
+        public MainWindowViewModel(ISettingsStorage settingsStorage, IMessenger messenger, ILogger<MainWindowViewModel> logger)
+            : base (messenger)
         {
             _settingsStorage = settingsStorage;
             _logger = logger;
+
+            IsActive = true;
 
             Initialize();
         }
@@ -108,6 +120,18 @@ namespace EJournalAutomate.ViewModels
                     MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     _logger.LogError(ex, $"Настройка пути скачивания не изменена");
                 }
+            }
+        }
+
+        public void Receive(NavigationMessage message)
+        {
+            if (message.NavigatedPageType == typeof(LoginPage))
+            {
+                IsSettingsMenuItemEnabled = false;
+            }
+            else
+            {
+                IsSettingsMenuItemEnabled = true;
             }
         }
     }

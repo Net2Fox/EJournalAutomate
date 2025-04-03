@@ -15,14 +15,13 @@
             <RowDefinition Height="20"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Menu x:Name="MainMenu" Height="20" VerticalAlignment="Top" Grid.Row="0">
+        <Menu Height="20" VerticalAlignment="Top" Grid.Row="0">
             <MenuItem Header="Файл" Height="20">
-                <MenuItem x:Name="RedownloadDataMenuItem" IsCheckable="False" Header="Повторно получить данные" IsEnabled="False"/>
-                <MenuItem x:Name="AboutMenuItem" IsCheckable="False" Command="{Binding ShowWindowAboutCommand}" Header="О программе"/>
+                <MenuItem IsCheckable="False" Command="{Binding ShowWindowAboutCommand}" Header="О программе"/>
             </MenuItem>
-            <MenuItem x:Name="SettingsMenuItem" Header="Настройки" Height="20" IsEnabled="True">
-                <MenuItem x:Name="ChangeSaveDirectoryMenuItem" IsCheckable="False" Header="Указать новую папку для скачивания писем" Height="20" Command="{Binding ShowWindowDirectorySettingsCommand}"/>
-                <MenuItem x:Name="SaveDateMenuItem" Header="Сохранение времени отправки файла в названии" IsCheckable="True" IsChecked="{Binding SaveDate}" Command="{Binding ToggleSaveDateCommand}" Height="20"/>
+            <MenuItem Header="Настройки" Height="20" IsEnabled="{Binding IsSettingsMenuItemEnabled}">
+                <MenuItem IsCheckable="False" Header="Указать новую папку для скачивания писем" Height="20" Command="{Binding ShowWindowDirectorySettingsCommand}"/>
+                <MenuItem Header="Сохранение времени отправки файла в названии" IsCheckable="True" IsChecked="{Binding SaveDate}" Command="{Binding ToggleSaveDateCommand}" Height="20"/>
                 <MenuItem Header="Сохранение логов" IsCheckable="True" IsChecked="{Binding SaveLogs}" Command="{Binding ToggleSaveLogsCommand}" Height="20"/>
             </MenuItem>
         </Menu>
