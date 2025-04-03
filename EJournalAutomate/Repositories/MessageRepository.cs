@@ -12,9 +12,9 @@ namespace EJournalAutomate.Repositories
         private readonly IDispatcherService _dispatcherService;
         private readonly ILogger<MessageRepository> _logger;
 
-        private readonly ObservableCollection<Models.Domain.Message> _messages = new();
+        private readonly ObservableCollection<Message> _messages = new();
 
-        public ObservableCollection<Models.Domain.Message> Messages => _messages;
+        public ObservableCollection<Message> Messages => _messages;
 
         public MessageRepository(IApiService apiService, IDispatcherService dispatcherService, ILogger<MessageRepository> logger)
         {

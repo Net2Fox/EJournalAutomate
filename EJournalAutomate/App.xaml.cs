@@ -1,23 +1,18 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
+using CommunityToolkit.Mvvm.Messaging;
+using EJournalAutomate.Repositories;
+using EJournalAutomate.Services.API;
 using EJournalAutomate.Services.Download;
+using EJournalAutomate.Services.Logger;
+using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Services.Storage.Cache;
 using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomate.Services.Storage.Token;
-using EJournalAutomate.Services.API;
-using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Services.UI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.Windows;
-using EJournalAutomate.Repositories;
-using CommunityToolkit.Mvvm.Messaging;
 using System.IO;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using EJournalAutomate.Services.Logger;
-using System.Windows.Threading;
-using System;
-using Application = System.Windows.Application;
-using MessageBox = System.Windows.MessageBox;
+using System.Windows;
 
 namespace EJournalAutomate
 {

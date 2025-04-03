@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EJournalAutomate.Services.Logger;
 using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomate.Views.Windows;
 using Microsoft.Extensions.Logging;
 using System.Windows;
-using MessageBox = System.Windows.MessageBox;
 
 namespace EJournalAutomate.ViewModels
 {
@@ -102,7 +100,7 @@ namespace EJournalAutomate.ViewModels
                 {
                     _settingsStorage.SetSavePath(SavePath);
                     await _settingsStorage.SaveSettings();
-                    System.Windows.MessageBox.Show("Путь успешно установлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Путь успешно установлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                     _logger.LogInformation($"Настройка пути скачивания: {SavePath}");
                 }
                 catch (Exception ex)

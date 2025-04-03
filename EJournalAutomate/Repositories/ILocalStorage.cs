@@ -1,12 +1,11 @@
-﻿using EJournalAutomate.Helpers;
-using EJournalAutomate.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
 using System.Collections.ObjectModel;
 
 namespace EJournalAutomate.Repositories
 {
     public interface ILocalStorage
     {
-        ObservableCollection<Models.Domain.Message> Messages { get; }
+        ObservableCollection<Message> Messages { get; }
         ObservableCollection<User> Users { get; }
 
         Task InitializeAsync();

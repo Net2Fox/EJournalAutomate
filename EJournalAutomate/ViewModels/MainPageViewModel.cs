@@ -1,14 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EJournalAutomate.Services.Download;
-using EJournalAutomate.Models.Domain;
-using System.ComponentModel;
-using System.Windows.Data;
-using EJournalAutomate.Repositories;
 using CommunityToolkit.Mvvm.Messaging;
 using EJournalAutomate.Messages;
+using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Repositories;
+using EJournalAutomate.Services.Download;
 using Microsoft.Extensions.Logging;
-using Message = EJournalAutomate.Models.Domain.Message;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace EJournalAutomate.ViewModels
 {

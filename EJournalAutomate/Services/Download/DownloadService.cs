@@ -1,12 +1,11 @@
-﻿using CommunityToolkit.Mvvm.DependencyInjection;
-using EJournalAutomate.Services.Storage.Settings;
-using EJournalAutomate.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Repositories;
 using EJournalAutomate.Services.API;
+using EJournalAutomate.Services.Storage.Settings;
+using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using EJournalAutomate.Repositories;
-using Microsoft.Extensions.Logging;
 
 namespace EJournalAutomate.Services.Download
 {
@@ -44,7 +43,7 @@ namespace EJournalAutomate.Services.Download
             }
         }
 
-        public async Task DownloadMessagesAsync(List<Models.Domain.Message> messages, IProgress<(int current, int total)>? progress = null)
+        public async Task DownloadMessagesAsync(List<Message> messages, IProgress<(int current, int total)>? progress = null)
         {
             _logger.LogInformation($"Скачивание сообщений: {messages.Count()}");
 
@@ -74,7 +73,7 @@ namespace EJournalAutomate.Services.Download
             }
         }
 
-        private async Task DownloadMessageFilesAsync(Models.Domain.Message message, HttpClient httpClient)
+        private async Task DownloadMessageFilesAsync(Message message, HttpClient httpClient)
         {
             _logger.LogInformation($"Попытка скачать сообщение: {message.ID}");
 

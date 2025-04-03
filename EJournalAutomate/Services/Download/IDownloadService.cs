@@ -4,6 +4,6 @@ namespace EJournalAutomate.Services.Download
 {
     public interface IDownloadService
     {
-        Task DownloadMessagesAsync(List<Models.Domain.Message> messages, IProgress<(int current, int total)> progress);
+        Task DownloadMessagesAsync(List<Message> messages, IProgress<(int current, int total)> progress);
     }
 }

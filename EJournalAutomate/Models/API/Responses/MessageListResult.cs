@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using EJournalAutomate.Models.Domain;
+using System.Text.Json.Serialization;
 
 namespace EJournalAutomate.Models.API.Responses
 {
@@ -11,6 +12,6 @@ namespace EJournalAutomate.Models.API.Responses
         public required int Count { get; set; }
 
         [JsonPropertyName("messages")]
-        public required List<Domain.Message> Messages { get; set; }
+        public required List<Message> Messages { get; set; }
     }
 }

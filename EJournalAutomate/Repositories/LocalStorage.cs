@@ -13,7 +13,7 @@ namespace EJournalAutomate.Repositories
         private readonly IMessenger _messenger;
         private readonly ILogger<LocalStorage> _logger;
 
-        public ObservableCollection<Models.Domain.Message> Messages => _messageRepository.Messages;
+        public ObservableCollection<Message> Messages => _messageRepository.Messages;
 
         public ObservableCollection<User> Users => _userRepository.Users;
 

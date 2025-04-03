@@ -1,12 +1,10 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
 using EJournalAutomate.Services.API;
 using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.Views.Pages;
 using Microsoft.Extensions.Logging;
 using System.Text;
-using System.Windows;
 
 namespace EJournalAutomate.ViewModels
 {

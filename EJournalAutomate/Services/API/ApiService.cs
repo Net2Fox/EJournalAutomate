@@ -27,8 +27,6 @@ namespace EJournalAutomate.Services.API
 
         private readonly JsonSerializerOptions _jsonOptions;
 
-
-
         public ApiService(ITokenStorage tokenStorage, ISettingsStorage settingsStorage, ILogger<ApiService> logger)
         {
             _httpClient = new HttpClient();
@@ -136,7 +134,7 @@ namespace EJournalAutomate.Services.API
             }
         }
 
-        public async Task<List<Models.Domain.Message>> GetMessagesAsync(int limit = 20)
+        public async Task<List<Message>> GetMessagesAsync(int limit = 20)
         {
             _logger.LogInformation($"Попытка получить список сообщений, лимит: {limit}");
 

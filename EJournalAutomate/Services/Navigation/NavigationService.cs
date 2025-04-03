@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Windows.Controls;
-using System.Windows.Media.Animation;
 
 namespace EJournalAutomate.Services.Navigation
 {

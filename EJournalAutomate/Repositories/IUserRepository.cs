@@ -1,5 +1,4 @@
-﻿using EJournalAutomate.Helpers;
-using EJournalAutomate.Models.Domain;
+﻿using EJournalAutomate.Models.Domain;
 using System.Collections.ObjectModel;
 
 namespace EJournalAutomate.Repositories
