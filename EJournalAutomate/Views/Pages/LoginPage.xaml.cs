@@ -17,7 +17,7 @@ namespace EJournalAutomate.Views.Pages
                 ?? throw new InvalidOperationException("Не удалось получить LoginViewModel из DI контейнера.");
         }
 
-        private void LoginButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void PasswordBox_PasswordChanged(object sender, System.Windows.RoutedEventArgs e)
         {
             if (this.DataContext is LoginViewModel vm)
             {

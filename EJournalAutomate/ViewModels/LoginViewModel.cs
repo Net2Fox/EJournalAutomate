@@ -14,42 +14,20 @@ namespace EJournalAutomate.ViewModels
         private readonly INavigationService _navigationService;
         private readonly ILogger<LoginViewModel> _logger;
 
-        private string? _login;
-        public string? Login
-        {
-            get => _login;
-            set => SetProperty(ref _login, value);
-        }
-
-        private string? _password;
-        public string? Password
-        {
-            get => _password;
-            set => SetProperty(ref _password, value);
-        }
-
-        private string? _errorMessage;
-        public string? ErrorMessage
-        {
-            get => _errorMessage;
-            set => SetProperty(ref _errorMessage, value);
-        }
-
-        private string? _token;
-        public string? Token
-        {
-            get => _token;
-            set => SetProperty(ref _token, value);
-        }
-
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(AuthenticateCommand))]
         private string _vendor;
 
-        public string Vendor
-        {
-            get => _vendor;
-            set => SetProperty(ref _vendor, value);
-        }
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(AuthenticateCommand))]
+        private string? _login;
 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(AuthenticateCommand))]
+        private string? _password;
+
+        [ObservableProperty]
+        private string? _errorMessage;
 
         public LoginViewModel(IApiService apiService, INavigationService navigationService, ILogger<LoginViewModel> logger)
         {
@@ -60,36 +38,10 @@ namespace EJournalAutomate.ViewModels
             _logger.LogDebug("LoginViewModel создана");
         }
 
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanAuthenticate))]
         private async Task AuthenticateAsync()
         {
             _logger.LogInformation("Начата авторизация");
-
-            StringBuilder errorsString = new StringBuilder();
-
-            if (string.IsNullOrWhiteSpace(Vendor))
-            {
-                errorsString.AppendLine("Введите поддомен учебного заведения!");
-            }
-
-            if (string.IsNullOrWhiteSpace(Login))
-            {
-                errorsString.AppendLine("Введите логин!");
-            }
-
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                errorsString.AppendLine("Введите пароль!");
-            }
-
-            if (errorsString.Length > 0)
-            {
-                ErrorMessage = errorsString.ToString();
-
-                _logger.LogInformation(errorsString.ToString());
-
-                return;
-            }
 
             try
             {
@@ -104,6 +56,11 @@ namespace EJournalAutomate.ViewModels
                 _logger.LogError(exception:ex, "Ошибка авторизации");
                 ErrorMessage = ex.Message;
             }
+        }
+
+        private bool CanAuthenticate()
+        {
+            return !string.IsNullOrWhiteSpace(Vendor) && !string.IsNullOrWhiteSpace(Login) && !string.IsNullOrWhiteSpace(Password);
         }
     }
 }
