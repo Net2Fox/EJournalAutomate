@@ -16,14 +16,12 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu Height="20" VerticalAlignment="Top" Grid.Row="0">
-            <MenuItem Header="Файл" Height="20">
-                <MenuItem IsCheckable="False" Command="{Binding ShowWindowAboutCommand}" Header="О программе"/>
-            </MenuItem>
             <MenuItem Header="Настройки" Height="20" IsEnabled="{Binding IsSettingsMenuItemEnabled}">
                 <MenuItem IsCheckable="False" Header="Указать новую папку для скачивания писем" Height="20" Command="{Binding ShowWindowDirectorySettingsCommand}"/>
                 <MenuItem Header="Сохранение времени отправки файла в названии" IsCheckable="True" IsChecked="{Binding SaveDate}" Command="{Binding ToggleSaveDateCommand}" Height="20"/>
                 <MenuItem Header="Сохранение логов" IsCheckable="True" IsChecked="{Binding SaveLogs}" Command="{Binding ToggleSaveLogsCommand}" Height="20"/>
             </MenuItem>
+            <MenuItem IsCheckable="False" Height="20" Command="{Binding ShowWindowAboutCommand}" Header="О программе"/>
         </Menu>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Grid.Row="1"/>
     </Grid>
