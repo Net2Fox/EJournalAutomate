@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace EJournalAutomate.Services.Download
 {
@@ -26,23 +25,6 @@ namespace EJournalAutomate.Services.Download
             _logger = logger;
             _logger.LogInformation("DownloadService инициализирован");
         }
-        private void EnsureDirectoryExists(string directory)
-        {
-            if (!Directory.Exists(directory))
-            {
-                _logger.LogDebug($"Создание директории: {directory}");
-                try
-                {
-                    Directory.CreateDirectory(directory);
-                }
-                catch (Exception ex)
-                {
-                    var exception = new Exception($"Ошибка при создании директории: {directory}", ex);
-                    _logger.LogError(exception, $"Ошибка при создании директории: {directory}");
-                    throw exception;
-                }
-            }
-        }
 
         public async Task DownloadMessagesAsync(List<Message> messages, IProgress<(int current, int total)>? progress = null)
         {
@@ -50,13 +32,10 @@ namespace EJournalAutomate.Services.Download
 
             if (messages == null || messages.Count == 0) return;
 
-            EnsureDirectoryExists(_settingsStorage.SavePath);
-
             using var httpClient = new HttpClient();
 
             for (int i = 0; i < messages.Count; i++)
             {
-
                 var message = messages[i];
                 progress?.Report((i + 1, messages.Count));
 
@@ -78,80 +57,84 @@ namespace EJournalAutomate.Services.Download
         {
             _logger.LogInformation($"Попытка скачать сообщение: {message.ID}");
 
-            string? group = null;
-            string? student = null;
-            string? subDirectory = null;
-            string? filename = null;
+            string? directory = null;
 
             var user = _userRepository.Users.FirstOrDefault(u => u.ID.Equals(message.UserFrom.ID));
 
-            if (user == null)
-            {
-                return;
-            }
+            if (user == null) return;
 
             MessageInfo messageInfo = await _apiService.GetMessageInfoAsync(message.ID);
 
-            student = messageInfo.User_From.FullName;
+            string studentFullName = messageInfo.User_From.FullName;
 
-            group = user.GroupName;
+            string? studentGroup = user.GroupName;
 
-            EnsureDirectoryExists(Path.Combine(_settingsStorage.SavePath, group, student));
+            if (studentGroup == null)
+            {
+                directory = Path.Combine(_settingsStorage.SavePath, studentFullName);
+            }
+            else
+            {
+                directory = Path.Combine(_settingsStorage.SavePath, studentGroup, studentFullName);
+            }
 
             if (messageInfo.Files.Count > 1 || !IsOnlySignature(messageInfo.Text))
             {
-                subDirectory = Regex.Replace(messageInfo.Subject, @"[<>:""|?*]", string.Empty);
-                if (subDirectory.Length > 30)
-                {
-                    subDirectory = subDirectory.Remove(30);
-                }
-                EnsureDirectoryExists(Path.Combine(_settingsStorage.SavePath, group, student, subDirectory));
+                string subDirectory = Regex.Replace(messageInfo.Subject, @"[<>:""|?*]", string.Empty);
 
-                await SaveMessageText(Path.Combine(_settingsStorage.SavePath, group, student, subDirectory), messageInfo.Text);
+                directory = Path.Combine(directory, subDirectory);
+
+                EnsureDirectoryExists(directory);
+
+                await System.IO.File.WriteAllTextAsync(Path.Combine(directory, "Сообщение.txt"), CleanAllHtmlTags(messageInfo.Text));
+            }
+            else
+            {
+                EnsureDirectoryExists(directory);
             }
 
             foreach (Models.Domain.File file in messageInfo.Files)
             {
+                string filename = Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty);
                 if (_settingsStorage.SaveDate)
                 {
-                    filename = $"{messageInfo.Date.ToString("dd.MM HH-mm")}";
-                }
-                else
-                {
-                    filename = "";
+                    filename = $"{messageInfo.Date.ToString("dd.MM HH-mm")} {filename}";
                 }
 
-                filename = $"{filename} {Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty)}";
+                string fullPath = Path.Combine(directory, filename);
 
-                if (subDirectory != null)
-                {
-                    filename = Path.Combine(_settingsStorage.SavePath, group, student, subDirectory, filename);
-                }
-                else
-                {
-                    filename = Path.Combine(_settingsStorage.SavePath, group, student, filename);
-                }
-
-                if (System.IO.File.Exists(filename))
-                {
-                    continue;
-                }
+                if (System.IO.File.Exists(fullPath)) continue;
 
                 byte[] fileBytes = await httpClient.GetByteArrayAsync(file.Link);
-                await System.IO.File.WriteAllBytesAsync(filename, fileBytes);
+                await System.IO.File.WriteAllBytesAsync(fullPath, fileBytes);
                 _logger.LogInformation($"Сообщение успешно скачано: {message.ID}");
             }
         }
 
-        private async Task SaveMessageText(string directory, string text)
+        private void EnsureDirectoryExists(string directory)
         {
-            await System.IO.File.WriteAllTextAsync(Path.Combine(directory, "Сообщение.txt"), CleanAllHtmlTags(text));
+            if (!Directory.Exists(directory))
+            {
+                _logger.LogDebug($"Создание директории: {directory}");
+                try
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                catch (Exception ex)
+                {
+                    var exception = new Exception($"Ошибка при создании директории: {directory}", ex);
+                    _logger.LogError(exception, $"Ошибка при создании директории: {directory}");
+                    throw exception;
+                }
+            }
         }
 
         private string CleanAllHtmlTags(string htmlText)
         {
             if (string.IsNullOrEmpty(htmlText))
+            {
                 return htmlText;
+            }
 
             return Regex.Replace(htmlText, @"<.*?>", string.Empty);
         }
@@ -159,7 +142,9 @@ namespace EJournalAutomate.Services.Download
         private bool IsOnlySignature(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
+            {
                 return false;
+            }
 
             string cleanText = CleanAllHtmlTags(text);
 
