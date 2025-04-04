@@ -14,16 +14,26 @@
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="140"/>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="130"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="130"/>
         </Grid.ColumnDefinitions>
-        <ComboBox Grid.Row="0" SelectedIndex="{Binding SelectedStatusIndex, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="16">
+        <ComboBox Grid.Row="0" Grid.Column="0" SelectedIndex="{Binding SelectedStatusIndex, Mode=TwoWay}" VerticalContentAlignment="Center" FontSize="14">
             <ComboBoxItem>Все</ComboBoxItem>
             <ComboBoxItem>Непрочитанные</ComboBoxItem>
             <ComboBoxItem>Прочитанные</ComboBoxItem>
         </ComboBox>
-        <TextBox Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Center" FontSize="14">
+        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding StudentGroups}" SelectedIndex="{Binding SelectedGroupIndex}" VerticalContentAlignment="Center" FontSize="14">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        <DatePicker Grid.Row="0" Grid.Column="2" SelectedDate="{Binding SelectedDate}" VerticalContentAlignment="Center" FontSize="14"/>
+        <TextBox Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="3" VerticalContentAlignment="Center" FontSize="14">
             <TextBox.Style>
                 <Style TargetType="TextBox">
                     <Style.Resources>
@@ -46,7 +56,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <TextBox Text="{Binding MessageLimit, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" FontSize="14" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="2">
+        <TextBox Text="{Binding MessageLimit, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" FontSize="14" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="4">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding ApplyLimitCommand}"/>
             </TextBox.InputBindings>
@@ -72,7 +82,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListView ItemsSource="{Binding FilteredMessages}" Grid.Row="1" Grid.ColumnSpan="3">
+        <ListView ItemsSource="{Binding FilteredMessages}" Grid.Row="1" Grid.ColumnSpan="5">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
@@ -127,9 +137,9 @@
                 </Style>
             </Button.Style>
         </Button>
-        <Button Grid.Column="2" Grid.Row="2" Content="Скачать" FontSize="14" Command="{Binding DownloadMessagesCommand}"/>
+        <Button Grid.Column="4" Grid.Row="2" Content="Скачать" FontSize="14" Command="{Binding DownloadMessagesCommand}"/>
 
-        <DockPanel Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <DockPanel Grid.RowSpan="3" Grid.ColumnSpan="5" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
             <DockPanel.Background>
                 <SolidColorBrush Color="Gray" Opacity="0.9"/>
             </DockPanel.Background>

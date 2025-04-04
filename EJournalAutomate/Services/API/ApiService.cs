@@ -255,7 +255,7 @@ namespace EJournalAutomate.Services.API
             }
         }
 
-        public async Task<List<User>> GetMessageReceivers()
+        public async Task<(List<User>, List<StudentGroup>)> GetMessageReceivers()
         {
             _logger.LogInformation("Попытка получить список пользователей");
 
@@ -292,7 +292,7 @@ namespace EJournalAutomate.Services.API
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            List<User> students = ExtractStudentsDirectly(json);
+            (List<User> students, List<StudentGroup> studentGroups) = ExtractStudentsDirectly(json);
 
             if (students == null)
             {
@@ -301,16 +301,17 @@ namespace EJournalAutomate.Services.API
                 throw apiException;
             }
             _logger.LogInformation("Список пользователей успешно получен");
-            return students;
+            return (students, studentGroups);
         }
 
         /*
          * Ручная обработка Json для метода GetMessageReceivers
          * Нужно, так как автоматическая десериализация очень медленная для обработки этого Json
          */
-        private List<User> ExtractStudentsDirectly(string jsonContent)
+        private (List<User>, List<StudentGroup>) ExtractStudentsDirectly(string jsonContent)
         {
             var students = new List<User>();
+            var studentGroups = new List<StudentGroup>();
 
             using JsonDocument document = JsonDocument.Parse(jsonContent);
 
@@ -353,6 +354,10 @@ namespace EJournalAutomate.Services.API
 
                                             GroupName = groupName
                                         };
+                                        if (studentGroups.FirstOrDefault(g => g.Name == groupName) == null)
+                                        {
+                                            studentGroups.Add(new StudentGroup { Name = groupName });
+                                        }
                                         students.Add(user);
                                     }
                                 }
@@ -362,7 +367,7 @@ namespace EJournalAutomate.Services.API
                     }
                 }
             }
-            return students;
+            return (students, studentGroups);
         }
     }
 }

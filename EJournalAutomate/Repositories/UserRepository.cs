@@ -13,7 +13,12 @@ namespace EJournalAutomate.Repositories
         private readonly ILogger<UserRepository> _logger;
 
         private readonly ObservableCollection<User> _users = new();
+
+        private readonly ObservableCollection<StudentGroup> _groups = new() { new StudentGroup { Name = "Все" } };
+
         public ObservableCollection<User> Users => _users;
+
+        public ObservableCollection<StudentGroup> Groups => _groups;
 
         public UserRepository(IApiService apiService, ICacheService cacheService, ILogger<UserRepository> logger)
         {
@@ -31,22 +36,28 @@ namespace EJournalAutomate.Repositories
             try
             {
                 List<User> users;
+                List<StudentGroup> studentGroups;
 
                 if (_cacheService.IsCacheAvailable)
                 {
-                    users = await _cacheService.LoadCache();
+                    (users, studentGroups) = await _cacheService.LoadCache();
                 }
                 else
                 {
-                    users = await _apiService.GetMessageReceivers();
-                    _cacheService.SaveCache(users);
+                    (users, studentGroups) = await _apiService.GetMessageReceivers();
+                    _cacheService.SaveCache(users, studentGroups);
                 }
 
-                _users.Clear();
+                Users.Clear();
 
                 foreach (var user in users)
                 {
-                    _users.Add(user);
+                    Users.Add(user);
+                }
+
+                foreach (var group in studentGroups)
+                {
+                    Groups.Add(group);
                 }
 
                 _logger.LogInformation("Пользователи успешно загружены");

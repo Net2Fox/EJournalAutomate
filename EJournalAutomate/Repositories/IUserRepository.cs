@@ -7,6 +7,8 @@ namespace EJournalAutomate.Repositories
     {
         ObservableCollection<User> Users { get; }
 
+        ObservableCollection<StudentGroup> Groups { get; }
+
         Task LoadUsersAsync();
     }
 }

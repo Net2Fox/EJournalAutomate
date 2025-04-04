@@ -6,7 +6,7 @@ namespace EJournalAutomate.Services.Storage.Cache
     {
         bool IsCacheAvailable { get; }
 
-        Task<List<User>> LoadCache();
-        void SaveCache(List<User> data);
+        Task<(List<User>, List<StudentGroup>)> LoadCache();
+        void SaveCache(List<User> users, List<StudentGroup> groups);
     }
 }

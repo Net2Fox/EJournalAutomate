@@ -7,6 +7,7 @@ namespace EJournalAutomate.Repositories
     {
         ObservableCollection<Message> Messages { get; }
         ObservableCollection<User> Users { get; }
+        ObservableCollection<StudentGroup> Groups { get; }
 
         Task InitializeAsync();
         Task RefreshMessagesAsync(int limit = 20);

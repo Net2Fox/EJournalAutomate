@@ -6,6 +6,7 @@ using EJournalAutomate.Models.Domain;
 using EJournalAutomate.Repositories;
 using EJournalAutomate.Services.Download;
 using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
 
@@ -63,6 +64,32 @@ namespace EJournalAutomate.ViewModels
             }
         }
 
+        private int _selectedGroupIndex = 0;
+        public int SelectedGroupIndex
+        {
+            get => _selectedGroupIndex;
+            set
+            {
+                if (SetProperty(ref _selectedGroupIndex, value))
+                {
+                    ApplyFilters();
+                }
+            }
+        }
+
+        private DateTime _selectedDate;
+        public DateTime SelectedDate
+        {
+            get => _selectedDate;
+            set
+            {
+                if (SetProperty(ref _selectedDate, value))
+                {
+                    ApplyFilters();
+                }
+            }
+        }
+
         private int _messageLimit = 20;
         public string MessageLimit
         {
@@ -94,6 +121,8 @@ namespace EJournalAutomate.ViewModels
             get => _isAllSelected;
             set => SetProperty(ref _isAllSelected, value);
         }
+
+        public ObservableCollection<StudentGroup> StudentGroups => _localStorage.Groups;
 
         private ICollectionView _filteredMessages;
         public ICollectionView FilteredMessages => _filteredMessages;
@@ -147,31 +176,39 @@ namespace EJournalAutomate.ViewModels
                 return false;
             }
 
+            bool passesSearchFilter = true;
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 string text = SearchText.ToLower();
-                bool containsText =
+                passesSearchFilter =
                     message.UserFrom.FirstName.ToLower().Contains(text) ||
                     message.UserFrom.LastName.ToLower().Contains(text) ||
                     (message.UserFrom.MiddleName != null && message.UserFrom.MiddleName.ToLower().Contains(text)) ||
                     message.Subject.ToLower().Contains(text);
-
-                if (!containsText)
-                {
-                    return false;
-                }
             }
 
+            bool passesStatusFilter = true;
             if (SelectedStatusIndex != 0)
             {
                 bool filterUnread = (SelectedStatusIndex == 1);
-                if (message.Unread != filterUnread)
-                {
-                    return false;
-                }
+                passesStatusFilter = (message.Unread == filterUnread);
             }
 
-            return true;
+            bool passesGroupFilter = true;
+            if (SelectedGroupIndex != 0)
+            {
+                passesGroupFilter = (message.UserFrom.GroupName == StudentGroups[SelectedGroupIndex].Name);
+            }
+
+            bool passesDateFilter = true;
+            if (SelectedDate.Year != 0001)
+            {
+                passesDateFilter = (message.Date.Year == SelectedDate.Year &&
+                                  message.Date.Month == SelectedDate.Month &&
+                                  message.Date.Day == SelectedDate.Day);
+            }
+
+            return passesSearchFilter && passesStatusFilter && passesGroupFilter && passesDateFilter;
         }
 
         private void ApplyFilters()

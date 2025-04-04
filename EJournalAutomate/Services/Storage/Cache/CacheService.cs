@@ -10,6 +10,11 @@ namespace EJournalAutomate.Services.Storage.Cache
         private readonly string _savePath = Path.Combine(Environment.CurrentDirectory, "cache.json");
         private readonly ILogger<CacheService> _logger;
 
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            IncludeFields = true
+        };
+
         public CacheService(ILogger<CacheService> logger)
         {
             _logger = logger;
@@ -19,17 +24,17 @@ namespace EJournalAutomate.Services.Storage.Cache
 
         public bool IsCacheAvailable => System.IO.File.Exists(_savePath);
 
-        public async Task<List<User>> LoadCache()
+        public async Task<(List<User>, List<StudentGroup>)> LoadCache()
         {
             _logger.LogInformation("Попытка загрузить данные из кэша");
             if (IsCacheAvailable)
             {
                 string json = await System.IO.File.ReadAllTextAsync(_savePath);
-                List<User> data = JsonSerializer.Deserialize<List<User>>(json);
-                if (data != null && data.Count > 0)
+                (List<User> users, List<StudentGroup> groups)= JsonSerializer.Deserialize<(List<User>, List<StudentGroup>)>(json, _jsonOptions);
+                if ((users != null && users.Count > 0) && (groups != null && groups.Count > 0))
                 {
                     _logger.LogInformation("Данные из кэша успешно загружены");
-                    return data;
+                    return (users, groups);
                 }
                 else
                 {
@@ -47,13 +52,13 @@ namespace EJournalAutomate.Services.Storage.Cache
             }
         }
 
-        public async void SaveCache(List<User> data)
+        public async void SaveCache(List<User> users, List<StudentGroup> groups)
         {
             _logger.LogInformation("Попытка сохранить кэш");
 
             try
             {
-                string json = JsonSerializer.Serialize<object>(data);
+                string json = JsonSerializer.Serialize<(List<User>, List<StudentGroup>)>((users, groups), _jsonOptions);
                 await System.IO.File.WriteAllTextAsync(_savePath, json);
             }
             catch (Exception ex)

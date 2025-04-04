@@ -17,6 +17,8 @@ namespace EJournalAutomate.Repositories
 
         public ObservableCollection<User> Users => _userRepository.Users;
 
+        public ObservableCollection<StudentGroup> Groups => _userRepository.Groups;
+
         public LocalStorage(IMessageRepository messageRepository, IUserRepository userRepository, IMessenger messenger, ILogger<LocalStorage> logger)
         {
             _messageRepository = messageRepository;
@@ -39,6 +41,15 @@ namespace EJournalAutomate.Repositories
                     _messageRepository.LoadMessagesAsync(),
                     _userRepository.LoadUsersAsync()
                 );
+                foreach (Message message in _messageRepository.Messages)
+                {
+                    User? user = _userRepository.Users.FirstOrDefault(u => u.ID == message.UserFrom.ID);
+                    if (user != null)
+                    {
+                        message.UserFrom.GroupName = user.GroupName;
+                    }
+                }
+                _messageRepository.Messages.Select(m => m.UserFrom.GroupName = _userRepository.Users.FirstOrDefault(u => u.ID == m.UserFrom.ID)?.GroupName);
                 _logger.LogInformation("Данные успешно загружены");
                 _messenger.Send(new StatusMessage(string.Empty, false));
             }
@@ -57,7 +68,15 @@ namespace EJournalAutomate.Repositories
 
             try
             {
-                await _messageRepository.LoadMessagesAsync(limit);
+                await Task.WhenAll(_messageRepository.LoadMessagesAsync(limit));
+                foreach (Message message in _messageRepository.Messages)
+                {
+                    User? user = _userRepository.Users.FirstOrDefault(u => u.ID == message.UserFrom.ID);
+                    if (user != null)
+                    {
+                        message.UserFrom.GroupName = user.GroupName;
+                    }
+                }
                 _logger.LogInformation("Сообщения успешно обновлены");
                 _messenger.Send(new StatusMessage(string.Empty, false));
             }
