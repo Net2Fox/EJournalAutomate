@@ -16,6 +16,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="140"/>
             <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="16"/>
             <ColumnDefinition Width="130"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="130"/>
@@ -32,8 +33,9 @@
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
-        <DatePicker Grid.Row="0" Grid.Column="2" SelectedDate="{Binding SelectedDate}" VerticalContentAlignment="Center" FontSize="14"/>
-        <TextBox Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="3" VerticalContentAlignment="Center" FontSize="14">
+        <CheckBox IsChecked="{Binding IsDateFilterEnabled}" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"/>
+        <DatePicker IsEnabled="{Binding IsDateFilterEnabled}" Grid.Row="0" Grid.Column="3" SelectedDate="{Binding SelectedDate}" Height="31" VerticalContentAlignment="Center" FontSize="14"/>
+        <TextBox Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="4" VerticalContentAlignment="Center" FontSize="14">
             <TextBox.Style>
                 <Style TargetType="TextBox">
                     <Style.Resources>
@@ -56,7 +58,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <TextBox Text="{Binding MessageLimit, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" FontSize="14" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="4">
+        <TextBox Text="{Binding MessageLimit, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" FontSize="14" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="5">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding ApplyLimitCommand}"/>
             </TextBox.InputBindings>
@@ -82,7 +84,7 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <ListView ItemsSource="{Binding FilteredMessages}" Grid.Row="1" Grid.ColumnSpan="5">
+        <ListView ItemsSource="{Binding FilteredMessages}" Grid.Row="1" Grid.ColumnSpan="6">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" Margin="10,0,0,0">
@@ -137,9 +139,9 @@
                 </Style>
             </Button.Style>
         </Button>
-        <Button Grid.Column="4" Grid.Row="2" Content="Скачать" FontSize="14" Command="{Binding DownloadMessagesCommand}"/>
+        <Button Grid.Column="5" Grid.Row="2" Content="Скачать" FontSize="14" Command="{Binding DownloadMessagesCommand}"/>
 
-        <DockPanel Grid.RowSpan="3" Grid.ColumnSpan="5" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <DockPanel Grid.RowSpan="3" Grid.ColumnSpan="6" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
             <DockPanel.Background>
                 <SolidColorBrush Color="Gray" Opacity="0.9"/>
             </DockPanel.Background>

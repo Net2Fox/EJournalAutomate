@@ -77,7 +77,21 @@ namespace EJournalAutomate.ViewModels
             }
         }
 
-        private DateTime _selectedDate;
+        private bool _isDateFilterEnabled = false;
+
+        public bool IsDateFilterEnabled
+        {
+            get => _isDateFilterEnabled;
+            set
+            {
+                if (SetProperty(ref _isDateFilterEnabled, value))
+                {
+                    ApplyFilters();
+                }
+            }
+        }
+
+        private DateTime _selectedDate = DateTime.Now;
         public DateTime SelectedDate
         {
             get => _selectedDate;
@@ -201,7 +215,7 @@ namespace EJournalAutomate.ViewModels
             }
 
             bool passesDateFilter = true;
-            if (SelectedDate.Year != 0001)
+            if (IsDateFilterEnabled)
             {
                 passesDateFilter = (message.Date.Year == SelectedDate.Year &&
                                   message.Date.Month == SelectedDate.Month &&
@@ -214,7 +228,13 @@ namespace EJournalAutomate.ViewModels
         private void ApplyFilters()
         {
             FilteredMessages.Refresh();
-            _logger.LogDebug($"Применены фильтры: Поиск='{SearchText}', Статус={SelectedStatusIndex}");
+            _logger.LogDebug($"""
+                Применены фильтры:
+                \n\tПоиск='{SearchText}',
+                \n\tСтатус={SelectedStatusIndex}
+                \n\tГруппа={SelectedGroupIndex}
+                \n\tДата={SelectedDate}
+                """);
         }
 
         [RelayCommand]
