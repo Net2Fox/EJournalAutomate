@@ -12,11 +12,11 @@ namespace EJournalAutomate.Services.Download
     public class DownloadService : IDownloadService
     {
         private readonly ISettingsStorage _settingsStorage;
-        private readonly IApiService _apiService;
+        private readonly IAPIService _apiService;
         private readonly IUserRepository _userRepository;
         private readonly ILogger<DownloadService> _logger;
 
-        public DownloadService(ISettingsStorage settingsStorage, IApiService apiService, IUserRepository userRepository, ILogger<DownloadService> logger)
+        public DownloadService(ISettingsStorage settingsStorage, IAPIService apiService, IUserRepository userRepository, ILogger<DownloadService> logger)
         {
             _settingsStorage = settingsStorage;
             _apiService = apiService;

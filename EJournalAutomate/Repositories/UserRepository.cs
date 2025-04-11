@@ -10,7 +10,7 @@ namespace EJournalAutomate.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly IApiService _apiService;
+        private readonly IAPIService _apiService;
         private readonly ICacheService _cacheService;
         private readonly ILogger<UserRepository> _logger;
 
@@ -22,7 +22,7 @@ namespace EJournalAutomate.Repositories
 
         public ObservableCollection<StudentGroup> Groups => _groups;
 
-        public UserRepository(IApiService apiService, ICacheService cacheService, ILogger<UserRepository> logger)
+        public UserRepository(IAPIService apiService, ICacheService cacheService, ILogger<UserRepository> logger)
         {
             _apiService = apiService;
             _cacheService = cacheService;

@@ -12,7 +12,7 @@ using System.Text.Json;
 
 namespace EJournalAutomate.Services.API
 {
-    public class ApiService : IApiService
+    public class APIService : IAPIService
     {
         private const string BaseUrl = "https://api.eljur.ru/api";
         private const string DevKey = "YourDevKey";
@@ -23,11 +23,11 @@ namespace EJournalAutomate.Services.API
         private readonly HttpClient _httpClient;
         private readonly ITokenStorage _tokenStorage;
         private readonly ISettingsStorage _settingsStorage;
-        private readonly ILogger<ApiService> _logger;
+        private readonly ILogger<APIService> _logger;
 
         private readonly JsonSerializerOptions _jsonOptions;
 
-        public ApiService(ITokenStorage tokenStorage, ISettingsStorage settingsStorage, ILogger<ApiService> logger)
+        public APIService(ITokenStorage tokenStorage, ISettingsStorage settingsStorage, ILogger<APIService> logger)
         {
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(30);

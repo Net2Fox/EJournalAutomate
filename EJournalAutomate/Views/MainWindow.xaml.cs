@@ -26,7 +26,7 @@ namespace EJournalAutomate.Views
 
             navigationService.SetFrame(MainFrame);
 
-            var apiService = Ioc.Default.GetService<IApiService>();
+            var apiService = Ioc.Default.GetService<IAPIService>();
             bool tokenExists = await apiService.LoadTokenFromAsync();
             if (tokenExists)
             {

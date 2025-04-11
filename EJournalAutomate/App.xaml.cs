@@ -43,7 +43,7 @@ namespace EJournalAutomate
                 })
                 .AddSingleton<IMessenger>(WeakReferenceMessenger.Default)
                 .AddSingleton<ITokenStorage, TokenStorage>()
-                .AddSingleton<IApiService, ApiService>()
+                .AddSingleton<IAPIService, APIService>()
                 .AddSingleton<INavigationService, NavigationService>()
                 .AddSingleton<IDispatcherService, DispatcherService>()
                 .AddSingleton<ISettingsStorage, SettingsStorage>()

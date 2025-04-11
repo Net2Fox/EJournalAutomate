@@ -10,7 +10,7 @@ namespace EJournalAutomate.ViewModels
 {
     public partial class LoginViewModel : ObservableRecipient
     {
-        private readonly IApiService _apiService;
+        private readonly IAPIService _apiService;
         private readonly INavigationService _navigationService;
         private readonly ILogger<LoginViewModel> _logger;
 
@@ -29,7 +29,7 @@ namespace EJournalAutomate.ViewModels
         [ObservableProperty]
         private string? _errorMessage;
 
-        public LoginViewModel(IApiService apiService, INavigationService navigationService, ILogger<LoginViewModel> logger)
+        public LoginViewModel(IAPIService apiService, INavigationService navigationService, ILogger<LoginViewModel> logger)
         {
             _apiService = apiService;
             _navigationService = navigationService;

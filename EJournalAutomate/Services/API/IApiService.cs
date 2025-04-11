@@ -2,7 +2,7 @@
 
 namespace EJournalAutomate.Services.API
 {
-    public interface IApiService
+    public interface IAPIService
     {
         Task<bool> LoadTokenFromAsync();
         Task AuthenticateAsync(string login, string password, string vendor);

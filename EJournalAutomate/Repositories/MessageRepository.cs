@@ -8,7 +8,7 @@ namespace EJournalAutomate.Repositories
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly IApiService _apiService;
+        private readonly IAPIService _apiService;
         private readonly IDispatcherService _dispatcherService;
         private readonly ILogger<MessageRepository> _logger;
 
@@ -16,7 +16,7 @@ namespace EJournalAutomate.Repositories
 
         public ObservableCollection<Message> Messages => _messages;
 
-        public MessageRepository(IApiService apiService, IDispatcherService dispatcherService, ILogger<MessageRepository> logger)
+        public MessageRepository(IAPIService apiService, IDispatcherService dispatcherService, ILogger<MessageRepository> logger)
         {
             _apiService = apiService;
             _dispatcherService = dispatcherService;
