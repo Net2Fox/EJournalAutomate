@@ -46,7 +46,7 @@ namespace EJournalAutomate.Repositories
             catch (Exception ex)
             {
                 var exception = new Exception($"Ошибка загрузки сообщений: {ex.Message}");
-                _logger.LogError(exception, "Ошибка загрузки сообщений");
+                _logger.LogCritical(exception, "Ошибка загрузки сообщений");
                 throw exception;
             }
         }

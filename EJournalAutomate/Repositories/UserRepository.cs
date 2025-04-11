@@ -92,7 +92,7 @@ namespace EJournalAutomate.Repositories
             catch (Exception ex)
             {
                 var exception = new Exception($"Ошибка загрузки пользователей: {ex.Message}");
-                _logger.LogError(exception, "Ошибка загрузки пользователей");
+                _logger.LogCritical(exception, "Ошибка загрузки пользователей");
                 throw exception;
             }
         }
