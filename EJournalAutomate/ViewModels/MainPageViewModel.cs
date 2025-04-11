@@ -15,25 +15,20 @@ namespace EJournalAutomate.ViewModels
     /// <summary>
     /// MainPageViewModel для MainPage
     /// </summary>
-    public partial class MainPageViewModel : ObservableRecipient, IRecipient<StatusMessage>
+    public partial class MainPageViewModel : ObservableRecipient, IRecipient<DataLoadMessage>, IRecipient<ErrorMessage>
     {
         private readonly ILocalStorage _localStorage;
         private readonly IDownloadService _downloadService;
         private readonly ILogger<MainPageViewModel> _logger;
 
+        [ObservableProperty]
         private bool _isLoading = true;
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set => SetProperty(ref _isLoading, value);
-        }
 
-        private string? _loadingMessage;
-        public string? LoadingMessage
-        {
-            get => _loadingMessage;
-            set => SetProperty(ref _loadingMessage, value);
-        }
+        [ObservableProperty]
+        private bool _isCriticalError = false;
+
+        [ObservableProperty]
+        private string? _splashMessage;
 
         private string? _searchText;
         public string? SearchText
@@ -121,20 +116,11 @@ namespace EJournalAutomate.ViewModels
             }
         }
 
+        [ObservableProperty]
         private bool _isSearchFocused;
-        public bool IsSearchFocused
-        {
-            get => _isSearchFocused;
-            set => SetProperty(ref _isSearchFocused, value);
-        }
 
+        [ObservableProperty]
         private bool _isAllSelected;
-
-        public bool IsAllSelected
-        {
-            get => _isAllSelected;
-            set => SetProperty(ref _isAllSelected, value);
-        }
 
         public ObservableCollection<StudentGroup> StudentGroups => _localStorage.Groups;
 
@@ -178,7 +164,7 @@ namespace EJournalAutomate.ViewModels
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, $"Ошибка при обновлении сообщений");
-                    LoadingMessage = $"Ошибка при обновлении сообщений: {ex.Message}";
+                    SplashMessage = $"Ошибка при обновлении сообщений: {ex.Message}";
                 }
             }
         }
@@ -274,13 +260,13 @@ namespace EJournalAutomate.ViewModels
                 }
 
                 IsLoading = true;
-                LoadingMessage = $"Скачивание {messagesToDownload.Count()} сообщений...";
+                SplashMessage = $"Скачивание {messagesToDownload.Count()} сообщений...";
 
                 var progress = new Progress<(int current, int total)>(progressInfo =>
                 {
 
                     double percentage = (double)progressInfo.current / progressInfo.total * 100;
-                    LoadingMessage = $"Скачивание: {progressInfo.current} из {progressInfo.total} ({percentage:F1}%)";
+                    SplashMessage = $"Скачивание: {progressInfo.current} из {progressInfo.total} ({percentage:F1}%)";
                 });
 
                 await _downloadService.DownloadMessagesAsync(messagesToDownload, progress);
@@ -298,7 +284,7 @@ namespace EJournalAutomate.ViewModels
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ошибка при скачивании");
-                LoadingMessage = $"Ошибка при скачивании: {ex.Message}";
+                SplashMessage = $"Ошибка при скачивании: {ex.Message}";
             }
         }
 
@@ -336,10 +322,16 @@ namespace EJournalAutomate.ViewModels
             }
         }
 
-        public void Receive(StatusMessage message)
+        public void Receive(DataLoadMessage message)
         {
-            LoadingMessage = message.Message;
+            SplashMessage = message.Message;
             IsLoading = message.IsLoading;
+        }
+
+        public void Receive(ErrorMessage message)
+        {
+            SplashMessage = $"{message.Message}\nПерезапустите программу!";
+            IsCriticalError = true;
         }
     }
 }
