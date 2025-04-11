@@ -33,7 +33,7 @@ namespace EJournalAutomate.Repositories
         {
             _logger.LogInformation("Попытка загрузка данных");
 
-            _messenger.Send(new StatusMessage("Загрузка данных...", true));
+            _messenger.Send(new DataLoadMessage("Загрузка данных...", true));
 
             try
             {
@@ -51,12 +51,12 @@ namespace EJournalAutomate.Repositories
                 }
                 _messageRepository.Messages.Select(m => m.UserFrom.GroupName = _userRepository.Users.FirstOrDefault(u => u.ID == m.UserFrom.ID)?.GroupName);
                 _logger.LogInformation("Данные успешно загружены");
-                _messenger.Send(new StatusMessage(string.Empty, false));
+                _messenger.Send(new DataLoadMessage(false));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка загрузки данных");
-                _messenger.Send(new StatusMessage($"Ошибка загрузки данных: {ex.Message}", true));
+                _logger.LogCritical(ex, "Ошибка загрузки данных");
+                _messenger.Send(new ErrorMessage($"Ошибка загрузки данных: {ex.Message}"));
             }
         }
 
@@ -64,7 +64,7 @@ namespace EJournalAutomate.Repositories
         {
             _logger.LogInformation("Попытка обновить сообщения");
 
-            _messenger.Send(new StatusMessage("Загрузка сообщений...", true));
+            _messenger.Send(new DataLoadMessage("Загрузка сообщений...", true));
 
             try
             {
@@ -78,12 +78,12 @@ namespace EJournalAutomate.Repositories
                     }
                 }
                 _logger.LogInformation("Сообщения успешно обновлены");
-                _messenger.Send(new StatusMessage(string.Empty, false));
+                _messenger.Send(new DataLoadMessage(false));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка загрузки сообщений");
-                _messenger.Send(new StatusMessage($"Ошибка загрузки сообщений: {ex.Message}", true));
+                _logger.LogCritical(ex, "Ошибка загрузки сообщений");
+                _messenger.Send(new ErrorMessage($"Ошибка загрузки сообщений: {ex.Message}"));
             }
         }
     }
