@@ -1,16 +1,16 @@
 ﻿namespace EJournalAutomate.Exceptions
 {
-    public class ApiException : Exception
+    public class APIException : Exception
     {
         public int? StatusCode { get; }
 
-        public ApiException(string message, int? statusCode = null)
+        public APIException(string message, int? statusCode = null)
             : base(message)
         {
             StatusCode = statusCode;
         }
 
-        public ApiException(string message, Exception innerException, int? statusCode = null)
+        public APIException(string message, Exception innerException, int? statusCode = null)
             : base(message, innerException)
         {
             StatusCode = statusCode;

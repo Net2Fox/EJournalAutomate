@@ -61,14 +61,14 @@ namespace EJournalAutomate.Services.API
             }
             else
             {
-                var apiException = new ApiException("Отсутствует поддомен учебного заведения.");
+                var apiException = new APIException("Отсутствует поддомен учебного заведения.");
                 _logger.LogError(exception: apiException, "Ошибка при входе");
                 throw apiException;
             }
 
             if (string.IsNullOrWhiteSpace(_vendor))
             {
-                var apiException = new ApiException("Отсутствует поддомен учебного заведения.");
+                var apiException = new APIException("Отсутствует поддомен учебного заведения.");
                 _logger.LogError(exception: apiException, "Ошибка при входе");
                 throw apiException;
             }
@@ -85,7 +85,7 @@ namespace EJournalAutomate.Services.API
             }
             catch (Exception ex)
             {
-                var apiException = new ApiException("Ошибка при выполнении запроса на аутентификацию.", ex);
+                var apiException = new APIException("Ошибка при выполнении запроса на аутентификацию.", ex);
                 _logger.LogError(exception: apiException, "Ошибка при входе");
                 throw apiException;
             }
@@ -97,13 +97,13 @@ namespace EJournalAutomate.Services.API
                     var errorJson = await response.Content.ReadAsStringAsync();
                     var errorApiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(errorJson, _jsonOptions);
 
-                    var apiException = new ApiException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
+                    var apiException = new APIException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
                     _logger.LogError(exception: apiException, "Ошибка при входе");
                     throw apiException;
                 }
                 catch (JsonException)
                 {
-                    var apiException = new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                    var apiException = new APIException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
                     _logger.LogError(exception: apiException, "Ошибка при входе");
                     throw apiException;
                 }
@@ -114,7 +114,7 @@ namespace EJournalAutomate.Services.API
 
             if (apiResponse == null)
             {
-                var apiException = new ApiException("Ответ API пустой или не может быть десериализован.");
+                var apiException = new APIException("Ответ API пустой или не может быть десериализован.");
                 _logger.LogError(exception: apiException, "Ошибка при входе");
                 throw apiException;
             }
@@ -128,7 +128,7 @@ namespace EJournalAutomate.Services.API
             }
             else
             {
-                var apiException = new ApiException($"Ошибка API: {apiResponse.Response.Error}");
+                var apiException = new APIException($"Ошибка API: {apiResponse.Response.Error}");
                 _logger.LogError(exception: apiException, "Ошибка при входе");
                 throw apiException;
             }
@@ -146,7 +146,7 @@ namespace EJournalAutomate.Services.API
             }
             catch (Exception ex)
             {
-                var apiException = new ApiException("Ошибка при выполнении запроса на получение сообщений.", ex);
+                var apiException = new APIException("Ошибка при выполнении запроса на получение сообщений.", ex);
                 _logger.LogError(exception: apiException, "Ошибка при получении списка сообщений");
                 throw apiException;
             }
@@ -158,13 +158,13 @@ namespace EJournalAutomate.Services.API
                     var errorJson = await response.Content.ReadAsStringAsync();
                     var errorApiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(errorJson, _jsonOptions);
 
-                    var apiException = new ApiException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
+                    var apiException = new APIException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
                     _logger.LogError(exception: apiException, "Ошибка при получении списка сообщений");
                     throw apiException;
                 }
                 catch (JsonException)
                 {
-                    var apiException = new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                    var apiException = new APIException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
                     _logger.LogError(exception: apiException, "Ошибка при получении списка сообщений");
                     throw apiException;
                 }
@@ -175,7 +175,7 @@ namespace EJournalAutomate.Services.API
 
             if (apiResponse == null)
             {
-                var apiException = new ApiException("Ответ API пустой или не может быть десериализован.");
+                var apiException = new APIException("Ответ API пустой или не может быть десериализован.");
                 _logger.LogError(exception: apiException, "Ошибка при получении списка сообщений");
                 throw apiException;
             }
@@ -188,7 +188,7 @@ namespace EJournalAutomate.Services.API
             }
             else
             {
-                var apiException = new ApiException($"Ошибка API: {apiResponse?.Response?.Error}");
+                var apiException = new APIException($"Ошибка API: {apiResponse?.Response?.Error}");
                 _logger.LogError(exception: apiException, "Ошибка при получении списка сообщений");
                 throw apiException;
             }
@@ -207,7 +207,7 @@ namespace EJournalAutomate.Services.API
             }
             catch (Exception ex)
             {
-                var apiException = new ApiException("Ошибка при выполненни запроса на получение информации о сообщении.", ex);
+                var apiException = new APIException("Ошибка при выполненни запроса на получение информации о сообщении.", ex);
                 _logger.LogError(exception: apiException, "Ошибка при получении информации о сообщении");
                 throw apiException;
             }
@@ -219,13 +219,13 @@ namespace EJournalAutomate.Services.API
                     var errorJson = await response.Content.ReadAsStringAsync();
                     var errorApiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(errorJson, _jsonOptions);
 
-                    var apiException = new ApiException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
+                    var apiException = new APIException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
                     _logger.LogError(exception: apiException, "Ошибка при получении информации о сообщении");
                     throw apiException;
                 }
                 catch (JsonException)
                 {
-                    var apiException = new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                    var apiException = new APIException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
                     _logger.LogError(exception: apiException, "Ошибка при получении информации о сообщении");
                     throw apiException;
                 }
@@ -236,7 +236,7 @@ namespace EJournalAutomate.Services.API
 
             if (apiResponse == null)
             {
-                var apiException = new ApiException("Ответ API пустой или не может быть десериализован.");
+                var apiException = new APIException("Ответ API пустой или не может быть десериализован.");
                 _logger.LogError(exception: apiException, "Ошибка при получении информации о сообщении");
                 throw apiException;
             }
@@ -249,7 +249,7 @@ namespace EJournalAutomate.Services.API
             }
             else
             {
-                var apiException = new ApiException($"Ошибка API: {apiResponse?.Response?.Error}");
+                var apiException = new APIException($"Ошибка API: {apiResponse?.Response?.Error}");
                 _logger.LogError(exception: apiException, "Ошибка при получении информации о сообщении");
                 throw apiException;
             }
@@ -268,7 +268,7 @@ namespace EJournalAutomate.Services.API
             }
             catch (Exception ex)
             {
-                var apiException = new ApiException("Ошибка при выполненни запроса на получение информации о сообщении.", ex);
+                var apiException = new APIException("Ошибка при выполненни запроса на получение информации о сообщении.", ex);
                 _logger.LogError(exception: apiException, "Ошибка при получении списка пользователей");
                 throw apiException;
             }
@@ -279,13 +279,13 @@ namespace EJournalAutomate.Services.API
                 {
                     var errorJson = await response.Content.ReadAsStringAsync();
                     var errorApiResponse = JsonSerializer.Deserialize<ApiResponse<object>>(errorJson, _jsonOptions);
-                    var apiException = new ApiException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
+                    var apiException = new APIException($"Ошибка HTTP: {errorApiResponse.Response.State}, {errorApiResponse.Response.Error}", errorApiResponse.Response.State);
                     _logger.LogError(exception: apiException, "Ошибка при получении списка пользователей");
                     throw apiException;
                 }
                 catch (JsonException)
                 {
-                    var apiException = new ApiException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
+                    var apiException = new APIException($"Ошибка HTTP: {(int)response.StatusCode} {response.ReasonPhrase}", (int)response.StatusCode);
                     _logger.LogError(exception: apiException, "Ошибка при получении списка пользователей");
                     throw apiException;
                 }
@@ -296,7 +296,7 @@ namespace EJournalAutomate.Services.API
 
             if (students == null)
             {
-                var apiException = new ApiException("Ответ API пустой или не может быть десериализован.");
+                var apiException = new APIException("Ответ API пустой или не может быть десериализован.");
                 _logger.LogError(exception: apiException, "Ошибка при получении списка пользователей");
                 throw apiException;
             }
