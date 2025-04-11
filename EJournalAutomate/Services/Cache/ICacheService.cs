@@ -1,6 +1,6 @@
 ﻿using EJournalAutomate.Models.Domain;
 
-namespace EJournalAutomate.Services.Storage.Cache
+namespace EJournalAutomate.Services.Cache
 {
     public interface ICacheService
     {

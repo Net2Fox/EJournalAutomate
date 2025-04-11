@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text.Json;
 
-namespace EJournalAutomate.Services.Storage.Cache
+namespace EJournalAutomate.Services.Cache
 {
     public class CacheService : ICacheService
     {
@@ -34,7 +34,7 @@ namespace EJournalAutomate.Services.Storage.Cache
                 if (IsCacheValid(json))
                 {
                     (List<User> users, List<StudentGroup> groups) = JsonSerializer.Deserialize<(List<User>, List<StudentGroup>)>(json, _jsonOptions);
-                    if ((users != null && users.Count > 0) && (groups != null && groups.Count > 0))
+                    if (users != null && users.Count > 0 && groups != null && groups.Count > 0)
                     {
                         _logger.LogInformation("Данные из кэша успешно загружены");
                         return (users, groups);

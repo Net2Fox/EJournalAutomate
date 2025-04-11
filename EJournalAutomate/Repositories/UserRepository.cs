@@ -1,7 +1,7 @@
 ﻿using EJournalAutomate.Exceptions;
 using EJournalAutomate.Models.Domain;
 using EJournalAutomate.Services.API;
-using EJournalAutomate.Services.Storage.Cache;
+using EJournalAutomate.Services.Cache;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.IO;

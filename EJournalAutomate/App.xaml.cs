@@ -2,10 +2,10 @@
 using CommunityToolkit.Mvvm.Messaging;
 using EJournalAutomate.Repositories;
 using EJournalAutomate.Services.API;
+using EJournalAutomate.Services.Cache;
 using EJournalAutomate.Services.Download;
 using EJournalAutomate.Services.Logger;
 using EJournalAutomate.Services.Navigation;
-using EJournalAutomate.Services.Storage.Cache;
 using EJournalAutomate.Services.Storage.Settings;
 using EJournalAutomate.Services.Storage.Token;
 using EJournalAutomate.Services.UI;
