@@ -77,8 +77,8 @@ namespace EJournalAutomate.Services.Download
             {
                 directory = Path.Combine(_settingsStorage.SavePath, studentGroup, studentFullName);
             }
-
-            if (messageInfo.Files.Count > 1 || !IsOnlySignature(messageInfo.Text))
+            bool isOnlySignature = IsOnlySignature(messageInfo.Text);
+            if (messageInfo.Files.Count > 1 || !isOnlySignature)
             {
                 string subDirectory = Regex.Replace(messageInfo.Subject, @"[<>:""|?*]", string.Empty);
 
@@ -86,7 +86,10 @@ namespace EJournalAutomate.Services.Download
 
                 EnsureDirectoryExists(directory);
 
-                await System.IO.File.WriteAllTextAsync(Path.Combine(directory, "Сообщение.txt"), CleanAllHtmlTags(messageInfo.Text));
+                if (!isOnlySignature)
+                {
+                    await System.IO.File.WriteAllTextAsync(Path.Combine(directory, "Сообщение.txt"), CleanAllHtmlTags(messageInfo.Text));
+                }
             }
             else
             {
@@ -150,7 +153,7 @@ namespace EJournalAutomate.Services.Download
 
             cleanText = Regex.Replace(cleanText, @"\s+", " ").Trim();
 
-            return Regex.IsMatch(cleanText, @"^(-+\s*)?С уважением,\s+[\p{L}\s\-\.]+$", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(cleanText, @"^(-+\s*)?С уважением,\s+[\p{L}\s\-\.]+", RegexOptions.IgnoreCase);
         }
     }
 }
