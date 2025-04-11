@@ -32,7 +32,7 @@ namespace EJournalAutomate.Services.Storage.Token
             }
             catch (Exception ex)
             {
-                var exception = new Exception("Не удалось сохранить токен", ex);
+                var exception = new IOException("Не удалось сохранить токен", ex);
                 _logger.LogCritical(exception, "Не удалось сохранить токен");
                 throw exception;
             }
@@ -63,7 +63,7 @@ namespace EJournalAutomate.Services.Storage.Token
             }
             catch (Exception ex)
             {
-                var exception = new Exception("Не удалось прочитать файл с токеном", ex);
+                var exception = new IOException("Не удалось прочитать файл с токеном", ex);
                 _logger.LogCritical(exception, "Не удалось прочитать файл с токеном");
                 throw exception;
             }
