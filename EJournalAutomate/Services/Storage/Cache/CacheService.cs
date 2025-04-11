@@ -1,4 +1,5 @@
-﻿using EJournalAutomate.Models.Domain;
+﻿using EJournalAutomate.Exceptions;
+using EJournalAutomate.Models.Domain;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text.Json;
@@ -30,24 +31,32 @@ namespace EJournalAutomate.Services.Storage.Cache
             if (IsCacheAvailable)
             {
                 string json = await System.IO.File.ReadAllTextAsync(_savePath);
-                (List<User> users, List<StudentGroup> groups)= JsonSerializer.Deserialize<(List<User>, List<StudentGroup>)>(json, _jsonOptions);
-                if ((users != null && users.Count > 0) && (groups != null && groups.Count > 0))
+                if (IsCacheValid(json))
                 {
-                    _logger.LogInformation("Данные из кэша успешно загружены");
-                    return (users, groups);
+                    (List<User> users, List<StudentGroup> groups) = JsonSerializer.Deserialize<(List<User>, List<StudentGroup>)>(json, _jsonOptions);
+                    if ((users != null && users.Count > 0) && (groups != null && groups.Count > 0))
+                    {
+                        _logger.LogInformation("Данные из кэша успешно загружены");
+                        return (users, groups);
+                    }
+                    else
+                    {
+                        var ex = new EmptyFileException("Файл с кэшем пустой");
+                        _logger.LogError(ex, "Кэш пустой");
+                        throw ex;
+                    }
                 }
                 else
                 {
-                    var ex = new FileFormatException("Файл с кэшем отсутсвует, загрузите данные из API");
-                    _logger.LogError(ex, "Кэш не существует или пустой");
+                    var ex = new FileFormatException("Файл с кэшем повреждён");
+                    _logger.LogError(ex, "Кэш повреждён");
                     throw ex;
                 }
-
             }
             else
             {
-                var ex = new FileNotFoundException("Файл с кэшем отсутсвует, загрузите данные из API");
-                _logger.LogError(ex, "Кэш не существует или пустой");
+                var ex = new FileNotFoundException("Файл с кэшем отсутствует");
+                _logger.LogError(ex, "Кэш отсутствует");
                 throw ex;
             }
         }
@@ -69,6 +78,19 @@ namespace EJournalAutomate.Services.Storage.Cache
             }
 
             _logger.LogInformation("Кэш успешно сохранён");
+        }
+
+        public bool IsCacheValid(string json)
+        {
+            try
+            {
+                using var jsonDoc = JsonDocument.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

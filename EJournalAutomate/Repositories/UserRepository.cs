@@ -1,8 +1,10 @@
-﻿using EJournalAutomate.Models.Domain;
+﻿using EJournalAutomate.Exceptions;
+using EJournalAutomate.Models.Domain;
 using EJournalAutomate.Services.API;
 using EJournalAutomate.Services.Storage.Cache;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace EJournalAutomate.Repositories
 {
@@ -33,34 +35,59 @@ namespace EJournalAutomate.Repositories
         {
             _logger.LogInformation("Попытка загрузки пользователей");
 
+            List<User> users;
+            List<StudentGroup> studentGroups;
+
+            if (_cacheService.IsCacheAvailable)
+            {
+                (users, studentGroups) = await LoadUsersFromCache();
+            }
+            else
+            {
+                (users, studentGroups) = await LoadUsersFromAPI();
+            }
+
+            Users.Clear();
+
+            foreach (var user in users)
+            {
+                Users.Add(user);
+            }
+
+            foreach (var group in studentGroups)
+            {
+                Groups.Add(group);
+            }
+
+            _logger.LogInformation("Пользователи успешно загружены");
+
+        }
+
+        private async Task<(List<User>, List<StudentGroup>)> LoadUsersFromCache()
+        {
+            _logger.LogInformation("Попытка загрузки пользователей из кэша");
+            try
+            {
+                return await _cacheService.LoadCache();
+            }
+            catch (Exception ex) when (ex is FileNotFoundException || ex is FileFormatException || ex is EmptyFileException)
+            {
+                _logger.LogError($"Проблема с кэшем: {ex.Message}");
+                return await LoadUsersFromAPI();
+            }
+
+        }
+
+        private async Task<(List<User>, List<StudentGroup>)> LoadUsersFromAPI()
+        {
+            _logger.LogInformation("Попытка загрузки пользователей из API");
             try
             {
                 List<User> users;
                 List<StudentGroup> studentGroups;
-
-                if (_cacheService.IsCacheAvailable)
-                {
-                    (users, studentGroups) = await _cacheService.LoadCache();
-                }
-                else
-                {
-                    (users, studentGroups) = await _apiService.GetMessageReceivers();
-                    _cacheService.SaveCache(users, studentGroups);
-                }
-
-                Users.Clear();
-
-                foreach (var user in users)
-                {
-                    Users.Add(user);
-                }
-
-                foreach (var group in studentGroups)
-                {
-                    Groups.Add(group);
-                }
-
-                _logger.LogInformation("Пользователи успешно загружены");
+                (users, studentGroups) = await _apiService.GetMessageReceivers();
+                _cacheService.SaveCache(users, studentGroups);
+                return await _apiService.GetMessageReceivers();
             }
             catch (Exception ex)
             {
