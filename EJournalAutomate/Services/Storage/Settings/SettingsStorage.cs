@@ -26,7 +26,7 @@ namespace EJournalAutomate.Services.Storage.Settings
         {
             _logger = logger;
 
-            _logger.LogDebug("SettingsStorage инициализирована");
+            _logger.LogInformation("SettingsStorage инициализирована");
         }
 
         public async Task LoadSettings()
@@ -78,7 +78,7 @@ namespace EJournalAutomate.Services.Storage.Settings
             }
             else
             {
-                _logger.LogInformation("Файл с настройками отсутствует, создание нового файла");
+                _logger.LogInformation("Файл с настройками неполный или повреждён, создание нового файла");
                 await SaveSettings();
             }
         }
@@ -94,7 +94,7 @@ namespace EJournalAutomate.Services.Storage.Settings
             catch (Exception ex)
             {
                 var exception = new Exception("Не удалось сохранить настройки", ex);
-                _logger.LogError(ex, "Не удалось сохранить настройки");
+                _logger.LogCritical(ex, "Не удалось сохранить настройки");
                 throw exception;
             }
 
