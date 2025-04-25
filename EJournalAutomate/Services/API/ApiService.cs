@@ -348,9 +348,9 @@ namespace EJournalAutomate.Services.API
                                         {
                                             ID = id.GetString(),
 
-                                            LastName = lastnameEl.GetString().Replace(" ", string.Empty),
-                                            FirstName = firstnameEl.GetString().Replace(" ", string.Empty),
-                                            MiddleName = userElement.TryGetProperty("middlename", out JsonElement middlenameEl) ? middlenameEl.GetString().Replace(" ", string.Empty) : null,
+                                            LastName = lastnameEl.GetString().Trim(),
+                                            FirstName = firstnameEl.GetString().Trim(),
+                                            MiddleName = userElement.TryGetProperty("middlename", out JsonElement middlenameEl) ? middlenameEl.GetString().Trim() : null,
 
                                             GroupName = groupName
                                         };
