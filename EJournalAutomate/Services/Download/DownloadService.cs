@@ -65,7 +65,8 @@ namespace EJournalAutomate.Services.Download
 
             MessageInfo messageInfo = await _apiService.GetMessageInfoAsync(message.ID);
 
-            string studentFullName = messageInfo.User_From.FullNamePatronymic;
+
+            string studentFullName = _settingsStorage.SaveFullName ? messageInfo.User_From.FullNamePatronymic : messageInfo.User_From.FullName;
 
             string? studentGroup = user.GroupName;
 
