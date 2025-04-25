@@ -16,6 +16,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Menu Height="20" VerticalAlignment="Top" Grid.Row="0">
+            <MenuItem Header="Авто загрузка" Height="20" Command=""/>
             <MenuItem Header="Настройки" Height="20" IsEnabled="{Binding IsSettingsMenuItemEnabled}">
                 <MenuItem IsCheckable="False" Header="Указать новую папку для скачивания писем" Height="20" Command="{Binding ShowWindowDirectorySettingsCommand}"/>
                 <MenuItem Header="Сохранение времени отправки файла в названии" IsCheckable="True" IsChecked="{Binding SaveDate}" Command="{Binding ToggleSaveDateCommand}" Height="20"/>
