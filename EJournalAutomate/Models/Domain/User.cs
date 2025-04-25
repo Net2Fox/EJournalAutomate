@@ -17,10 +17,13 @@ namespace EJournalAutomate.Models.Domain
         public string? MiddleName { get; set; }
 
         [JsonIgnore]
-        public string FullName => $"{LastName} {FirstName}{(!string.IsNullOrWhiteSpace(MiddleName) ? $" {MiddleName}" : "")}";
+        public string FullNamePatronymic => $"{LastName} {FirstName}{(!string.IsNullOrWhiteSpace(MiddleName) ? $" {MiddleName}" : "")}";
 
         [JsonIgnore]
-        public string NameWithInitials => $"{LastName} {FirstName[0]}. {(!string.IsNullOrWhiteSpace(MiddleName) ? $"{MiddleName[0]}." : string.Empty)}";
+        public string FullNameWithInitials => $"{LastName} {FirstName[0]}. {(!string.IsNullOrWhiteSpace(MiddleName) ? $"{MiddleName[0]}." : string.Empty)}";
+
+        [JsonIgnore]
+        public string FullName => $"{LastName} {FirstName}";
 
         [JsonPropertyName("groupname")]
         public string? GroupName { get; set; }

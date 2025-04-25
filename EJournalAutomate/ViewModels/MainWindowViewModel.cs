@@ -28,6 +28,9 @@ namespace EJournalAutomate.ViewModels
         private bool _saveLogs;
 
         [ObservableProperty]
+        private bool _saveFullName;
+
+        [ObservableProperty]
         private bool _isSettingsMenuItemEnabled = true;
 
         public MainWindowViewModel(ISettingsStorage settingsStorage, IMessenger messenger, ILogger<MainWindowViewModel> logger)
@@ -48,6 +51,7 @@ namespace EJournalAutomate.ViewModels
                 SavePath = _settingsStorage.SavePath;
                 SaveDate = _settingsStorage.SaveDate;
                 SaveLogs = _settingsStorage.SaveLogs;
+                SaveFullName = _settingsStorage.SaveFullName;
                 _logger.LogDebug("MainWindowViewModel инициализирована");
             }
             catch (Exception ex)
@@ -88,6 +92,22 @@ namespace EJournalAutomate.ViewModels
             {
                 MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 _logger.LogError(ex, $"Настройка логов не изменена");
+            }
+        }
+
+        [RelayCommand]
+        private async Task ToggleSaveFullName()
+        {
+            try
+            {
+                _settingsStorage.SetSaveFullName(SaveFullName);
+                await _settingsStorage.SaveSettings();
+                _logger.LogInformation($"Настройка логов изменена: {SaveLogs}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                _logger.LogError(ex, $"Настройка сохранения отчества не изменена");
             }
         }
 

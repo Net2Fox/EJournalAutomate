@@ -20,6 +20,7 @@
                 <MenuItem IsCheckable="False" Header="Указать новую папку для скачивания писем" Height="20" Command="{Binding ShowWindowDirectorySettingsCommand}"/>
                 <MenuItem Header="Сохранение времени отправки файла в названии" IsCheckable="True" IsChecked="{Binding SaveDate}" Command="{Binding ToggleSaveDateCommand}" Height="20"/>
                 <MenuItem Header="Сохранение логов" IsCheckable="True" IsChecked="{Binding SaveLogs}" Command="{Binding ToggleSaveLogsCommand}" Height="20"/>
+                <MenuItem Header="Сохранение отчества" IsCheckable="True" IsChecked="{Binding SaveFullName}" Command="{Binding ToggleSaveFullNameCommand}" Height="20"/>
             </MenuItem>
             <MenuItem IsCheckable="False" Height="20" Command="{Binding ShowWindowAboutCommand}" Header="О программе"/>
         </Menu>
