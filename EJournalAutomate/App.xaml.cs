@@ -43,6 +43,7 @@ namespace EJournalAutomate
             {
                builder.Services.AddLogging(builder =>
                {
+                   builder.ClearProviders();
                    builder.AddProvider(new LoggingServiceProvider(_logPath));
                    builder.SetMinimumLevel(LogLevel.Information);
                });
