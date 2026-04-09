@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Windows;
+using Microsoft.Extensions.Hosting;
 
 namespace EJournalAutomate
 {
@@ -21,11 +22,15 @@ namespace EJournalAutomate
     /// </summary>
     public partial class App : Application
     {
+        private IHost _host;
+        
         private ILogger<App>? _logger;
         private string _logPath;
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected async override void OnStartup(StartupEventArgs e)
         {
+            var builder = Host.CreateApplicationBuilder();
+            
             _logPath = Path.Combine(Environment.CurrentDirectory, "logs", "app.log");
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -34,34 +39,38 @@ namespace EJournalAutomate
 
             try
             {
-                Ioc.Default.ConfigureServices(
-                new ServiceCollection()
-                .AddLogging(builder =>
-                {
-                    builder.AddProvider(new LoggingServiceProvider(_logPath));
-                    builder.SetMinimumLevel(LogLevel.Information);
-                })
-                .AddSingleton<IMessenger>(WeakReferenceMessenger.Default)
-                .AddSingleton<ITokenStorage, TokenStorage>()
-                .AddSingleton<IAPIService, APIService>()
-                .AddSingleton<INavigationService, NavigationService>()
-                .AddSingleton<IDispatcherService, DispatcherService>()
-                .AddSingleton<ISettingsStorage, SettingsStorage>()
-                .AddSingleton<ICacheService, CacheService>()
-                .AddSingleton<IMessageRepository, MessageRepository>()
-                .AddSingleton<IUserRepository, UserRepository>()
-                .AddSingleton<IDownloadService, DownloadService>()
-                .AddSingleton<ILocalStorage, LocalStorage>()
-                .AddTransient<ViewModels.MainWindowViewModel>()
-                .AddTransient<ViewModels.LoginViewModel>()
-                .AddTransient<ViewModels.MainPageViewModel>()
-                .BuildServiceProvider());
+                //Ioc.Default.ConfigureServices(
+               // new ServiceCollection()
+               builder.Services.AddLogging(builder =>
+               {
+                   builder.AddProvider(new LoggingServiceProvider(_logPath));
+                   builder.SetMinimumLevel(LogLevel.Information);
+               });
+               builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
+               builder.Services.AddSingleton<ITokenStorage, TokenStorage>();
+               builder.Services.AddSingleton<IAPIService, APIService>();
+               builder.Services.AddSingleton<INavigationService, NavigationService>();
+               builder.Services.AddSingleton<IDispatcherService, DispatcherService>();
+               builder.Services.AddSingleton<ISettingsStorage, SettingsStorage>();
+               builder.Services.AddSingleton<ICacheService, CacheService>();
+               builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
+               builder.Services.AddSingleton<IUserRepository, UserRepository>();
+               builder.Services.AddSingleton<IDownloadService, DownloadService>();
+               builder.Services.AddSingleton<ILocalStorage, LocalStorage>();
+               builder.Services.AddTransient<ViewModels.MainWindowViewModel>();
+               builder.Services.AddTransient<ViewModels.LoginViewModel>();
+               builder.Services.AddTransient<ViewModels.MainPageViewModel>();
+                //.BuildServiceProvider());
 
-                _logger = Ioc.Default.GetRequiredService<ILogger<App>>();
+                _host = builder.Build();
+                
+                await _host.StartAsync();
+                
+                _logger = _host.Services.GetRequiredService<ILogger<App>>();
                 _logger.LogInformation($"--- Приложение запущено v{typeof(App).Assembly.GetName().Version} ---");
                 _logger.LogInformation($"Платформа: {Environment.OSVersion}, .NET: {Environment.Version}");
 
-                var settingsService = Ioc.Default.GetService<ISettingsStorage>();
+                var settingsService = _host.Services.GetService<ISettingsStorage>();
                 if (settingsService != null)
                 {
                     Task.Run(async () =>
@@ -115,7 +124,7 @@ namespace EJournalAutomate
             try
             {
 
-                var logger = Ioc.Default.GetService<ILogger<App>>();
+                var logger = _host.Services.GetService<ILogger<App>>();
                 logger?.LogCritical(exception, "Необработанное исключение в приложении");
 
                 LoggingService.SaveLogsOnCrash(crashLogPath);
