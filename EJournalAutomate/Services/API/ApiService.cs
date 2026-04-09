@@ -19,6 +19,7 @@ namespace EJournalAutomate.Services.API
         private string BaseUrl;
         private string DevKey;
 
+        private const string BaseUrl = "https://api.eljur.ru/api";
         private string _vendor = string.Empty;
         private string _authToken = string.Empty;
 
