@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Windows;
+using EJournalAutomate.Views;
 using Microsoft.Extensions.Hosting;
 
 namespace EJournalAutomate
@@ -39,8 +40,6 @@ namespace EJournalAutomate
 
             try
             {
-                //Ioc.Default.ConfigureServices(
-               // new ServiceCollection()
                builder.Services.AddLogging(builder =>
                {
                    builder.AddProvider(new LoggingServiceProvider(_logPath));
@@ -57,10 +56,15 @@ namespace EJournalAutomate
                builder.Services.AddSingleton<IUserRepository, UserRepository>();
                builder.Services.AddSingleton<IDownloadService, DownloadService>();
                builder.Services.AddSingleton<ILocalStorage, LocalStorage>();
-               builder.Services.AddTransient<ViewModels.MainWindowViewModel>();
+               // ViewModels
                builder.Services.AddTransient<ViewModels.LoginViewModel>();
                builder.Services.AddTransient<ViewModels.MainPageViewModel>();
-                //.BuildServiceProvider());
+               // Pages
+               builder.Services.AddTransient<Views.Pages.LoginPage>();
+               builder.Services.AddTransient<Views.Pages.MainPage>();
+               // MainWindow и MainWindowViewModel
+               builder.Services.AddSingleton<ViewModels.MainWindowViewModel>();
+               builder.Services.AddSingleton<MainWindow>();
 
                 _host = builder.Build();
                 
@@ -81,6 +85,9 @@ namespace EJournalAutomate
                         });
                     });
                 }
+                
+                MainWindow mainWindow = _host.Services.GetRequiredService<MainWindow>();
+                mainWindow.Show();
             }
             catch (Exception ex)
             {
@@ -88,7 +95,7 @@ namespace EJournalAutomate
                 Shutdown(-1);
                 return;
             }
-
+           
             base.OnStartup(e);
         }
 
