@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Windows;
 using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Services.Window;
 using EJournalAutomate.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -80,6 +81,7 @@ namespace EJournalAutomate
                 builder.Services.AddSingleton<IUserRepository, UserRepository>();
                 builder.Services.AddSingleton<IDownloadService, DownloadService>();
                 builder.Services.AddSingleton<ILocalStorage, LocalStorage>();
+                builder.Services.AddSingleton<IWindowService, WindowService>();
                 // ViewModels
                 builder.Services.AddTransient<ViewModels.LoginViewModel>();
                 builder.Services.AddTransient<ViewModels.MainPageViewModel>();
