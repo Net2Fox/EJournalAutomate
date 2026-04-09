@@ -13,9 +13,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Windows;
-using EJournalAutomate.Configurations;
+using EJournalAutomate.Models.Domain;
 using EJournalAutomate.Views;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace EJournalAutomate
 {
@@ -41,48 +43,61 @@ namespace EJournalAutomate
 
             try
             {
-               builder.Services.AddLogging(builder =>
-               {
-                   builder.ClearProviders();
-                   builder.AddProvider(new LoggingServiceProvider(_logPath));
-                   builder.SetMinimumLevel(LogLevel.Information);
-               });
-               builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
-               builder.Services.AddSingleton<ITokenStorage, TokenStorage>();
-               builder.Services.AddSingleton<IAPIService, APIService>();
-               builder.Services.AddSingleton<INavigationService, NavigationService>();
-               builder.Services.AddSingleton<IDispatcherService, DispatcherService>();
-               builder.Services.AddSingleton<ISettingsStorage, SettingsStorage>();
-               builder.Services.AddSingleton<ICacheService, CacheService>();
-               builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
-               builder.Services.AddSingleton<IUserRepository, UserRepository>();
-               builder.Services.AddSingleton<IDownloadService, DownloadService>();
-               builder.Services.AddSingleton<ILocalStorage, LocalStorage>();
-               // ViewModels
-               builder.Services.AddTransient<ViewModels.LoginViewModel>();
-               builder.Services.AddTransient<ViewModels.MainPageViewModel>();
-               // Pages
-               builder.Services.AddTransient<Views.Pages.LoginPage>();
-               builder.Services.AddTransient<Views.Pages.MainPage>();
-               // MainWindow и MainWindowViewModel
-               builder.Services.AddSingleton<ViewModels.MainWindowViewModel>();
-               builder.Services.AddSingleton<MainWindow>();
-               
-               builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection("ApiConfiguration"));
-
-
+                // Configurations
+                builder.Configuration.AddJsonFile("settings.json", true, true);
+                builder.Services.Configure<SettingsModel>(builder.Configuration);
+                builder.Services.AddKeyedSingleton<ISecureStorage, SecureStorage>("token", (sp, _) => 
+                    new SecureStorage(
+                        Path.Combine(Environment.CurrentDirectory, "token.dat"),
+                        sp.GetRequiredService<ILogger<SecureStorage>>()));
+                builder.Services.AddKeyedSingleton<ISecureStorage, SecureStorage>("devkey", (sp, _) => 
+                    new SecureStorage(
+                        Path.Combine(Environment.CurrentDirectory, "token.dat"),
+                        sp.GetRequiredService<ILogger<SecureStorage>>()
+                    )
+                );
+                
+                // Logging
+                builder.Services.AddLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(LogLevel.Information);
+                });
+                builder.Services.AddSingleton<ILoggerProvider>(sp => 
+                    new LoggingServiceProvider(
+                        _logPath,
+                        sp.GetRequiredService<IOptionsMonitor<SettingsModel>>()
+                    )
+                );
+                
+                builder.Services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
+                builder.Services.AddSingleton<IAPIService, APIService>();
+                builder.Services.AddSingleton<INavigationService, NavigationService>();
+                builder.Services.AddSingleton<IDispatcherService, DispatcherService>();
+                builder.Services.AddSingleton<ISettingsStorage, SettingsStorage>();
+                builder.Services.AddSingleton<ICacheService, CacheService>();
+                builder.Services.AddSingleton<IMessageRepository, MessageRepository>();
+                builder.Services.AddSingleton<IUserRepository, UserRepository>();
+                builder.Services.AddSingleton<IDownloadService, DownloadService>();
+                builder.Services.AddSingleton<ILocalStorage, LocalStorage>();
+                // ViewModels
+                builder.Services.AddTransient<ViewModels.LoginViewModel>();
+                builder.Services.AddTransient<ViewModels.MainPageViewModel>();
+                // Pages
+                builder.Services.AddTransient<Views.Pages.LoginPage>();
+                builder.Services.AddTransient<Views.Pages.MainPage>();
+                // MainWindow и MainWindowViewModel
+                builder.Services.AddSingleton<ViewModels.MainWindowViewModel>();
+                builder.Services.AddSingleton<MainWindow>();
+                
                 _host = builder.Build();
-                
+                 
                 await _host.StartAsync();
-                
+                 
                 _logger = _host.Services.GetRequiredService<ILogger<App>>();
-                _logger.LogInformation($"--- Приложение запущено v{typeof(App).Assembly.GetName().Version} ---");
+                _logger.LogInformation($"--- Приложение запущено v{typeof(App).Assembly.GetName().Version} ---"); 
                 _logger.LogInformation($"Платформа: {Environment.OSVersion}, .NET: {Environment.Version}");
-                
-                var settingsService = _host.Services.GetRequiredService<ISettingsStorage>();
-                await settingsService.LoadSettings();
-                LoggingService.SetSettingsSaveLogs(settingsService.SaveLogs);
-                
+                 
                 MainWindow mainWindow = _host.Services.GetRequiredService<MainWindow>();
                 mainWindow.Show();
             }
@@ -113,8 +128,9 @@ namespace EJournalAutomate
             HandleCriticalException(e.ExceptionObject as Exception);
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        protected async override void OnExit(ExitEventArgs e)
         {
+            await _host.StopAsync();
             _logger?.LogInformation($"--- Приложение завершено с кодом {e.ApplicationExitCode} ---");
             base.OnExit(e);
         }
