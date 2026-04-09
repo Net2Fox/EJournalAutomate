@@ -28,4 +28,12 @@ public class WindowService : IWindowService
         _logger.LogInformation("Окно \"Настройки\" успешно открыто");
         return result;
     }
+
+    public string? ShowDevKeySettingWindow()
+    {
+        var window = new DevKeySettingWindow();
+        var result = window.ShowDialog() == true ? window.DevKey : null;
+        _logger.LogInformation("Окно \"Установка DevKey\" успешно открыто");
+        return result;
+    }
 }
