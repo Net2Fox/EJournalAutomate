@@ -6,19 +6,20 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
 
 namespace EJournalAutomate.Services.Download
 {
     public class DownloadService : IDownloadService
     {
-        private readonly ISettingsStorage _settingsStorage;
+        private readonly IOptionsMonitor<SettingsModel> _settingsMonitor;
         private readonly IAPIService _apiService;
         private readonly IUserRepository _userRepository;
         private readonly ILogger<DownloadService> _logger;
 
-        public DownloadService(ISettingsStorage settingsStorage, IAPIService apiService, IUserRepository userRepository, ILogger<DownloadService> logger)
+        public DownloadService(IOptionsMonitor<SettingsModel> settingsMonitor, IAPIService apiService, IUserRepository userRepository, ILogger<DownloadService> logger)
         {
-            _settingsStorage = settingsStorage;
+            _settingsMonitor = settingsMonitor;
             _apiService = apiService;
             _userRepository = userRepository;
 
@@ -66,17 +67,17 @@ namespace EJournalAutomate.Services.Download
             MessageInfo messageInfo = await _apiService.GetMessageInfoAsync(message.ID);
 
 
-            string studentFullName = _settingsStorage.SaveFullName ? messageInfo.User_From.FullNamePatronymic : messageInfo.User_From.FullName;
+            string studentFullName = _settingsMonitor.CurrentValue.SaveFullName ? messageInfo.User_From.FullNamePatronymic : messageInfo.User_From.FullName;
 
             string? studentGroup = user.GroupName;
 
             if (studentGroup == null)
             {
-                directory = Path.Combine(_settingsStorage.SavePath, studentFullName);
+                directory = Path.Combine(_settingsMonitor.CurrentValue.SavePath, studentFullName);
             }
             else
             {
-                directory = Path.Combine(_settingsStorage.SavePath, studentGroup, studentFullName);
+                directory = Path.Combine(_settingsMonitor.CurrentValue.SavePath, studentGroup, studentFullName);
             }
             bool isOnlySignature = IsOnlySignature(messageInfo.Text);
             if (messageInfo.Files.Count > 1 || !isOnlySignature)
@@ -100,7 +101,7 @@ namespace EJournalAutomate.Services.Download
             foreach (Models.Domain.File file in messageInfo.Files)
             {
                 string filename = Regex.Replace(file.Filename, @"[<>:""|?*]", string.Empty);
-                if (_settingsStorage.SaveDate)
+                if (_settingsMonitor.CurrentValue.SaveDate)
                 {
                     filename = $"{messageInfo.Date.ToString("dd.MM HH-mm")} {filename}";
                 }
