@@ -86,7 +86,7 @@ namespace EJournalAutomate.Repositories
                 List<User> users;
                 List<StudentGroup> studentGroups;
                 (users, studentGroups) = await _apiService.GetMessageReceivers();
-                _cacheService.SaveCache(users, studentGroups);
+                await _cacheService.SaveCache(users, studentGroups);
                 return (users, studentGroups);
             }
             catch (Exception ex)
