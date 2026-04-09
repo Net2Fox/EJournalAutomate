@@ -9,6 +9,6 @@ namespace EJournalAutomate.Services.Cache
         bool IsCacheValid(string json);
 
         Task<(List<User>, List<StudentGroup>)> LoadCache();
-        void SaveCache(List<User> users, List<StudentGroup> groups);
+        Task SaveCache(List<User> users, List<StudentGroup> groups);
     }
 }

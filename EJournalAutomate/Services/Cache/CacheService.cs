@@ -61,7 +61,7 @@ namespace EJournalAutomate.Services.Cache
             }
         }
 
-        public async void SaveCache(List<User> users, List<StudentGroup> groups)
+        public async Task SaveCache(List<User> users, List<StudentGroup> groups)
         {
             _logger.LogInformation("Попытка сохранить кэш");
 
