@@ -2,12 +2,6 @@
 {
     public interface ISettingsStorage
     {
-        //string SavePath { get; }
-        //bool SaveDate { get; }
-        //bool SaveLogs { get; }
-        //bool SaveFullName { get; }
-        //string Vendor { get; }
-
         Task SaveSettings();
         void SetSavePath(string savePath);
         void SetSaveDate(bool saveDate);

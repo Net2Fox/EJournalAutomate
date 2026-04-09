@@ -9,7 +9,5 @@ namespace EJournalAutomate.Models.Domain
         public bool SaveLogs { get; set; } = false;
         public bool SaveFullName { get; set; } = true;
         public string Vendor { get; set; } = string.Empty;
-
-
     }
 }
