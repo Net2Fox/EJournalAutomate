@@ -2,18 +2,21 @@
 using EJournalAutomate.Messages;
 using Microsoft.Extensions.Logging;
 using System.Windows.Controls;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EJournalAutomate.Services.Navigation
 {
     public class NavigationService : INavigationService
     {
         private Frame _frame;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Dictionary<string, Type> _pages = new Dictionary<string, Type>();
         private readonly IMessenger _messenger;
         private readonly ILogger<NavigationService> _logger;
 
-        public NavigationService(IMessenger messenger, ILogger<NavigationService> logger)
+        public NavigationService(IServiceProvider serviceProvider, IMessenger messenger, ILogger<NavigationService> logger)
         {
+            _serviceProvider = serviceProvider;
             _messenger = messenger;
             _logger = logger;
 
@@ -49,7 +52,7 @@ namespace EJournalAutomate.Services.Navigation
                 throw ex;
             }
 
-            var page = (Page)Activator.CreateInstance(pageType);
+            var page = (Page)_serviceProvider.GetRequiredService(pageType);
 
             if (parameter != null)
             {
