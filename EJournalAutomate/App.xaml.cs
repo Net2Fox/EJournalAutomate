@@ -86,7 +86,7 @@ namespace EJournalAutomate
                 builder.Services.AddSingleton<IDialogService, DialogService>();
                 // ViewModels
                 builder.Services.AddTransient<ViewModels.LoginViewModel>();
-                builder.Services.AddTransient<ViewModels.MainPageViewModel>();
+                builder.Services.AddSingleton<ViewModels.MainPageViewModel>();
                 // Pages
                 builder.Services.AddTransient<Views.Pages.LoginPage>();
                 builder.Services.AddTransient<Views.Pages.MainPage>();
