@@ -33,4 +33,9 @@
 	<Resource Include="Images\icon_text_white.ico" />
     <Resource Include="Images\icon_text_black.ico" />
   </ItemGroup>
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>
