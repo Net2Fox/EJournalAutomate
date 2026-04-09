@@ -9,13 +9,15 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using EJournalAutomate.Configurations;
+using Microsoft.Extensions.Options;
 
 namespace EJournalAutomate.Services.API
 {
     public class APIService : IAPIService
     {
-        private const string BaseUrl = "https://api.eljur.ru/api";
-        private const string DevKey = "YourDevKey";
+        private string BaseUrl;
+        private string DevKey;
 
         private string _vendor = string.Empty;
         private string _authToken = string.Empty;
@@ -27,7 +29,7 @@ namespace EJournalAutomate.Services.API
 
         private readonly JsonSerializerOptions _jsonOptions;
 
-        public APIService(ITokenStorage tokenStorage, ISettingsStorage settingsStorage, ILogger<APIService> logger)
+        public APIService(ITokenStorage tokenStorage, ISettingsStorage settingsStorage, ILogger<APIService> logger, IOptions<ApiConfiguration> apiConfiguration)
         {
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(30);
@@ -35,6 +37,9 @@ namespace EJournalAutomate.Services.API
             _settingsStorage = settingsStorage;
             _logger = logger;
 
+            BaseUrl = apiConfiguration.Value.BaseUrl;
+            DevKey = apiConfiguration.Value.DevKey;
+            
             _jsonOptions = new();
             _jsonOptions.Converters.Add(new DateTimeConverter());
 
