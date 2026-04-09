@@ -22,7 +22,6 @@ namespace EJournalAutomate.Services.Download
         public DownloadService(IOptionsMonitor<SettingsModel> settingsMonitor, IAPIService apiService, IUserRepository userRepository, ILogger<DownloadService> logger)
         {
             _httpClient = new HttpClient();
-            _httpClient.Timeout = TimeSpan.FromSeconds(30);
             
             _settingsMonitor = settingsMonitor;
             _apiService = apiService;
