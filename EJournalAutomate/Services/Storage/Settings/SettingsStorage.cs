@@ -2,25 +2,22 @@
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Text.Json;
+using EJournalAutomate.Models.Domain;
+using Microsoft.Extensions.Options;
+using File = System.IO.File;
 
 namespace EJournalAutomate.Services.Storage.Settings
 {
     public class SettingsStorage : ISettingsStorage
     {
+        private readonly IOptionsMonitor<SettingsModel> _settingsMonitor;
         private readonly string _settingsPath = Path.Combine(Environment.CurrentDirectory, "settings.json");
         private readonly ILogger<SettingsStorage> _logger;
 
-        private Models.Domain.SettingsModel _settings;
-        public string SavePath => _settings.SavePath;
-        public bool SaveDate => _settings.SaveDate;
-        public bool SaveLogs => _settings.SaveLogs;
-        public bool SaveFullName => _settings.SaveFullName;
-        public string Vendor => _settings.Vendor;
-
-        public SettingsStorage(ILogger<SettingsStorage> logger)
+        public SettingsStorage(IOptionsMonitor<SettingsModel> settingsMonitor, ILogger<SettingsStorage> logger)
         {
+            _settingsMonitor = settingsMonitor;
             _logger = logger;
-            _settings = new();
             _logger.LogInformation("SettingsStorage инициализирована");
         }
 
@@ -29,7 +26,7 @@ namespace EJournalAutomate.Services.Storage.Settings
             _logger.LogInformation("Попытка сохранения настроек");
             try
             {
-                await File.WriteAllTextAsync(_settingsPath, JsonSerializer.Serialize<Models.Domain.SettingsModel>(_settings));
+                await File.WriteAllTextAsync(_settingsPath, JsonSerializer.Serialize(_settingsMonitor.CurrentValue));
                 _logger.LogInformation("Настройки успешно сохранены");
             }
             catch (Exception ex)
@@ -43,27 +40,27 @@ namespace EJournalAutomate.Services.Storage.Settings
 
         public void SetSavePath(string savePath)
         {
-            _settings.SavePath = savePath;
+            _settingsMonitor.CurrentValue.SavePath = savePath;
         }
 
         public void SetSaveDate(bool saveDate)
         {
-            _settings.SaveDate = saveDate;
+            _settingsMonitor.CurrentValue.SaveDate = saveDate;
         }
 
         public void SetSaveLogs(bool saveLogs)
         {
-            _settings.SaveLogs = saveLogs;
+            _settingsMonitor.CurrentValue.SaveLogs = saveLogs;
         }
 
         public void SetSaveFullName(bool saveFullName)
         {
-            _settings.SaveFullName = saveFullName;
+            _settingsMonitor.CurrentValue.SaveFullName = saveFullName;
         }
 
         public void SetVendor(string vendor)
         {
-            _settings.Vendor = vendor;
+            _settingsMonitor.CurrentValue.Vendor = vendor;
         }
 
         private bool IsValidPath(string path)
