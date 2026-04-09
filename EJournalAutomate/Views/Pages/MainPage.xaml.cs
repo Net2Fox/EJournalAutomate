@@ -9,12 +9,10 @@ namespace EJournalAutomate.Views.Pages
     /// </summary>
     public partial class MainPage : Page
     {
-        public MainPage()
+        public MainPage(MainPageViewModel viewModel)
         {
             InitializeComponent();
-            
-            DataContext = Ioc.Default.GetService<MainPageViewModel>()
-                ?? throw new InvalidOperationException("Не удалось получить MainPageViewModel из DI контейнера.");
+            DataContext = viewModel;
         }
     }
 }

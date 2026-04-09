@@ -4,6 +4,7 @@ using EJournalAutomate.Services.Navigation;
 using EJournalAutomate.ViewModels;
 using EJournalAutomate.Views.Pages;
 using System.Windows;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace EJournalAutomate.Views
 {
@@ -12,29 +13,29 @@ namespace EJournalAutomate.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly INavigationService _navigationService;
+        private readonly IAPIService _apiService;
+        
+        public MainWindow(MainWindowViewModel viewModel, INavigationService navigationService, IAPIService apiService)
         {
             InitializeComponent();
-
-            DataContext = Ioc.Default.GetService<MainWindowViewModel>()
-                ?? throw new InvalidOperationException("Не удалось получить MainWindowViewModel из DI контейнера.");
+            DataContext = viewModel;
+            _navigationService = navigationService;
+            _apiService = apiService;
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var navigationService = Ioc.Default.GetService<INavigationService>();
+            _navigationService.SetFrame(MainFrame);
 
-            navigationService.SetFrame(MainFrame);
-
-            var apiService = Ioc.Default.GetService<IAPIService>();
-            bool tokenExists = await apiService.LoadTokenFromAsync();
+            bool tokenExists = await _apiService.LoadTokenFromAsync();
             if (tokenExists)
             {
-                navigationService.NavigateTo(typeof(MainPage));
+                _navigationService.NavigateTo(typeof(MainPage));
             }
             else
             {
-                navigationService.NavigateTo(typeof(LoginPage));
+                _navigationService.NavigateTo(typeof(LoginPage));
             }
         }
     }

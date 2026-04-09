@@ -9,12 +9,10 @@ namespace EJournalAutomate.Views.Pages
     /// </summary>
     public partial class LoginPage : Page
     {
-        public LoginPage()
+        public LoginPage(LoginViewModel viewModel)
         {
             InitializeComponent();
-
-            DataContext = Ioc.Default.GetService<LoginViewModel>()
-                ?? throw new InvalidOperationException("Не удалось получить LoginViewModel из DI контейнера.");
+            DataContext = viewModel;
         }
 
         private void PasswordBox_PasswordChanged(object sender, System.Windows.RoutedEventArgs e)
