@@ -16,9 +16,14 @@ namespace EJournalAutomate.Services.Download
         private readonly IAPIService _apiService;
         private readonly IUserRepository _userRepository;
         private readonly ILogger<DownloadService> _logger;
+        
+        private readonly HttpClient _httpClient;
 
         public DownloadService(IOptionsMonitor<SettingsModel> settingsMonitor, IAPIService apiService, IUserRepository userRepository, ILogger<DownloadService> logger)
         {
+            _httpClient = new HttpClient();
+            _httpClient.Timeout = TimeSpan.FromSeconds(30);
+            
             _settingsMonitor = settingsMonitor;
             _apiService = apiService;
             _userRepository = userRepository;
@@ -33,8 +38,6 @@ namespace EJournalAutomate.Services.Download
 
             if (messages == null || messages.Count == 0) return;
 
-            using var httpClient = new HttpClient();
-
             for (int i = 0; i < messages.Count; i++)
             {
                 var message = messages[i];
@@ -42,7 +45,7 @@ namespace EJournalAutomate.Services.Download
 
                 try
                 {
-                    await DownloadMessageFilesAsync(message, httpClient);
+                    await DownloadMessageFilesAsync(message);
                 }
                 catch (Exception ex)
                 {
@@ -54,7 +57,7 @@ namespace EJournalAutomate.Services.Download
             }
         }
 
-        private async Task DownloadMessageFilesAsync(Message message, HttpClient httpClient)
+        private async Task DownloadMessageFilesAsync(Message message)
         {
             _logger.LogInformation($"Попытка скачать сообщение: {message.ID}");
 
@@ -110,7 +113,7 @@ namespace EJournalAutomate.Services.Download
 
                 if (System.IO.File.Exists(fullPath)) continue;
 
-                byte[] fileBytes = await httpClient.GetByteArrayAsync(file.Link);
+                byte[] fileBytes = await _httpClient.GetByteArrayAsync(file.Link);
                 await System.IO.File.WriteAllBytesAsync(fullPath, fileBytes);
                 _logger.LogInformation($"Сообщение успешно скачано: {message.ID}");
             }
