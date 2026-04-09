@@ -10,12 +10,15 @@ using EJournalAutomate.Views.Windows;
 using Microsoft.Extensions.Logging;
 using System.Windows;
 using System.Windows.Controls;
+using EJournalAutomate.Models.Domain;
+using Microsoft.Extensions.Options;
 
 namespace EJournalAutomate.ViewModels
 {
     public partial class MainWindowViewModel : ObservableRecipient, IRecipient<NavigationMessage>
     {
         private readonly ISettingsStorage _settingsStorage;
+        private readonly IOptions<SettingsModel> _settingsOptions;
         private readonly ILogger<MainWindowViewModel> _logger;
 
         [ObservableProperty]
@@ -33,10 +36,11 @@ namespace EJournalAutomate.ViewModels
         [ObservableProperty]
         private bool _isSettingsMenuItemEnabled = true;
 
-        public MainWindowViewModel(ISettingsStorage settingsStorage, IMessenger messenger, ILogger<MainWindowViewModel> logger)
+        public MainWindowViewModel(ISettingsStorage settingsStorage, IOptions<SettingsModel> settingsOptions, IMessenger messenger, ILogger<MainWindowViewModel> logger)
             : base (messenger)
         {
             _settingsStorage = settingsStorage;
+            _settingsOptions = settingsOptions;
             _logger = logger;
 
             IsActive = true;
@@ -48,10 +52,10 @@ namespace EJournalAutomate.ViewModels
         {
             try
             {
-                SavePath = _settingsStorage.SavePath;
-                SaveDate = _settingsStorage.SaveDate;
-                SaveLogs = _settingsStorage.SaveLogs;
-                SaveFullName = _settingsStorage.SaveFullName;
+                SavePath = _settingsOptions.Value.SavePath;
+                SaveDate = _settingsOptions.Value.SaveDate;
+                SaveLogs = _settingsOptions.Value.SaveLogs;
+                SaveFullName = _settingsOptions.Value.SaveFullName;
                 _logger.LogDebug("MainWindowViewModel инициализирована");
             }
             catch (Exception ex)
