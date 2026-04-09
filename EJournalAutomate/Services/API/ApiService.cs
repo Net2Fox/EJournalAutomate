@@ -9,50 +9,58 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using EJournalAutomate.Configurations;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace EJournalAutomate.Services.API
 {
     public class APIService : IAPIService
     {
-        private string BaseUrl;
-        private string DevKey;
-
         private const string BaseUrl = "https://api.eljur.ru/api";
+        
+        private string _devKey = string.Empty;
         private string _vendor = string.Empty;
         private string _authToken = string.Empty;
 
         private readonly HttpClient _httpClient;
-        private readonly ITokenStorage _tokenStorage;
+        private readonly ISecureStorage _tokenStorage;
+        private readonly ISecureStorage _devKeyStorage;
         private readonly ISettingsStorage _settingsStorage;
         private readonly ILogger<APIService> _logger;
 
         private readonly JsonSerializerOptions _jsonOptions;
 
-        public APIService(ITokenStorage tokenStorage, ISettingsStorage settingsStorage, ILogger<APIService> logger, IOptions<ApiConfiguration> apiConfiguration)
+        public APIService(
+            [FromKeyedServices("token")]ISecureStorage tokenStorage, 
+            [FromKeyedServices("devkey")]ISecureStorage devKeyStorage, 
+            ISettingsStorage settingsStorage, ILogger<APIService> logger, 
+            IOptionsMonitor<SettingsModel> settingsMonitor)
         {
             _httpClient = new HttpClient();
             _httpClient.Timeout = TimeSpan.FromSeconds(30);
             _tokenStorage = tokenStorage;
+            _devKeyStorage = devKeyStorage;
             _settingsStorage = settingsStorage;
             _logger = logger;
-
-            BaseUrl = apiConfiguration.Value.BaseUrl;
-            DevKey = apiConfiguration.Value.DevKey;
             
             _jsonOptions = new();
             _jsonOptions.Converters.Add(new DateTimeConverter());
 
-            _vendor = _settingsStorage.Vendor;
+            _vendor = settingsMonitor.CurrentValue.Vendor;
 
             _logger.LogInformation("ApiService инициализирован");
         }
 
         public async Task<bool> LoadTokenFromAsync()
         {
-            _authToken = await _tokenStorage.LoadTokenAsync();
+            _authToken = await _tokenStorage.LoadAsync();
             return !string.IsNullOrEmpty(_authToken);
+        }
+        
+        public async Task<bool> LoadDevKeyFromAsync()
+        {
+            _devKey = await _devKeyStorage.LoadAsync();
+            return !string.IsNullOrEmpty(_devKey);
         }
 
         public async Task AuthenticateAsync(string login, string password, string? vendor = null)
@@ -79,7 +87,7 @@ namespace EJournalAutomate.Services.API
                 throw apiException;
             }
 
-            var url = $"{BaseUrl}/auth?devkey={DevKey}&out_format=json&vendor={_vendor}";
+            var url = $"{BaseUrl}/auth?devkey={_devKey}&out_format=json&vendor={_vendor}";
             var loginRequest = new LoginRequest { Login = login, Password = password };
             var jsonContent = JsonSerializer.Serialize(loginRequest);
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
@@ -130,7 +138,7 @@ namespace EJournalAutomate.Services.API
                 _logger.LogInformation("Вход выполнен успешно");
 
                 _authToken = apiResponse.Response.Result.Token;
-                await _tokenStorage.SaveTokenAsync(_authToken);
+                await _tokenStorage.SaveAsync(_authToken);
             }
             else
             {
@@ -144,7 +152,7 @@ namespace EJournalAutomate.Services.API
         {
             _logger.LogInformation($"Попытка получить список сообщений, лимит: {limit}");
 
-            var url = $"{BaseUrl}/getmessages?folder=inbox&unreadonly=no&limit={limit}&page=1&devkey={DevKey}&auth_token={_authToken}&out_format=json&vendor={_vendor}";
+            var url = $"{BaseUrl}/getmessages?folder=inbox&unreadonly=no&limit={limit}&page=1&devkey={_devKey}&auth_token={_authToken}&out_format=json&vendor={_vendor}";
             HttpResponseMessage response;
             try
             {
@@ -204,7 +212,7 @@ namespace EJournalAutomate.Services.API
         {
             _logger.LogInformation($"Попытка получить информацию о сообщении: {id}");
 
-            var url = $"{BaseUrl}/getmessageinfo?id={id}&devkey={DevKey}&out_format=json&auth_token={_authToken}&vendor={_vendor}";
+            var url = $"{BaseUrl}/getmessageinfo?id={id}&devkey={_devKey}&out_format=json&auth_token={_authToken}&vendor={_vendor}";
 
             HttpResponseMessage response;
             try
@@ -265,7 +273,7 @@ namespace EJournalAutomate.Services.API
         {
             _logger.LogInformation("Попытка получить список пользователей");
 
-            var url = $"{BaseUrl}/getmessagereceivers?devkey={DevKey}&out_format=json&auth_token={_authToken}&vendor={_vendor}";
+            var url = $"{BaseUrl}/getmessagereceivers?devkey={_devKey}&out_format=json&auth_token={_authToken}&vendor={_vendor}";
 
             HttpResponseMessage response;
             try
