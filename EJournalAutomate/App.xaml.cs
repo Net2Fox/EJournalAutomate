@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Windows;
+using EJournalAutomate.Configurations;
 using EJournalAutomate.Views;
 using Microsoft.Extensions.Hosting;
 
@@ -65,6 +66,9 @@ namespace EJournalAutomate
                // MainWindow и MainWindowViewModel
                builder.Services.AddSingleton<ViewModels.MainWindowViewModel>();
                builder.Services.AddSingleton<MainWindow>();
+               
+               builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection("ApiConfiguration"));
+
 
                 _host = builder.Build();
                 
