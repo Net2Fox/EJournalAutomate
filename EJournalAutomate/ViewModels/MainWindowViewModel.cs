@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System.Windows;
 using System.Windows.Controls;
 using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Services.Dialog;
 using EJournalAutomate.Services.Window;
 using Microsoft.Extensions.Options;
 
@@ -21,6 +22,7 @@ namespace EJournalAutomate.ViewModels
         private readonly ISettingsStorage _settingsStorage;
         private readonly IOptions<SettingsModel> _settingsOptions;
         private readonly IWindowService _windowService;
+        private readonly IDialogService _dialogService;
         private readonly ILogger<MainWindowViewModel> _logger;
 
         [ObservableProperty]
@@ -42,6 +44,7 @@ namespace EJournalAutomate.ViewModels
             ISettingsStorage settingsStorage, 
             IOptions<SettingsModel> settingsOptions,
             IWindowService windowService,
+            IDialogService dialogService,
             IMessenger messenger, 
             ILogger<MainWindowViewModel> logger)
             : base (messenger)
@@ -49,6 +52,7 @@ namespace EJournalAutomate.ViewModels
             _settingsStorage = settingsStorage;
             _settingsOptions = settingsOptions;
             _windowService = windowService;
+            _dialogService = dialogService;
             _logger = logger;
 
             IsActive = true;
@@ -68,7 +72,7 @@ namespace EJournalAutomate.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowError(ex.Message);
                 _logger.LogCritical(ex, "MainWindowViewModel не инициализирована");
             }
 
@@ -85,7 +89,7 @@ namespace EJournalAutomate.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowError(ex.Message);
                 _logger.LogError(ex, $"Настройка даты не изменена");
             }
 
@@ -102,7 +106,7 @@ namespace EJournalAutomate.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowError(ex.Message);
                 _logger.LogError(ex, $"Настройка логов не изменена");
             }
         }
@@ -118,7 +122,7 @@ namespace EJournalAutomate.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                _dialogService.ShowError(ex.Message);
                 _logger.LogError(ex, $"Настройка сохранения отчества не изменена");
             }
         }
@@ -141,12 +145,12 @@ namespace EJournalAutomate.ViewModels
                 {
                     _settingsStorage.SetSavePath(SavePath);
                     await _settingsStorage.SaveSettings();
-                    MessageBox.Show("Путь успешно установлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _dialogService.ShowInfo("Путь успешно установлен!");
                     _logger.LogInformation($"Настройка пути скачивания: {SavePath}");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _dialogService.ShowError(ex.Message);
                     _logger.LogError(ex, $"Настройка пути скачивания не изменена");
                 }
             }
