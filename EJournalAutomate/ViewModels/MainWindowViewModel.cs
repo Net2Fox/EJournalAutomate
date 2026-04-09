@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System.Windows;
 using System.Windows.Controls;
 using EJournalAutomate.Models.Domain;
+using EJournalAutomate.Services.Window;
 using Microsoft.Extensions.Options;
 
 namespace EJournalAutomate.ViewModels
@@ -19,6 +20,7 @@ namespace EJournalAutomate.ViewModels
     {
         private readonly ISettingsStorage _settingsStorage;
         private readonly IOptions<SettingsModel> _settingsOptions;
+        private readonly IWindowService _windowService;
         private readonly ILogger<MainWindowViewModel> _logger;
 
         [ObservableProperty]
@@ -36,11 +38,17 @@ namespace EJournalAutomate.ViewModels
         [ObservableProperty]
         private bool _isSettingsMenuItemEnabled = true;
 
-        public MainWindowViewModel(ISettingsStorage settingsStorage, IOptions<SettingsModel> settingsOptions, IMessenger messenger, ILogger<MainWindowViewModel> logger)
+        public MainWindowViewModel(
+            ISettingsStorage settingsStorage, 
+            IOptions<SettingsModel> settingsOptions,
+            IWindowService windowService,
+            IMessenger messenger, 
+            ILogger<MainWindowViewModel> logger)
             : base (messenger)
         {
             _settingsStorage = settingsStorage;
             _settingsOptions = settingsOptions;
+            _windowService = windowService;
             _logger = logger;
 
             IsActive = true;
@@ -118,20 +126,17 @@ namespace EJournalAutomate.ViewModels
         [RelayCommand]
         private void ShowWindowAbout()
         {
-            AboutWindow aboutWindow = new AboutWindow();
-            aboutWindow.ShowDialog();
-            _logger.LogInformation("Окно \"О программе\" успешно открыто");
+            _windowService.ShowAboutWindow();
         }
 
         [RelayCommand]
         private async Task ShowWindowDirectorySettingsAsync()
         {
-            DirectorySettingsWindow settingsWindow = new DirectorySettingsWindow();
-            _logger.LogInformation("Окно \"Настройки\" успешно открыто");
-            settingsWindow.SavePath = SavePath;
-            if (settingsWindow.ShowDialog() == true)
+            var result = _windowService.ShowDirectorySettingsWindow(SavePath);
+
+            if (result != null)
             {
-                SavePath = settingsWindow.SavePath;
+                SavePath = result;
                 try
                 {
                     _settingsStorage.SetSavePath(SavePath);
