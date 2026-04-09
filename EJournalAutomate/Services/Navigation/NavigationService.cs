@@ -10,7 +10,6 @@ namespace EJournalAutomate.Services.Navigation
     {
         private Frame _frame;
         private readonly IServiceProvider _serviceProvider;
-        private readonly Dictionary<string, Type> _pages = new Dictionary<string, Type>();
         private readonly IMessenger _messenger;
         private readonly ILogger<NavigationService> _logger;
 
