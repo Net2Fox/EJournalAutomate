@@ -78,18 +78,10 @@ namespace EJournalAutomate
                 _logger = _host.Services.GetRequiredService<ILogger<App>>();
                 _logger.LogInformation($"--- Приложение запущено v{typeof(App).Assembly.GetName().Version} ---");
                 _logger.LogInformation($"Платформа: {Environment.OSVersion}, .NET: {Environment.Version}");
-
-                var settingsService = _host.Services.GetService<ISettingsStorage>();
-                if (settingsService != null)
-                {
-                    Task.Run(async () =>
-                    {
-                        await settingsService.LoadSettings();
-                        Application.Current.Dispatcher.Invoke(() => {
-                            LoggingService.SetSettingsSaveLogs(settingsService.SaveLogs);
-                        });
-                    });
-                }
+                
+                var settingsService = _host.Services.GetRequiredService<ISettingsStorage>();
+                await settingsService.LoadSettings();
+                LoggingService.SetSettingsSaveLogs(settingsService.SaveLogs);
                 
                 MainWindow mainWindow = _host.Services.GetRequiredService<MainWindow>();
                 mainWindow.Show();
