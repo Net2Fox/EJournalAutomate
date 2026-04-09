@@ -53,7 +53,7 @@ namespace EJournalAutomate
                         sp.GetRequiredService<ILogger<SecureStorage>>()));
                 builder.Services.AddKeyedSingleton<ISecureStorage, SecureStorage>("devkey", (sp, _) => 
                     new SecureStorage(
-                        Path.Combine(Environment.CurrentDirectory, "token.dat"),
+                        Path.Combine(Environment.CurrentDirectory, "devkey.dat"),
                         sp.GetRequiredService<ILogger<SecureStorage>>()
                     )
                 );
