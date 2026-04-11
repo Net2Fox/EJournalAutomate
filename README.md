@@ -23,7 +23,7 @@
    ```
    git clone https://github.com/Net2Fox/EJournalDesktop.git
    ```
-2. Откройте проект в Visual Studio 2022.
+2. Откройте проект в IDE.
 3. Соберите и запустите проект.
 
 ## Документация API
